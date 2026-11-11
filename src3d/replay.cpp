@@ -1,0 +1,48 @@
+#include "output.h"
+#include "hash.h"
+#include <charconv>
+#include <sstream>
+#include <locale>
+namespace rs3d {
+namespace {
+void require(bool ok,const std::string&message){if(!ok)throw std::runtime_error("replay: "+message);}
+std::vector<std::string> split(const std::string&line){
+    std::vector<std::string>cells;std::string cell;bool quoted=false,closed=false;
+    for(size_t i=0;i<line.size();++i){char c=line[i];if(quoted){if(c=='"'){if(i+1<line.size()&&line[i+1]=='"'){cell+='"';++i;}else{quoted=false;closed=true;}}else cell+=c;}
+        else if(c==','){cells.push_back(cell);cell.clear();closed=false;}else if(c=='"'){require(cell.empty()&&!closed,"invalid CSV quote");quoted=true;}else{require(!closed,"content after closing CSV quote");cell+=c;}}
+    require(!quoted,"unterminated CSV quote");cells.push_back(cell);return cells;
+}
+using Row=std::map<std::string,std::string>;
+void rows(const std::filesystem::path&path,const std::function<void(const Row&)>&consume){
+    std::ifstream file(path,std::ios::binary);require(bool(file),"missing "+path.u8string());std::string line;require(bool(std::getline(file,line)),"empty CSV");if(!line.empty()&&line.back()=='\r')line.pop_back();auto header=split(line);
+    while(std::getline(file,line)){require(line.size()<1024*1024,"CSV row exceeds limit");if(!line.empty()&&line.back()=='\r')line.pop_back();auto cells=split(line);require(cells.size()==header.size(),"CSV field count mismatch: "+path.filename().u8string());Row row;for(size_t i=0;i<header.size();++i)require(row.emplace(header[i],cells[i]).second,"duplicate CSV header");consume(row);}require(!file.bad(),"CSV read error");
+}
+std::uint64_t integer(const std::string&s){std::uint64_t n=0;auto r=std::from_chars(s.data(),s.data()+s.size(),n);require(r.ec==std::errc{}&&r.ptr==s.data()+s.size(),"invalid integer");return n;}
+double number(const std::string&s){std::istringstream in(s);in.imbue(std::locale::classic());double n=0;in>>n;require(bool(in)&&std::isfinite(n),"invalid finite number");in>>std::ws;require(in.eof(),"trailing number content");return n;}
+double get(const Row&r,const std::string&k){return number(r.at(k));}
+Vec3 vector(const Row&r,const std::string&prefix){return {get(r,prefix+"x"),get(r,prefix+"y"),get(r,prefix+"z")};}
+Quaternion rotation(const Row&r,const std::string&prefix){return {get(r,prefix+"qw"),get(r,prefix+"qx"),get(r,prefix+"qy"),get(r,prefix+"qz")};}
+Row manifest(const std::filesystem::path&path){std::ifstream in(path,std::ios::binary);require(bool(in),"missing manifest");Row out;std::string line;while(std::getline(in,line)){if(!line.empty()&&line[0]=='[')break;auto eq=line.find('=');if(eq!=line.npos)require(out.emplace(line.substr(0,eq),line.substr(eq+1)).second,"duplicate manifest key");}return out;}
+Face face(const Row&r,size_t vertices){std::uint64_t a=integer(r.at("a")),b=integer(r.at("b")),c=integer(r.at("c"));require(a<vertices&&b<vertices&&c<vertices,"face index out of range");return {int(a),int(b),int(c)};}
+}
+ReplayInput loadReplay(const std::filesystem::path&directory,std::uint64_t id){
+    require(!std::filesystem::exists(directory/L"INCOMPLETE.txt")&&std::filesystem::exists(directory/L"FILES_COMPLETE.txt"),"uncommitted output transaction");auto m=manifest(directory/L"manifest.ini");require(m.at("status")!="io_error","I/O-failed transaction");auto config=freezeConfig(loadScene(directory/L"scene.ini"));require(config->hash==m.at("run_config_hash"),"configuration hash mismatch");
+    Row selected;rows(directory/L"trials.csv",[&](const Row&r){if(integer(r.at("trial_id"))==id){require(selected.empty(),"duplicate trial");selected=r;}});require(!selected.empty()&&selected.at("has_initial")=="1"&&selected.at("has_shape")=="1","trial has no replayable initial state");
+    auto terrain=std::make_shared<TerrainMesh>(*config->terrain);terrain->vertices.clear();terrain->faces.clear();
+    rows(directory/L"terrain_vertices.csv",[&](const Row&r){require(integer(r.at("vertex_id"))==terrain->vertices.size(),"terrain vertex order");require(terrain->vertices.size()<100000,"terrain vertex limit");terrain->vertices.push_back(vector(r,""));});
+    rows(directory/L"terrain_faces.csv",[&](const Row&r){require(integer(r.at("face_id"))==terrain->faces.size(),"terrain face order");require(terrain->faces.size()<76800,"terrain face limit");terrain->faces.push_back(face(r,terrain->vertices.size()));});
+    require(terrain->vertices.size()==config->terrain->vertices.size()&&terrain->faces.size()==config->terrain->faces.size(),"terrain topology mismatch");ContentHash hash;hash.word(terrain->vertices.size());for(auto v:terrain->vertices){hash.number(v.x);hash.number(v.y);hash.number(v.z);}for(auto f:terrain->faces){hash.word(f.a);hash.word(f.b);hash.word(f.c);}terrain->contentHash="fnv1a64:"+hash.hex();require(terrain->contentHash==m.at("terrain_hash"),"actual terrain CSV hash mismatch");
+    std::vector<Vec3>vertices;std::vector<Face>faces;
+    rows(directory/L"shape_vertices.csv",[&](const Row&r){if(integer(r.at("trial_id"))==id){require(integer(r.at("vertex_id"))==vertices.size()&&vertices.size()<100,"shape vertex order/count");vertices.push_back(vector(r,""));}});
+    rows(directory/L"shape_faces.csv",[&](const Row&r){if(integer(r.at("trial_id"))==id){require(integer(r.at("face_id"))==faces.size()&&faces.size()<196,"shape face order/count");faces.push_back(face(r,vertices.size()));}});
+    ReplayInput out;auto&scene=out.scene;scene.shape=polyhedronFromMesh(vertices,faces);require(vertices.size()==integer(selected.at("k")),"shape k mismatch");
+    require(std::abs(scene.shape.volume-get(selected,"measured_V"))<=1e-12*scene.shape.volume,"shape volume mismatch");require(norm(scene.shape.center-vector(selected,"canonical_com_"))<=1e-12*get(selected,"r"),"shape COM mismatch");
+    const std::array<const char*,9>inertiaNames{"xx","xy","xz","yx","yy","yz","zx","zy","zz"};Mat3 expectedInertia;for(int i=0;i<9;++i)expectedInertia.a[i]=get(selected,std::string("inertia_")+inertiaNames[i]);require(frobenius(scene.shape.inertia-expectedInertia)<=1e-12*frobenius(expectedInertia),"shape inertia mismatch");
+    scene.shape.tau=get(selected,"tau");scene.radius=get(selected,"r");scene.terrain=terrain;scene.barrier=config->barrier;scene.barrier.center=vector(m,"barrier_center_");scene.initial.shapeOrigin=vector(selected,"initial_origin_");scene.initial.rotation=rotation(selected,"initial_");
+    scene.initial.velocity={get(selected,"vx"),get(selected,"vy"),get(selected,"vz")};scene.initial.angularVelocity=vector(selected,"omega_");
+    scene.dynamics.density=config->source.density;scene.dynamics.airDensity=config->source.airDensity;scene.dynamics.friction=get(selected,"mu");scene.dynamics.restitution=get(selected,"e");scene.dynamics.dragCoefficient=get(selected,"Cd");scene.dynamics.rollingCoefficient=get(selected,"c_rr");
+    out.settings.timeLimit=config->source.maxTime;out.grid=config->grid;out.collectorX=config->collectorX;out.input.id=id;out.input.seed=integer(selected.at("trial_seed"));out.input.kSeed=integer(selected.at("k_seed"));out.input.propertySeed=integer(selected.at("property_seed"));for(int i=0;i<propertyCount;++i)out.input.values[i]=get(selected,propertyNames[i]);
+    out.expected.time=get(selected,"final_time");out.expected.center=vector(selected,"final_com_");out.expected.shapeOrigin=vector(selected,"final_origin_");out.expected.rotation=rotation(selected,"final_");out.expected.velocity={get(selected,"final_vx"),get(selected,"final_vy"),get(selected,"final_vz")};out.expected.angularVelocity=vector(selected,"final_omega_");
+    bool known=false;for(auto reason:{StopReason::resting,StopReason::downstream,StopReason::upstream,StopReason::lateral,StopReason::timeout,StopReason::numericFailure,StopReason::cancelled})if(selected.at("reason")==stopReasonName(reason)){out.expected.reason=reason;known=true;}require(known,"unknown stop reason");validatePhysicsScene(scene);return out;
+}
+}

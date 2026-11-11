@@ -1,0 +1,20 @@
+# Verified source checkouts only. Bootstrap is an explicit separate step.
+function(rs_dependency name sha)
+  set(RS_${name}_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.deps3d/${name}" CACHE PATH "Offline ${name} source checkout")
+  execute_process(COMMAND git -C "${RS_${name}_SOURCE_DIR}" rev-parse HEAD
+    OUTPUT_VARIABLE actual OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE rc)
+  if(NOT rc EQUAL 0 OR NOT actual STREQUAL sha)
+    message(FATAL_ERROR "${name}: expected ${sha}, got '${actual}'. Run scripts3d/bootstrap.ps1 or set RS_${name}_SOURCE_DIR to the locked checkout.")
+  endif()
+  execute_process(COMMAND git -C "${RS_${name}_SOURCE_DIR}" diff --quiet HEAD RESULT_VARIABLE dirty)
+  if(NOT dirty EQUAL 0)
+    message(FATAL_ERROR "${name}: tracked dependency source modifications are not allowed")
+  endif()
+  set(RS_${name}_SOURCE_DIR "${RS_${name}_SOURCE_DIR}" PARENT_SCOPE)
+endfunction()
+rs_dependency(JoltPhysics 0373ec0dd762e4bc2f6acdb08371ee84fa23c6db)
+if(RS3D_GUI)
+  rs_dependency(raylib c1ab645ca298a2801097931d1079b10ff7eb9df8)
+  rs_dependency(raygui 25c8c65a6e5f0f4d4b564a0343861898c6f2778b)
+endif()
+

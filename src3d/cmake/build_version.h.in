@@ -1,0 +1,3 @@
+#pragma once
+#define RS3D_SOURCE_HEAD "@RS3D_SOURCE_HEAD@"
+#define RS3D_SOURCE_HASH "@RS3D_SOURCE_HASH@"
