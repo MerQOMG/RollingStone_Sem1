@@ -38,7 +38,6 @@ RollingStone_Sem1/
   run.cmd  test.cmd  demo.cmd   上述三种用途的快捷脚本
   README.md                     本说明
   BATCH_README.md               批量模式的统计口径、随机模型和 CSV 列说明
-  Fortest.cpp                   EasyX 环境自检小程序，与本项目无关
   examples/barrier_reference/   挡板对照算例的参考 CSV
   results/                      已提交的批量样例（已过时，见第 7 节）
   rollingstone/rollingstone/    历史嵌套工程，内含另一份 rollingstone.cpp 与 batch_stats.h
@@ -62,7 +61,7 @@ build_msvc.cmd --test
 build_msvc.cmd --demo
 ```
 
-也可双击 `run.cmd`、`test.cmd`、`demo.cmd`。脚本把可执行文件写到 `build\RollingStone.exe`。EasyX 若装在自定义目录，先设置环境变量 `EASYX_INCLUDE` 和 `EASYX_LIB`。
+也可双击 `run.cmd`、`test.cmd`、`demo.cmd`。脚本把可执行文件写到 `build\RockfallStudio.exe`。EasyX 若装在自定义目录，先设置环境变量 `EASYX_INCLUDE` 和 `EASYX_LIB`。
 
 也可以打开根目录的 `RollingStone.sln`（工具集 v143；本机只有更新工具集时，在 VS 里重定向即可）。嵌套目录里还有一份历史工程，建议不要混用。
 
@@ -100,6 +99,8 @@ C:\msys64\ucrt64\bin\g++.exe rollingstone.cpp -o rollingstone.exe -std=c++17 -O2
 
 模拟结束（到达下游边界、静止满 3 秒、超过 180 秒，或求解出错）会自动导出到 `results/trial_时间戳_*`。脚本运行时该目录在仓库根目录。
 
+旧 --batch 的网格经过、失败状态和安全输出修复详见 [BATCH_README.md](BATCH_README.md)。--self-test 同时覆盖几何、挡板、批量统计和新版参数配置。
+
 ## 5. 命令行模式
 
 以下命令都不打开图形窗口。请在仓库根目录运行，以便相对路径与示例一致。
@@ -112,11 +113,11 @@ rollingstone.exe --batch 500 2026
 rollingstone.exe --batch 300 2026 55.6 40 25 15 7 20
 ```
 
-`--batch` 也可以写成 `-b`。次数 N 省略时默认为 200，种子省略时默认为 2026；种子写 `0` 表示用当前时间。N 会被限制在 1～20000。
+`--batch` 也可以写成 `-b`。次数 N 省略时默认为 200，种子省略时默认为 2026；种子写 `0` 表示用当前时间。旧 --batch 的 N 必须是 2～20000 的整数；非法次数或种子直接报错。
 
 | 参数 | 含义 |
 | --- | --- |
-| `--self-test` | 多边形刚体回归 + 弹性挡板自检 |
+| `--self-test` | 多边形刚体 + 弹性挡板 + 批量统计 + 参数配置自检 |
 | `--barrier-test` | 只跑挡板自检 |
 | `--barrier-demo` | 在平地上跑 3 组对照（关挡板 / 默认刚度 / 更高刚度），写入 `results/`，用于核对第 6 节的数值表 |
 | `--batch N seed` | 批量蒙特卡洛，使用原始山坡 |
@@ -135,13 +136,13 @@ rollingstone.exe --batch 300 2026 55.6 40 25 15 7 20
 
 另外还有两条几何约束：缓台末端至少离坡脚 1 m，整条山坡水平长度不超过 120 m。
 
-**输出目录：** 原始山坡的 CSV 写在当前工作目录（不是自动写到 `results/`）。自定义地形写到 `results/terrain_<H>_<steepDeg>_<benchStart>_<benchLength>_<benchDeg>_<toeLength>/`，例如 `results/terrain_55.6_40_25_15_7_20/`，不同地形互不覆盖。地形不合法时不生成任何 CSV。
+**旧 --batch 输出目录：** 原始山坡写入 results/batch_.../；自定义地形写入 results/terrain_<六个参数>/batch_.../。每次独立，未完成目录保留 .partial；同一地形重跑也不覆盖已有数据。地形不合法时不生成 CSV。
 
 `batch_summary.csv` 在原有列之后追加：`terrain`（`original` 或 `custom`）、6 个地形参数（原始山坡填 `-`）、`release_x_min`、`release_x_max`。
 
 **释放点：** 原始山坡仍为 x = 90～100 m。自定义地形按几何计算：在坡脚前最后一段陡坡上，高度范围为 `[0.75·zHigh, zHigh]`，其中 `zHigh = min(20 m, 这段陡坡的上端高度)`，再换算成 x 后均匀随机。
 
-批量模式退出码：`0` 成功；`1` 无法创建 CSV；`2` 地形参数个数不对或不是合法数字；`3` 地形不合法。`--self-test`、`--barrier-test`、`--barrier-demo` 通过为 `0`，失败为 `1`。
+旧 --batch 退出码：0 表示完整成功；1 表示次数/种子非法或文件创建、写入、关闭失败；2 表示地形参数格式错误，或模拟存在失败/超时（请结合错误信息及 .partial 目录判断）；3 表示地形不合法。不完整批次的概率留空。`--self-test`、`--barrier-test`、`--barrier-demo` 通过为 `0`，失败为 `1`。
 
 批量的随机模型、统计口径和各 CSV 列说明见 [BATCH_README.md](BATCH_README.md)。
 
@@ -188,11 +189,11 @@ M * q'' + c * q' + k * q = F_contact
 
 ## 7. 已知问题与待办
 
-- 仓库里 `results/` 的批量样例已过时：当前代码运行 `--batch 500 2026`，到达收集器的是 307 次，不是 `BATCH_README.md` 和 `results/batch_summary.csv` 里写的 303 次。该样例也还没有后来追加的地形列。`.gitignore` 已忽略 `results/`，但这些文件此前已经提交。
+- results/ 的已提交批量样例是历史数据，按要求保留；当前运行采用线段网格统计和精确终止边界，结果可能不同。样例不代表当前版本的重新验证结果。
 - 批量默认释放点在坡脚上方的陡坡段（原始山坡为 x = 90～100 m），不是坡顶。原因是：多边形若从坡顶按图形模式的 1.5 m/s 出发，多数会在缓台停住，坡脚统计没有意义。图形模式仍然从坡顶释放。两种场景不要混着解释。
 - 因此，在原始山坡上 `p_entered_toe` 恒为 1（释放点已在 z≤10 m 区内）。看结果时请主要看到达收集器（x = 终点−10 m）的概率、最大速度和停止位置。自定义地形的释放点更高，`p_entered_toe` 才可能小于 1。
 - `results/route_probability_heatmap.png` 不是程序生成的，而是根据 CSV 另行绘图后放进仓库的。程序本身只写 CSV。
-- 批量模式尚未接入挡板，也还没有单参数敏感性分析模式。
+- 旧 --batch 不启用挡板；新版工作台与 --batch-config 可选择当前挡板。单参数敏感性分析仍需用户安排对照运行。
 - 课程交付物还未开始：使用说明书、开发说明、约 15 页 PPT、海报。提交截止日期为 12 月 1 日；汇报报名截止日期为 11 月 18 日。
 
 ## 8. 分工

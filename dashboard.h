@@ -176,7 +176,7 @@ int runDashboard(bool preview=false) {
                 stable=(!stone->isMoving() && barrier.settled())?stable+dt:0;
                 if(stable>=settings.settleWait) { ended=true;endReason="settled"; }
                 else if(simTime>=settings.maxTime-1e-10) { ended=true;endReason="time_limit"; }
-                else if(stone->getX()>=max(projectEndX(hill)-0.5,barrier.enabled()?barrier.faceX()+stone->getShape().extent+1:projectEndX(hill)-0.5)) { ended=true;endReason="downstream_boundary"; }
+                else if(stone->getX()>=max(projectEndX(hill),barrier.enabled()?barrier.faceX()+stone->getShape().extent+1:projectEndX(hill))) { ended=true;endReason="downstream_boundary"; }
             }
             if(ended && !exported) {
                 paused=true; exported=true;

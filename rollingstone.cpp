@@ -181,7 +181,7 @@ class HillSlope
 {
 private:
 	DynamicArray<Point> points; // 地形控制点（米）
-	int startX, endX;			// 只用于快速判断，单位仍是米（取整）
+	double startX, endX; // 保留米制坐标的小数，不得提前截断地形边界
 
 public:
 	HillSlope()
@@ -200,8 +200,8 @@ public:
 		points.push_back(Point(100.0, 2.88));
 		points.push_back(Point(120.0, 0.0)); // 坡脚平台（道路位置）
 
-		startX = (int)points[0].x;
-		endX = (int)points[points.size() - 1].x;
+		startX = points[0].x;
+		endX = points[points.size() - 1].x;
 	}
 
 	// 指定 x 处的地面高程 z (m)
@@ -266,8 +266,8 @@ public:
 		line(0, (int)toPxY(0), WIDTH, (int)toPxY(0));
 	}
 
-	int getStartX() const { return startX; }
-	int getEndX() const { return endX; }
+	double getStartX() const { return startX; }
+	double getEndX() const { return endX; }
     const DynamicArray<Point>& getPoints() const { return points; }
     // 用于同一刚体求解器的水平面/折线回归验证，也便于以后替换地形。
     explicit HillSlope(const DynamicArray<Point>& terrain) : points(terrain)
@@ -275,38 +275,38 @@ public:
         if (points.size() < 2) throw std::runtime_error("Terrain needs two points");
         for (size_t i = 1; i < points.size(); ++i)
             if (points[i].x <= points[i - 1].x) throw std::runtime_error("Terrain x must increase");
-        startX = (int)points[0].x; endX = (int)points[points.size() - 1].x;
+        startX = points[0].x; endX = points[points.size() - 1].x;
     }
 
-	int getPeakX() const
+	double getPeakX() const
 	{
 		if (points.empty())
 			return startX;
 		double bestZ = points[0].z;
-		int bestX = (int)points[0].x;
+		double bestX = points[0].x;
 		for (size_t i = 1; i < points.size(); ++i)
 		{
 			if (points[i].z > bestZ)
 			{ // 高程最大者即坡顶
 				bestZ = points[i].z;
-				bestX = (int)points[i].x;
+				bestX = points[i].x;
 			}
 		}
 		return bestX;
 	}
 
-	int getValleyX() const
+	double getValleyX() const
 	{
 		if (points.empty())
 			return startX;
 		double lowZ = points[0].z;
-		int lowX = (int)points[0].x;
+		double lowX = points[0].x;
 		for (size_t i = 1; i < points.size(); ++i)
 		{
 			if (points[i].z < lowZ)
 			{ // 高程最小者即坡脚
 				lowZ = points[i].z;
-				lowX = (int)points[i].x;
+				lowX = points[i].x;
 			}
 		}
 		return lowX;
@@ -1232,11 +1232,18 @@ int barrierSelfTest() {
         bool invalidRejected=false; BarrierSettings invalid=settings; invalid.mass=-1;
         try { ElasticBarrier::validate(invalid,hill); } catch(const std::exception&) { invalidRejected=true; }
         requireTest(invalidRejected,"invalid barrier mass rejected");
-        // 关闭挡板必须与旧算法逐步一致。
+        // 关闭挡板必须逐步保持基线；旧32位MinGW的优化路径可能产生x87末位舍入差异。
         settings.enabled=false; barrier.reset(hill,settings);
         RollingStone old(0,5,aligned),disabled=old;
-        for(int i=0;i<2000;++i) { old.update(hill,DT); disabled.update(hill,DT,&barrier); }
-        requireTest(old.x==disabled.x && old.z==disabled.z && old.vx==disabled.vx && old.vz==disabled.vz && old.omega==disabled.omega,"disabled barrier preserves baseline");
+        auto sameState=[](double a,double b) { return fabs(a-b)<=1e-12*max(1.0,max(fabs(a),fabs(b))); };
+        for(int i=0;i<2000;++i) {
+            old.update(hill,DT); disabled.update(hill,DT,&barrier);
+            requireTest(sameState(old.x,disabled.x) && sameState(old.z,disabled.z) &&
+                sameState(old.vx,disabled.vx) && sameState(old.vz,disabled.vz) &&
+                sameState(old.omega,disabled.omega) && sameState(old.angle,disabled.angle) &&
+                sameState(old.quietTime,disabled.quietTime) && old.moving==disabled.moving,
+                "disabled barrier preserves baseline at every step");
+        }
         BarrierScenarioResult coarse=runBarrierScenario(0.002,true,500000);
         BarrierScenarioResult medium=runBarrierScenario(0.001,true,500000);
         BarrierScenarioResult fine=runBarrierScenario(0.0005,true,500000);
@@ -1281,16 +1288,20 @@ int main(int argc, char** argv)
     SetConsoleOutputCP(CP_UTF8);
     if (argc > 1 && (std::strcmp(argv[1], "--batch") == 0 ||
                      std::strcmp(argv[1], "-b") == 0)) {
-        int n = (argc > 2) ? std::atoi(argv[2]) : 200;
-        unsigned int seed = (argc > 3)
-            ? (unsigned int)std::strtoul(argv[3], nullptr, 10)
-            : 2026u;
-        return runBatchCommand(n, seed, argc, argv);
+        unsigned long long count=200,seed=2026;
+        if((argc>2 && !batchParseUnsigned(argv[2],20000,count)) || count<2 ||
+            (argc>3 && !batchParseUnsigned(argv[3],UINT_MAX,seed))) {
+            std::fprintf(stderr,"Usage: --batch N [seed] [H steepDeg benchStart benchLength benchDeg toeLength]; N=2..20000, seed=0..4294967295.\n");
+            return 1;
+        }
+        return runBatchCommand((int)count,(unsigned int)seed,argc,argv);
     }
     if(argc>1 && std::strcmp(argv[1],"--self-test")==0) {
         int code=polygonSelfTest(); if(code) return code;
-        code=barrierSelfTest(); return code?code:projectSettingsSelfTest();
+        code=barrierSelfTest(); if(code) return code;
+        code=batchSelfTest(); return code?code:projectSettingsSelfTest();
     }
+    if(argc>1 && std::strcmp(argv[1],"--batch-test")==0) return batchSelfTest();
     if(argc>1 && std::strcmp(argv[1],"--barrier-test")==0) return barrierSelfTest();
     if(argc>1 && std::strcmp(argv[1],"--barrier-demo")==0) return barrierDemo();
     if(argc>1 && std::strcmp(argv[1],"--settings-test")==0) return projectSettingsSelfTest();
