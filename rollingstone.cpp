@@ -1285,7 +1285,7 @@ int main(int argc, char** argv)
         unsigned int seed = (argc > 3)
             ? (unsigned int)std::strtoul(argv[3], nullptr, 10)
             : 2026u;
-        return runBatchSimulation(n, seed);
+        return runBatchCommand(n, seed, argc, argv);
     }
     if(argc>1 && std::strcmp(argv[1],"--self-test")==0) {
         int code=polygonSelfTest(); if(code) return code;
