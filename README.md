@@ -61,4 +61,4 @@ build_msvc.cmd --demo
 
 核心代码是根目录 `rollingstone.cpp`；历史嵌套工程使用 `rollingstone/rollingstone/rollingstone.cpp`，两份必须一起更新。嵌套 `.vcxproj` 同时补充 UTF-8、C++14 和 EasyX 路径。其余新增脚本、README、参考数据可以一并上传。
 
-未执行 git commit 或 push。此增量只完成弹性阻挡体及其数值记录，没有完成总作业的正态参数蒙特卡洛试验、坡脚10米概率统计或最终提交文档。
+批量无窗口模式与统计修复参见 [BATCH_README.md](BATCH_README.md)。`--self-test` 已包含批量统计回归检查。当前批量场景不启用挡板，也尚未实现前两次动画和用户自选随机范围。
