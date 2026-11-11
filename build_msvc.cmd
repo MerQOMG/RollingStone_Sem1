@@ -31,30 +31,30 @@ if not exist "%EASYX_LIB%\EasyXw.lib" (
   exit /b 1
 )
 if not exist build mkdir build
-cl /nologo /W3 /EHsc /O2 /std:c++14 /utf-8 /DUNICODE /D_UNICODE /I"%EASYX_INCLUDE%" rollingstone.cpp /Fo"build\rollingstone.obj" /Fe"build\RollingStone.exe" /link /LIBPATH:"%EASYX_LIB%" EasyXw.lib user32.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib
+cl /nologo /W3 /EHsc /O2 /std:c++14 /utf-8 /DUNICODE /D_UNICODE /I"%EASYX_INCLUDE%" rollingstone.cpp /Fo"build\rollingstone.obj" /Fe"build\RockfallStudio.exe" /link /LIBPATH:"%EASYX_LIB%" EasyXw.lib user32.lib gdi32.lib shell32.lib comdlg32.lib ole32.lib
 if errorlevel 1 (
   echo BUILD FAILED
   popd
   exit /b 1
 )
-echo Build OK: build\RollingStone.exe
+echo Build OK: build\RockfallStudio.exe
 if /I "%~1"=="--test" goto test
 if /I "%~1"=="--demo" goto demo
 if /I "%~1"=="--run" goto run
 popd
 exit /b 0
 :test
-build\RollingStone.exe --self-test
+build\RockfallStudio.exe --self-test
 set "BARRIER_RC=%errorlevel%"
 popd
 exit /b %BARRIER_RC%
 :demo
-build\RollingStone.exe --barrier-demo
+build\RockfallStudio.exe --barrier-demo
 set "BARRIER_RC=%errorlevel%"
 popd
 exit /b %BARRIER_RC%
 :run
-build\RollingStone.exe
+build\RockfallStudio.exe
 set "BARRIER_RC=%errorlevel%"
 popd
 exit /b %BARRIER_RC%

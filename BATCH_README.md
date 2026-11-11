@@ -1,3 +1,5 @@
+> 本文件说明兼容保留的旧 `--batch` 场景及原500次结果。新版界面批量会读取当前地形、形状和材料参数，输出到独立文件夹，详见[参数总表](参数总表.md)。
+
 # 批量蒙特卡洛统计与 CSV 输出（任务 1、2）
 
 本 PR 在现有的**凸多边形刚体**版本上增加了无窗口的批量模拟模式：
@@ -15,19 +17,19 @@
 ### 1.1 图形模式（原程序）
 
 ```text
-rollingstone.exe
+RockfallStudio.exe
 ```
 
 ### 1.2 回归自检（原程序）
 
 ```text
-rollingstone.exe --self-test
+RockfallStudio.exe --self-test
 ```
 
 ### 1.3 批量模式（本 PR 新增）
 
 ```text
-rollingstone.exe --batch 500 2026
+RockfallStudio.exe --batch 500 2026
 ```
 
 - `--batch`（或 `-b`）：进入批量模式，不打开图形窗口；

@@ -137,7 +137,8 @@
       <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(VCInstallDir)Auxiliary\VS\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ItemGroup><ClInclude Include="project_settings.h" /><ClInclude Include="configured_batch.h" /><ClInclude Include="parameter_editor.h" /><ClInclude Include="dashboard.h" /></ItemGroup>
+<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

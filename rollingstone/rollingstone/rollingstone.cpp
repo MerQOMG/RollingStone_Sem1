@@ -58,11 +58,13 @@ int formatText(TCHAR* buffer, size_t capacity, const TCHAR* format, Args... args
 #define GROUND_Y 490   // 坡脚基准线（屏幕 y）
 
 // ------------------------------------------------------------------ 物理常数
-#define GRAVITY 9.81		// 重力加速度 (m/s²)
+double g_gravity=9.81, g_rockDensity=2600, g_rockThickness=1, g_airDensity=1.225;
+double g_barrierFriction=0.3, g_restSpeed=0.015, g_restTime=2;
+#define GRAVITY g_gravity		// 重力加速度 (m/s²)
 #define DT 0.002			// 物理步长 (s)
 #define STEPS_PER_FRAME 8	// 每帧 8 步 × 2 ms = 16 ms ≈ 实时
-#define ROCK_DENSITY 2600.0 // 岩石密度 (kg/m³)
-#define AIR_DENSITY 1.225	// 空气密度 (kg/m³)
+#define ROCK_DENSITY g_rockDensity // 岩石密度 (kg/m³)
+#define AIR_DENSITY g_airDensity	// 空气密度 (kg/m³)
 #define MIN_RADIUS 0.2		// 半径可调下限 (m)，只用来防止误操作，不是默认半径
 #define MAX_RADIUS 3.0		// 半径可调上限 (m)
 #define BOUNCE_MIN 0.15		// 法向速度小于此值不再弹跳，按接触处理 (m/s)
@@ -362,8 +364,8 @@ struct PolygonShape
             Point a=local[i], b=local[(i+1)%local.size()];
             polar+=cross2(a,b)*(dot2(a,a)+dot2(a,b)+dot2(b,b))/12;
         }
-        mass=ROCK_DENSITY*area; // 均匀棱柱，厚度固定 1m
-        inertia=ROCK_DENSITY*polar;
+        mass=ROCK_DENSITY*g_rockThickness*area; // 均匀棱柱，厚度由项目参数指定
+        inertia=ROCK_DENSITY*g_rockThickness*polar;
         if(inertia<=0 || !std::isfinite(inertia)) throw std::runtime_error("Invalid inertia");
     }
 };
@@ -709,7 +711,7 @@ class RollingStone
         vz-=GRAVITY*h;
         double speed=sqrt(vx*vx+vz*vz);
         // 平动空气阻力：迎风宽度近似 2r，棱柱厚度 1m，隐式衰减防止反向。
-        double damping=1+0.5*AIR_DENSITY*g_dragCoef*(2*shape.radius)*speed*h/shape.mass;
+        double damping=1+0.5*AIR_DENSITY*g_dragCoef*(2*shape.radius*g_rockThickness)*speed*h/shape.mass;
         vx/=damping; vz/=damping;
         x+=vx*h; z+=vz*h; angle=std::remainder(angle+omega*h,2*POLY_PI);
         std::vector<Contact> c=contacts(hill,0.0002,barrier);
@@ -725,7 +727,7 @@ class RollingStone
                 q.normalSum=max(0.0,old+(q.bounce-contactVelocity(q,q.normal,barrier))/effectiveMass(q,q.normal,barrier));
                 impulse(q,q.normal,q.normalSum-old,barrier);
                 Point tangent(q.normal.z,-q.normal.x);
-                double limit=(q.barrier?0.3:g_slideFriction)*q.normalSum;
+                double limit=(q.barrier?g_barrierFriction:g_slideFriction)*q.normalSum;
                 old=q.tangentSum;
                 q.tangentSum=max(-limit,min(limit,old-contactVelocity(q,tangent,barrier)/effectiveMass(q,tangent,barrier)));
                 impulse(q,tangent,q.tangentSum-old,barrier);
@@ -751,9 +753,9 @@ class RollingStone
         if(barrier) barrier->endStep(h);
         if(!std::isfinite(x+z+vx+vz+angle+omega)) throw std::runtime_error("Non-finite rigid-body state");
         // 不能仅凭质心低速判断停止：还需接触支撑及转动足够慢，持续 2 秒。
-        if(!c.empty() && getSpeed()<0.015 && fabs(omega)*shape.extent<0.015) quietTime+=h;
+        if(!c.empty() && getSpeed()<g_restSpeed && fabs(omega)*shape.extent<g_restSpeed) quietTime+=h;
         else quietTime=0;
-        if(quietTime>=2) { moving=false; vx=vz=omega=0; }
+        if(quietTime>=g_restTime) { moving=false; vx=vz=omega=0; }
         else moving=true;
     }
 public:
@@ -812,6 +814,11 @@ public:
     double getSpeed() const { return sqrt(vx*vx+vz*vz); }
     double getEnergy() const { return 0.5*shape.mass*(vx*vx+vz*vz)+0.5*shape.inertia*omega*omega; }
     double getHorizontalSpeed() const { return vx; }
+    double getAngle() const { return angle; }
+    std::vector<Point> worldVertices() const { return vertices(); }
+    void setInitialPose(double radians) { angle=radians; }
+    void setInitialSpin(double radiansPerSecond) { omega=radiansPerSecond; }
+    void raise(double height) { z+=height; }
     double getRadius() const { return shape.radius; }
     const PolygonShape& getShape() const { return shape; }
     double getMass() const { return shape.mass; }
@@ -1080,11 +1087,11 @@ int polygonSelfTest()
 
 // ------------------------------------------------------------------ 数值记录与 CSV（均为 SI 单位，CSV 中不混用 kJ 与 J）
 struct TrialSample {
-    double t,x,z,vx,vz,omega,rockKinetic,rockPotential,q,v,force,barrierEnergy,damper,numerical,impact;
+    double t,x,z,vx,vz,omega,angle,rockKinetic,rockPotential,q,v,force,barrierEnergy,damper,numerical,impact;
 };
 void recordSample(std::vector<TrialSample>& samples,double t,const RollingStone& stone,const ElasticBarrier& barrier) {
     samples.push_back(TrialSample{t,stone.getX(),stone.getZ(),stone.getHorizontalSpeed(),stone.getVerticalSpeed(),
-        stone.getOmega(),stone.getEnergy(),stone.getMass()*GRAVITY*stone.getZ(),barrier.displacement(),barrier.speed(),
+        stone.getOmega(),stone.getAngle(),stone.getEnergy(),stone.getMass()*GRAVITY*stone.getZ(),barrier.displacement(),barrier.speed(),
         barrier.supportForce(),barrier.energy(),barrier.dampingEnergy(),barrier.numericalEnergy(),barrier.impactEnergy()});
 }
 const char* trialOutcome(const RollingStone& stone,const ElasticBarrier& barrier,bool ended) {
@@ -1100,10 +1107,10 @@ void exportTrial(const std::string& prefix,const std::vector<TrialSample>& sampl
     trace.imbue(std::locale::classic()); summary.imbue(std::locale::classic()); config.imbue(std::locale::classic());
     trace<<std::setprecision(15); summary<<std::setprecision(15); config<<std::setprecision(15);
     if(!trace || !summary || !config) throw std::runtime_error("Cannot create CSV files in results directory.");
-    trace<<"time_s,rock_x_m,rock_z_m,rock_vx_m_s,rock_vz_m_s,rock_omega_rad_s,rock_kinetic_J,rock_potential_J,barrier_q_m,barrier_v_m_s,support_force_N,barrier_energy_J,damper_loss_J,numerical_loss_J,contact_loss_J\n";
+    trace<<"time_s,rock_x_m,rock_z_m,rock_vx_m_s,rock_vz_m_s,rock_omega_rad_s,rock_angle_rad,rock_kinetic_J,rock_potential_J,barrier_q_m,barrier_v_m_s,support_force_N,barrier_energy_J,damper_loss_J,numerical_loss_J,contact_loss_J\n";
     for(size_t i=0;i<samples.size();++i) {
         const TrialSample& a=samples[i];
-        trace<<a.t<<','<<a.x<<','<<a.z<<','<<a.vx<<','<<a.vz<<','<<a.omega<<','<<a.rockKinetic<<','<<a.rockPotential<<','
+        trace<<a.t<<','<<a.x<<','<<a.z<<','<<a.vx<<','<<a.vz<<','<<a.omega<<','<<a.angle<<','<<a.rockKinetic<<','<<a.rockPotential<<','
             <<a.q<<','<<a.v<<','<<a.force<<','<<a.barrierEnergy<<','<<a.damper<<','<<a.numerical<<','<<a.impact<<'\n';
     }
     double time=samples.empty()?0:samples.back().t;
@@ -1112,7 +1119,8 @@ void exportTrial(const std::string& prefix,const std::vector<TrialSample>& sampl
         <<barrier.maxDisplacement()<<','<<barrier.peakSupportForce()<<','<<barrier.peakContactForce()<<','<<barrier.dampingEnergy()<<','
         <<barrier.numericalEnergy()<<','<<barrier.impactEnergy()<<','<<stone.getX()<<','<<stone.getSpeed()<<','<<barrier.energy()<<'\n';
     const BarrierSettings& b=barrier.config(); const PolygonShape& p=stone.getShape();
-    config<<"parameter,value\nmodel,horizontal_1d_spring_damper_panel\ncontact_restitution,0\ncontact_friction,0.3\ncontact_solver_iterations,20\ninitial_angle_rad,0\n";
+    config<<"parameter,value\nmodel,horizontal_1d_spring_damper_panel\ncontact_restitution,0\ncontact_solver_iterations,20\n";
+    config<<"contact_friction,"<<g_barrierFriction<<"\nrock_density_kg_m3,"<<g_rockDensity<<"\nrock_thickness_m,"<<g_rockThickness<<"\ngravity_m_s2,"<<g_gravity<<"\nair_density_kg_m3,"<<g_airDensity<<'\n';
     if(samples.size()>1) config<<"sample_dt_s,"<<samples[1].t-samples[0].t<<'\n';
     config<<"barrier_enabled,"<<b.enabled<<"\nbarrier_rest_x_m,"<<b.x<<"\nbarrier_base_z_m,"<<barrier.baseZ()<<"\nbarrier_height_m,"<<b.height
         <<"\nbarrier_mass_kg,"<<b.mass<<"\nstiffness_N_m,"<<b.stiffness<<"\ndamping_N_s_m,"<<b.damping
@@ -1120,7 +1128,7 @@ void exportTrial(const std::string& prefix,const std::vector<TrialSample>& sampl
         <<"\nground_friction,"<<g_slideFriction<<"\nground_restitution,"<<g_restitution<<"\nrolling_resistance,"<<g_rollResist<<"\nair_drag_coefficient,"<<g_dragCoef<<'\n';
     if(!samples.empty()) {
         const TrialSample& a=samples.front();
-        config<<"initial_x_m,"<<a.x<<"\ninitial_z_m,"<<a.z<<"\ninitial_vx_m_s,"<<a.vx<<"\ninitial_vz_m_s,"<<a.vz<<"\ninitial_omega_rad_s,"<<a.omega<<'\n';
+        config<<"initial_x_m,"<<a.x<<"\ninitial_z_m,"<<a.z<<"\ninitial_vx_m_s,"<<a.vx<<"\ninitial_vz_m_s,"<<a.vz<<"\ninitial_angle_rad,"<<a.angle<<"\ninitial_omega_rad_s,"<<a.omega<<'\n';
     }
     for(size_t i=0;i<p.local.size();++i) config<<"rock_vertex_"<<i<<"_local_x_m,"<<p.local[i].x<<"\nrock_vertex_"<<i<<"_local_z_m,"<<p.local[i].z<<'\n';
     const DynamicArray<Point>& points=hill.getPoints();
@@ -1130,9 +1138,13 @@ void exportTrial(const std::string& prefix,const std::vector<TrialSample>& sampl
 }
 
 struct PhysicsParameterGuard {
-    double drag,mu,e,roll;
-    PhysicsParameterGuard() : drag(g_dragCoef),mu(g_slideFriction),e(g_restitution),roll(g_rollResist) {}
-    ~PhysicsParameterGuard() { g_dragCoef=drag; g_slideFriction=mu; g_restitution=e; g_rollResist=roll; }
+    double drag,mu,e,roll,gravity,density,thickness,air,barrierMu,restSpeed,restTime;
+    PhysicsParameterGuard() : drag(g_dragCoef),mu(g_slideFriction),e(g_restitution),roll(g_rollResist),
+        gravity(g_gravity),density(g_rockDensity),thickness(g_rockThickness),air(g_airDensity),
+        barrierMu(g_barrierFriction),restSpeed(g_restSpeed),restTime(g_restTime) {}
+    ~PhysicsParameterGuard() { g_dragCoef=drag; g_slideFriction=mu; g_restitution=e; g_rollResist=roll;
+        g_gravity=gravity; g_rockDensity=density; g_rockThickness=thickness; g_airDensity=air;
+        g_barrierFriction=barrierMu; g_restSpeed=restSpeed; g_restTime=restTime; }
 };
 struct BarrierScenarioResult { double deflection,finalX,loss,maxPenetration; bool touched,passed; };
 BarrierScenarioResult runBarrierScenario(double dt,bool enabled,double stiffness,const std::string& output="",double initialSpeed=12) {
@@ -1258,10 +1270,15 @@ int barrierDemo() {
 }
 
 #include "batch_stats.h"
+#include "project_settings.h"
+#include "configured_batch.h"
+#include "parameter_editor.h"
+#include "dashboard.h"
 
 // ------------------------------------------------------------------ 主程序
 int main(int argc, char** argv)
 {
+    SetConsoleOutputCP(CP_UTF8);
     if (argc > 1 && (std::strcmp(argv[1], "--batch") == 0 ||
                      std::strcmp(argv[1], "-b") == 0)) {
         int n = (argc > 2) ? std::atoi(argv[2]) : 200;
@@ -1270,551 +1287,22 @@ int main(int argc, char** argv)
             : 2026u;
         return runBatchSimulation(n, seed);
     }
-    if(argc>1 && std::strcmp(argv[1],"--self-test")==0) { int code=polygonSelfTest(); return code?code:barrierSelfTest(); }
+    if(argc>1 && std::strcmp(argv[1],"--self-test")==0) {
+        int code=polygonSelfTest(); if(code) return code;
+        code=barrierSelfTest(); return code?code:projectSettingsSelfTest();
+    }
     if(argc>1 && std::strcmp(argv[1],"--barrier-test")==0) return barrierSelfTest();
     if(argc>1 && std::strcmp(argv[1],"--barrier-demo")==0) return barrierDemo();
-	initgraph(WIDTH, HEIGHT);
-	setbkcolor(RGB(135, 206, 235));
-    SetWindowText(GetHWnd(),_T("Rolling Stone - Convex Polygon"));
-	BeginBatchDraw();
-
-	HillSlope hill;
-	int initX = hill.getPeakX();
-	double initZ = hill.getHeight((double)initX);
-
-    ShapeSettings shapeSettings={3,6,2.0,3.0};
-    std::mt19937 shapeRng((unsigned int)GetTickCount() ^ (unsigned int)GetCurrentProcessId());
-    if(!readShapeSettings(shapeSettings)) { EndBatchDraw(); closegraph(); return 0; }
-    double stoneSpeed=1.5;
-    TerrainSettings terrainSettings;      //当前地形参数（按 T 修改）
-
-    if (readTerrainSettings(terrainSettings) == 1)
-    {
-        hill = HillSlope(buildTerrain(terrainSettings));
-        initX = hill.getPeakX();
-        initZ = hill.getHeight((double)initX);
+    if(argc>1 && std::strcmp(argv[1],"--settings-test")==0) return projectSettingsSelfTest();
+    if(argc>2 && std::strcmp(argv[1],"--batch-config")==0) {
+        try {
+            int count=0; LPWSTR* args=CommandLineToArgvW(GetCommandLineW(),&count);
+            std::wstring path=count>2?args[2]:L""; LocalFree(args);
+            ProjectSettings settings=loadProjectSettings(path);
+            std::string directory=uniqueProjectRun("batch");
+            runConfiguredBatch(settings,directory);
+            std::printf("Configured batch saved: %s\n",directory.c_str()); return 0;
+        } catch(const std::exception& e) { std::fprintf(stderr,"FAIL: %s\n",e.what()); return 1; }
     }
-
-    PolygonShape initial=generatePolygon(3,2,3,shapeRng);
-    for(;;) {
-        try { initial=generatePolygon(shapeSettings,shapeRng); break; }
-        catch(const std::exception& e) {
-            MessageBoxA(GetHWnd(),e.what(),"Shape generation failed",MB_OK|MB_ICONWARNING);
-            if(!readShapeSettings(shapeSettings)) { EndBatchDraw(); closegraph(); return 0; }
-        }
-    }
-    RollingStone stone((double)initX,initZ,initial);
-    stone.adjustToGround(hill); stone.startAlongSlope(hill,stoneSpeed);
-    RollingStone trialStart=stone; // B/V 重跑时复用同一块石头，不重新随机形状。
-    BarrierSettings barrierSettings;
-    barrierSettings.x=max((double)hill.getStartX()+2.0,(double)hill.getEndX()-12.0);
-    ElasticBarrier barrier; barrier.reset(hill,barrierSettings);
-	bool simEnded = false;
-
-	bool paused = false;
-	double stoppedDuration = 0.0;
-	bool stoppedTriggered = false;
-	bool inMenu = false;
-	int menuSel = 0; // 0: c_rr 1: μ 2: e 3: Cd 4: 倍速
-	const int menuRows = 4;
-	const int playbackOptions[4] = {1, 2, 4, 8};
-	int playbackIndex = 0;
-	bool inPauseMenu = false;
-	int pauseMenuSel = 0;
-
-	char inputBuf[4][32];
-	std::snprintf(inputBuf[0], sizeof(inputBuf[0]), "%.3f", g_rollResist);
-	std::snprintf(inputBuf[1], sizeof(inputBuf[1]), "%.3f", g_slideFriction);
-	std::snprintf(inputBuf[2], sizeof(inputBuf[2]), "%.3f", g_restitution);
-	std::snprintf(inputBuf[3], sizeof(inputBuf[3]), "%.3f", g_dragCoef);
-
-	DynamicArray<TimeSpeed> speedData;
-	double simTime = 0.0;
-	const double graphWindow = 10.0;
-    std::vector<TrialSample> trialSamples; recordSample(trialSamples,0,stone,barrier);
-    bool autoExported=false;
-    std::string endReason="running", lastExport;
-    auto restartTrial=[&]() {
-        stone=trialStart; barrier.reset(hill,barrierSettings);
-        paused=false; simEnded=false; inMenu=false; inPauseMenu=false;
-        stoppedDuration=0; stoppedTriggered=false; speedData.clear(); simTime=0;
-        autoExported=false; endReason="running"; trialSamples.clear(); lastExport.clear();
-        recordSample(trialSamples,0,stone,barrier);
-    };
-    auto saveTrial=[&]() {
-        if(!CreateDirectoryA("results",nullptr) && GetLastError()!=ERROR_ALREADY_EXISTS)
-            throw std::runtime_error("Cannot create results directory");
-        SYSTEMTIME now; GetLocalTime(&now); char prefix[180];
-        std::snprintf(prefix,sizeof(prefix),"results/trial_%04u%02u%02u_%02u%02u%02u_%03u_%lu",
-            now.wYear,now.wMonth,now.wDay,now.wHour,now.wMinute,now.wSecond,now.wMilliseconds,(unsigned long)GetTickCount());
-        exportTrial(prefix,trialSamples,stone,barrier,hill,endReason.c_str(),simEnded);
-        lastExport=prefix;
-    };
-
-	settextstyle(16, 0, _T("Consolas"));
-	setcolor(RGB(50, 50, 50));
-	outtextxy(10, 20, _T("Convex polygon rigid body - SI units; thickness=1 m"));
-	outtextxy(10, 45, _T("SPACE=Pause M=Physics R=New polygon G=Geometry T=Terrain ESC=Exit"));
-
-	while (true)
-	{
-        int key=-1;
-        ExMessage event;
-        if(peekmessage(&event,EX_CHAR)) key=(int)event.ch;
-        else if(_kbhit()) key=_getch();
-        if(key>=0)
-        {
-			if (key == 27)
-				break;
-			if (key == 32)
-			{
-				paused = !paused;
-			}
-			if (key == 'p' || key == 'P')
-			{
-				inPauseMenu = !inPauseMenu;
-				pauseMenuSel = paused ? 1 : 0;
-			}
-			if (inPauseMenu)
-			{
-				if (key == 'w' || key == 'W' || key == 's' || key == 'S')
-				{
-					pauseMenuSel = 1 - pauseMenuSel;
-				}
-				if (key == 13)
-				{
-					if (pauseMenuSel == 0)
-						paused = true;
-					else
-						paused = false;
-					inPauseMenu = false;
-				}
-			}
-            if(key=='b' || key=='B') {
-                BarrierSettings candidate=barrierSettings;
-                if(readBarrierSettings(candidate,hill)) { barrierSettings=candidate; restartTrial(); }
-            }
-            if(key=='v' || key=='V') { barrierSettings.enabled=!barrierSettings.enabled; restartTrial(); }
-            if(key=='e' || key=='E') {
-                try { saveTrial(); MessageBoxA(GetHWnd(),lastExport.c_str(),"CSV exported (trajectory / summary / config)",MB_OK); }
-                catch(const std::exception& e) { MessageBoxA(GetHWnd(),e.what(),"CSV export failed",MB_OK|MB_ICONWARNING); }
-            }
-            if(key=='r' || key=='R' || key=='g' || key=='G')
-            {
-                ShapeSettings candidate=shapeSettings;
-                bool apply=(key=='r' || key=='R') || readShapeSettings(candidate);
-                if(apply) try {
-                    PolygonShape generated=generatePolygon(candidate,shapeRng);
-                    stone=RollingStone((double)initX,initZ,generated);
-                    stone.adjustToGround(hill); stone.startAlongSlope(hill,stoneSpeed);
-                    shapeSettings=candidate;
-                    trialStart=stone; restartTrial();
-                } catch(const std::exception& e) {
-                    MessageBoxA(GetHWnd(),e.what(),"Shape generation failed - previous shape retained",MB_OK|MB_ICONWARNING);
-                }
-            }
-            if (key == 't' || key == 'T')
-            {
-                int choice = readTerrainSettings(terrainSettings);
-
-                if (choice != 0)
-                {
-                    try
-                    {
-                        HillSlope newHill = (choice == 2) ? HillSlope() : HillSlope(buildTerrain(terrainSettings));
-                        // 先完成可能失败的构造，再提交地形变更，避免半更新状态。
-                        int newX=newHill.getPeakX(); double newZ=newHill.getHeight(newX);
-                        RollingStone newStone((double)newX,newZ,generatePolygon(shapeSettings,shapeRng));
-                        newStone.adjustToGround(newHill); newStone.startAlongSlope(newHill,stoneSpeed);
-                        BarrierSettings newBarrier=barrierSettings;
-                        newBarrier.x=max((double)newHill.getStartX()+2.0,(double)newHill.getEndX()-12.0);
-                        ElasticBarrier::validate(newBarrier,newHill);
-                        hill=newHill; initX=newX; initZ=newZ; barrierSettings=newBarrier;
-                        trialStart=newStone; restartTrial();
-                    }
-                    catch (const std::exception& e)
-                    {
-                        MessageBoxA(GetHWnd(), e.what(), "Terrain change failed - previous terrain retained", MB_OK | MB_ICONWARNING);
-                    }
-                }
-            }
-			if (key == 'm' || key == 'M')
-			{
-				inMenu = !inMenu;
-				playbackIndex = 0;
-				for (int i = 0; i < 4; i++)
-					if (playbackOptions[i] == g_playbackFactor)
-						playbackIndex = i;
-			}
-			if (inMenu)
-			{
-				if (key == 'w' || key == 'W')
-				{
-					menuSel = (menuSel + menuRows) % (menuRows + 1);
-				}
-				if (key == 's' || key == 'S')
-				{
-					menuSel = (menuSel + 1) % (menuRows + 1);
-				}
-				if (key == 'a' || key == 'A')
-				{
-					if (menuSel == 0)
-						g_rollResist = max(0.0, g_rollResist - 0.01);
-					if (menuSel == 1)
-						g_slideFriction = max(0.0, g_slideFriction - 0.05);
-					if (menuSel == 2)
-						g_restitution = max(0.0, g_restitution - 0.05);
-					if (menuSel == 3)
-						g_dragCoef = max(0.0, g_dragCoef - 0.1);
-					if (menuSel == 4)
-					{
-						playbackIndex = max(0, playbackIndex - 1);
-						g_playbackFactor = playbackOptions[playbackIndex];
-					}
-				}
-				if (key == 'd' || key == 'D')
-				{
-					if (menuSel == 0)
-						g_rollResist = min(0.30, g_rollResist + 0.01);
-					if (menuSel == 1)
-						g_slideFriction = min(1.00, g_slideFriction + 0.05);
-					if (menuSel == 2)
-						g_restitution = min(0.90, g_restitution + 0.05);
-					if (menuSel == 3)
-						g_dragCoef = min(2.00, g_dragCoef + 0.1);
-					if (menuSel == 4)
-					{
-						playbackIndex = min(3, playbackIndex + 1);
-						g_playbackFactor = playbackOptions[playbackIndex];
-					}
-				}
-                if((key=='a'||key=='A'||key=='d'||key=='D') && menuSel<4) {
-                    stone=trialStart; barrier.reset(hill,barrierSettings);
-                    simEnded=false; stoppedDuration=0; stoppedTriggered=false; simTime=0;
-                    speedData.clear(); trialSamples.clear(); recordSample(trialSamples,0,stone,barrier);
-                    autoExported=false; lastExport.clear(); endReason="running";
-                }
-                if(key=='a'||key=='A'||key=='d'||key=='D') {
-                    std::snprintf(inputBuf[0],32,"%.3f",g_rollResist);
-                    std::snprintf(inputBuf[1],32,"%.3f",g_slideFriction);
-                    std::snprintf(inputBuf[2],32,"%.3f",g_restitution);
-                    std::snprintf(inputBuf[3],32,"%.3f",g_dragCoef);
-                }
-				if (key == 13)
-				{
-					inMenu = false;
-				}
-			}
-		}
-
-		{
-            if(!paused && !inMenu && !inPauseMenu && !simEnded)
-            {
-			// 每帧 8 个子步（2 ms × 8 = 16 ms），倍速就是“每帧多跑几步”
-			int steps = STEPS_PER_FRAME * g_playbackFactor;
-			for (int i = 0; i < steps; ++i)
-			{
-                try {
-                    stone.update(hill,DT,&barrier);
-                    simTime+=DT; recordSample(trialSamples,simTime,stone,barrier);
-                }
-                catch(const std::exception& e) {
-                    paused=true; simEnded=true; endReason="solver_error";
-                    MessageBoxA(GetHWnd(),e.what(),"Simulation stopped",MB_OK|MB_ICONWARNING); break;
-                }
-                if(simTime>=180) { simEnded=true; paused=true; endReason="time_limit_180s"; break; }
-			}
-			double curSpeed = stone.getSpeed();
-			speedData.push_back(TimeSpeed(simTime, curSpeed));
-			while (!speedData.empty() && speedData[0].t < simTime - graphWindow)
-			{
-				speedData.erase_front();
-			}
-
-			if (!simEnded)
-			{
-				if (stone.getX() >= max((double)hill.getEndX()-0.5,
-                    barrier.enabled()?barrier.faceX()+stone.getShape().extent+1.0:(double)hill.getEndX()-0.5))
-				{
-                    simEnded=true; paused=true; endReason="downstream_boundary";
-				}
-			}
-
-			if (!stoppedTriggered && !simEnded)
-			{
-				if (!stone.isMoving() && barrier.settled())
-					stoppedDuration += STEPS_PER_FRAME * DT * g_playbackFactor;
-				else
-					stoppedDuration = 0.0;
-				if (stoppedDuration >= 3.0)
-				{
-                    simEnded=true; paused=true; endReason="settled_3s";
-				}
-			}
-
-            }
-            if(simEnded && !autoExported) {
-                autoExported=true;
-                try { saveTrial(); }
-                catch(const std::exception& e) { MessageBoxA(GetHWnd(),e.what(),"Automatic CSV export failed - press E to retry",MB_OK|MB_ICONWARNING); }
-            }
-			cleardevice();
-			setbkcolor(RGB(135, 206, 235));
-
-			hill.draw();
-            barrier.draw();
-			if (inMenu)
-			{
-				setfillcolor(RGB(240, 240, 240));
-				bar(70, 45, 500, 440);
-				setcolor(RGB(0, 0, 0));
-				settextstyle(16, 0, _T("Consolas"));
-				outtextxy(90, 55, _T("Parameters (W/S select, A/D change, Enter apply)"));
-
-				TCHAR bufMenu[160];
-				for (int i = 0; i < menuRows; i++)
-				{
-					int y = 100 + i * 55;
-					if (i == menuSel)
-						setcolor(RGB(255, 0, 0));
-					else
-						setcolor(RGB(0, 0, 0));
-					if (i == 0)
-						formatText(bufMenu, 160, _T("滚动阻矩系数 (0-0.30):"));
-					else if (i == 1)
-						formatText(bufMenu, 160, _T("摩擦系数 mu (0-1):"));
-					else if (i == 2)
-						formatText(bufMenu, 160, _T("恢复系数 e (0-0.90):"));
-					else
-						formatText(bufMenu, 160, _T("空气阻力 Cd (0=真空):"));
-					outtextxy(90, y, bufMenu);
-
-					setcolor(RGB(0, 0, 0));
-					TCHAR tbuf[64];
-					#ifdef _UNICODE
-                    MultiByteToWideChar(CP_ACP, 0, inputBuf[i], -1, tbuf, 64);
-#else
-                    std::snprintf(tbuf, sizeof(tbuf), "%s", inputBuf[i]);
-#endif
-					outtextxy(400, y, tbuf);
-				}
-				int y = 100 + menuRows * 55;
-				if (menuSel == menuRows)
-					setcolor(RGB(255, 0, 0));
-				else
-					setcolor(RGB(0, 0, 0));
-				formatText(bufMenu, 160, _T("播放倍速: x1 x2 x4 x8 (当前 x%d)"), g_playbackFactor);
-				outtextxy(90, y, bufMenu);
-
-				setfillcolor(RGB(100, 200, 100));
-				bar(250, 380, 380, 415);
-				setcolor(RGB(0, 0, 0));
-				outtextxy(275, 388, _T("启动模拟"));
-
-
-				setcolor(RGB(80, 80, 80));
-				outtextxy(90, 360, _T("按 R 重置模拟，按 M 退出菜单"));
-			}
-
-			if (inPauseMenu)
-			{
-				setfillcolor(RGB(240, 240, 240));
-				bar(WIDTH / 2 - 120, HEIGHT / 2 - 40, WIDTH / 2 + 120, HEIGHT / 2 + 40);
-				setcolor(RGB(0, 0, 0));
-				settextstyle(16, 0, _T("Consolas"));
-				outtextxy(WIDTH / 2 - 60, HEIGHT / 2 - 24, _T("Pause Menu (W/S select, Enter)"));
-				if (pauseMenuSel == 0)
-					setcolor(RGB(255, 0, 0));
-				else
-					setcolor(RGB(0, 0, 0));
-				outtextxy(WIDTH / 2 - 40, HEIGHT / 2 - 2, _T("Pause"));
-				if (pauseMenuSel == 1)
-					setcolor(RGB(255, 0, 0));
-				else
-					setcolor(RGB(0, 0, 0));
-				outtextxy(WIDTH / 2 - 40, HEIGHT / 2 + 18, _T("Continue"));
-			}
-
-            stone.draw();
-            TCHAR geometryInfo[200];
-            formatText(geometryInfo,200,_T("k=%d  r=%.4g m  S=%.8g m2  omega=%.3f rad/s"),stone.getSides(),stone.getRadius(),stone.getArea(),stone.getOmega());
-            settextstyle(16,0,_T("Consolas")); setcolor(RGB(20,30,50));
-            outtextxy(10,10,geometryInfo);
-            outtextxy(10,32,_T("SPACE:pause R:polygon G:shape T:terrain M:physics B:barrier V:on/off E:CSV ESC:exit"));
-
-            TCHAR barrierInfo[240]; settextstyle(14,0,_T("Consolas")); setcolor(RGB(10,40,90));
-            formatText(barrierInfo,240,_T("Barrier %s  q=%.4f m  max|q|=%.4f m  support=%.2f kN"),
-                barrier.enabled()?_T("ON"):_T("OFF"),barrier.displacement(),barrier.maxDisplacement(),barrier.supportForce()/1000);
-            outtextxy(10,56,barrierInfo);
-            formatText(barrierInfo,240,_T("Damper=%.3f kJ  numerical=%.3f kJ  contact=%.3f kJ  hit:%d passed:%d"),
-                barrier.dampingEnergy()/1000,barrier.numericalEnergy()/1000,barrier.impactEnergy()/1000,barrier.hasContact(),barrier.hasPassed());
-            outtextxy(10,76,barrierInfo);
-            if(!lastExport.empty()) outtextxy(10,96,_T("CSV saved in results/ (summary + trajectory + config)"));
-			// -------- HUD（米制） --------
-			TCHAR info[200];
-			setcolor(RGB(255, 255, 255));
-			settextstyle(14, 0, _T("Consolas"));
-
-			formatText(info, 200, _T("Position: %.1f m"), stone.getX());
-			outtextxy(10, HEIGHT - 100, info);
-
-			formatText(info, 200, _T("Height: %.1f m"), stone.getZ());
-			outtextxy(10, HEIGHT - 80, info);
-
-			formatText(info, 200, _T("Speed: %.1f m/s"), stone.getSpeed());
-			outtextxy(10, HEIGHT - 60, info);
-
-			formatText(info, 200, _T("Energy: %.1f kJ"), stone.getEnergy() / 1000.0);
-			outtextxy(10, HEIGHT - 40, info);
-
-			formatText(info, 200, _T("Circle r: %.2f m   Mass: %.0f kg"), stone.getRadius(), stone.getMass());
-			outtextxy(10, HEIGHT - 20, info);
-
-			formatText(info, 200, _T("Status: %s"), stone.isMoving() ? _T("ROLLING") : _T("STOPPED"));
-			setcolor(stone.isMoving() ? RGB(255, 200, 0) : RGB(100, 255, 100));
-			outtextxy(10, HEIGHT - 120, info);
-
-			double slope = hill.getSlopeAngle(stone.getX()) * 180 / 3.14159;
-			setcolor(RGB(200, 200, 200));
-			formatText(info, 200, _T("Slope: %.1f deg"), slope);
-			outtextxy(WIDTH - 130, HEIGHT - 60, info);
-
-			TCHAR paramBuf[240];
-			formatText(paramBuf, 240, _T("c_rr:%.2f mu:%.2f e:%.2f Cd:%.1f x%d"),
-						g_rollResist, g_slideFriction, g_restitution, g_dragCoef, g_playbackFactor);
-			setcolor(RGB(180, 180, 180));
-			settextstyle(12, 0, _T("Consolas"));
-			outtextxy(WIDTH - 330, 10, paramBuf);
-
-			// 速度条（0~20 m/s）
-			int speedBar = (int)(stone.getSpeed() / 20.0 * 100);
-			if (speedBar > 100)
-				speedBar = 100;
-			setfillcolor(RGB(255, 100, 100));
-			bar(WIDTH - 120, HEIGHT - 40, WIDTH - 120 + speedBar, HEIGHT - 30);
-			setcolor(RGB(150, 150, 150));
-			rectangle(WIDTH - 120, HEIGHT - 40, WIDTH - 20, HEIGHT - 30);
-
-			// -------- 速度-时间曲线 --------
-			const int gx = WIDTH - 260;
-			const int gy = 20;
-			const int gw = 240;
-			const int gh = 120;
-
-			setfillcolor(RGB(135, 206, 235));
-			bar(gx, gy, gx + gw, gy + gh);
-			setcolor(RGB(200, 200, 200));
-			rectangle(gx, gy, gx + gw, gy + gh);
-
-			const int marginL = 36;
-			const int marginR = 8;
-			const int marginTop = 6;
-			const int marginBottom = 20;
-			int plotX = gx + marginL;
-			int plotY = gy + marginTop;
-			int plotW = gw - marginL - marginR;
-			int plotH = gh - marginTop - marginBottom;
-
-			double t0 = simTime - graphWindow;
-			if (t0 < 0)
-				t0 = 0;
-
-			setcolor(RGB(180, 180, 180));
-			line(plotX, plotY, plotX, plotY + plotH);
-			line(plotX, plotY + plotH, plotX + plotW, plotY + plotH);
-
-			double gridStart = floor(t0);
-			double gridEnd = ceil(simTime);
-			setcolor(RGB(220, 220, 220));
-			setlinestyle(PS_DASH, 1);
-			for (int g = (int)gridStart; g <= (int)gridEnd; ++g)
-			{
-				double gxTime = (double)g;
-				double gxp = plotX + (gxTime - (simTime - graphWindow)) / graphWindow * plotW;
-				if (gxp >= plotX && gxp <= plotX + plotW)
-				{
-					line((int)gxp, plotY, (int)gxp, plotY + plotH);
-				}
-			}
-			setlinestyle(PS_SOLID, 1);
-
-			double yMax = 8.0; // 纵轴最小量程 8 m/s
-			for (size_t _i = 0; _i < speedData.size(); ++_i)
-			{
-				auto &p = speedData[_i];
-				if (p.s > yMax)
-					yMax = p.s;
-			}
-			yMax *= 1.1;
-
-			settextstyle(12, 0, _T("Consolas"));
-			setcolor(RGB(80, 80, 80));
-			TCHAR buf[64];
-			formatText(buf, 64, _T("%.1f"), yMax);
-			outtextxy(plotX - 32, plotY - 8, buf);
-			formatText(buf, 64, _T("%.1f"), 0.0);
-			outtextxy(plotX - 28, plotY + plotH - 14, buf);
-
-			formatText(buf, 64, _T("%.1fs"), t0);
-			outtextxy(plotX + 2, plotY + plotH + 2, buf);
-			formatText(buf, 64, _T("%.1fs"), simTime);
-			outtextxy(plotX + plotW - 40, plotY + plotH + 2, buf);
-
-			formatText(buf, 64, _T("Speed (m/s)"));
-			outtextxy(plotX + 2, plotY - 18, buf);
-			formatText(buf, 64, _T("Time (s)"));
-			outtextxy(plotX + plotW / 2 - 22, plotY + plotH + 2, buf);
-
-			if (speedData.size() >= 2)
-			{
-				setcolor(RGB(255, 0, 0));
-				setlinestyle(PS_SOLID, 2);
-				for (size_t i = 1; i < speedData.size(); ++i)
-				{
-					double tx1 = speedData[i - 1].t;
-					double ty1 = speedData[i - 1].s;
-					double tx2 = speedData[i].t;
-					double ty2 = speedData[i].s;
-
-					double nx1 = plotX + (tx1 - (simTime - graphWindow)) / graphWindow * plotW;
-					double nx2 = plotX + (tx2 - (simTime - graphWindow)) / graphWindow * plotW;
-					double ny1 = plotY + plotH - (ty1 / yMax) * plotH;
-					double ny2 = plotY + plotH - (ty2 / yMax) * plotH;
-
-					if (nx1 < plotX)
-						nx1 = plotX;
-					if (nx1 > plotX + plotW)
-						nx1 = plotX + plotW;
-					if (nx2 < plotX)
-						nx2 = plotX;
-					if (nx2 > plotX + plotW)
-						nx2 = plotX + plotW;
-					if (ny1 < plotY)
-						ny1 = plotY;
-					if (ny1 > plotY + plotH)
-						ny1 = plotY + plotH;
-					if (ny2 < plotY)
-						ny2 = plotY;
-					if (ny2 > plotY + plotH)
-						ny2 = plotY + plotH;
-
-					line((int)nx1, (int)ny1, (int)nx2, (int)ny2);
-				}
-				setlinestyle(PS_SOLID, 1);
-			}
-
-			FlushBatchDraw();
-			Sleep(16);
-		}
-
-		if (!stone.isMoving() || simEnded)
-		{
-			setcolor(RGB(0, 255, 0));
-			settextstyle(16, 0, _T("Consolas"));
-			outtextxy(WIDTH / 2 - 80, HEIGHT - 150, _T("Ended: E=CSV, V=compare on/off, R=new polygon"));
-		}
-	}
-
-	closegraph();
-	return 0;
+    return runDashboard(argc>1 && std::strcmp(argv[1],"--ui-preview")==0);
 }
