@@ -34,7 +34,8 @@ std::string sceneText(const SceneDraft&s,bool output){
     if(output||b.elastic||b.mass!=2000||b.stiffness!=500000||b.damping!=30000||b.initialDisplacement!=0||b.initialVelocity!=0)
         o<<"\nmode="<<(b.elastic?"elastic":"rigid")<<"\nmass="<<b.mass<<"\nstiffness="<<b.stiffness<<"\ndamping="<<b.damping<<"\ninitial_displacement="<<b.initialDisplacement<<"\ninitial_velocity="<<b.initialVelocity;
     if(output||s.sourceSchema>=2||s.obstacles.enabled){const auto&a=s.obstacles;
-        o<<"\n[obstacles]\nenabled="<<a.enabled<<"\ncount="<<a.count<<"\nseed="<<a.seed<<"\nsize_mode="<<(a.relativeToRadius?"relative_to_r":"absolute_m")<<"\nlength="<<rangeString({a.lengthMin,a.lengthMax})<<"\nwidth="<<rangeString({a.widthMin,a.widthMax})<<"\nexposed_height="<<rangeString({a.heightMin,a.heightMax})<<"\nautomatic_region="<<a.automaticRegion<<"\nx="<<rangeString({a.xMin,a.xMax})<<"\ny="<<rangeString({a.yMin,a.yMax})<<"\nmin_spacing="<<a.minSpacing<<"\nembed_depth="<<a.embedDepth<<"\nmax_total_height="<<a.maxTotalHeight<<"\nmu="<<a.friction<<"\ne="<<a.restitution;}
+        o<<"\n[obstacles]\nenabled="<<a.enabled<<"\ncount="<<a.count<<"\nseed="<<a.seed<<"\nsize_mode="<<(a.relativeToRadius?"relative_to_r":"absolute_m")<<"\nlength="<<rangeString({a.lengthMin,a.lengthMax})<<"\nwidth="<<rangeString({a.widthMin,a.widthMax})<<"\nexposed_height="<<rangeString({a.heightMin,a.heightMax})<<"\nautomatic_region="<<a.automaticRegion<<"\nx="<<rangeString({a.xMin,a.xMax})<<"\ny="<<rangeString({a.yMin,a.yMax})<<"\nmin_spacing="<<a.minSpacing<<"\nembed_depth="<<a.embedDepth<<"\nmax_total_height="<<a.maxTotalHeight<<"\nmu="<<a.friction<<"\ne="<<a.restitution;
+        if(output||a.wholeTerrain)o<<"\nplacement="<<(a.wholeTerrain?"terrain":"legacy_corridor");}
     o<<"\n[statistics]\nheight_reference="<<(s.heightReference==HeightReference::toeCenter?"toe_center":"toe_min")<<"\nautomatic_box="<<s.automaticGrid;
     for(int i=0;i<3;++i)o<<"\nlower_"<<"xyz"[i]<<'='<<s.grid.lower[i]<<"\nupper_"<<"xyz"[i]<<'='<<s.grid.upper[i]<<"\ncell_"<<"xyz"[i]<<'='<<s.grid.cell[i];
     o<<"\ncollector_x=";if(s.automaticCollector)o<<"auto";else o<<s.collectorX;
@@ -91,7 +92,9 @@ SceneDraft parseScene(const std::string&utf8,bool validate){
     num("barrier.width",b.width);num("barrier.height",b.height);num("barrier.thickness",b.thickness);num("barrier.yaw_degrees",b.yawDegrees);num("barrier.mu",b.friction);num("barrier.e",b.restitution);
     take("barrier.mode",[&](auto&x){require(x=="rigid"||x=="elastic","barrier.mode must be rigid/elastic");b.elastic=x=="elastic";});
     num("barrier.mass",b.mass);num("barrier.stiffness",b.stiffness);num("barrier.damping",b.damping);num("barrier.initial_displacement",b.initialDisplacement);num("barrier.initial_velocity",b.initialVelocity);
-    auto&a=s.obstacles;flag("obstacles.enabled",a.enabled);flag("obstacles.automatic_region",a.automaticRegion);take("obstacles.count",[&](auto&x){a.count=smallInteger(x);});take("obstacles.seed",[&](auto&x){a.seed=integer(x);});
+    s.obstacles=legacyObstacleSettings();auto&a=s.obstacles;
+    take("obstacles.placement",[&](auto&x){require(x=="terrain"||x=="legacy_corridor","obstacle placement must be terrain/legacy_corridor");a.wholeTerrain=x=="terrain";});
+    flag("obstacles.enabled",a.enabled);flag("obstacles.automatic_region",a.automaticRegion);take("obstacles.count",[&](auto&x){a.count=smallInteger(x);});take("obstacles.seed",[&](auto&x){a.seed=integer(x);});
     take("obstacles.size_mode",[&](auto&x){require(x=="relative_to_r"||x=="absolute_m","obstacle size_mode must be relative_to_r/absolute_m");a.relativeToRadius=x=="relative_to_r";});
     auto interval=[&](const char*key,double&low,double&high){take(key,[&](auto&x){auto r=range(x);low=r.lower;high=r.upper;});};
     interval("obstacles.length",a.lengthMin,a.lengthMax);interval("obstacles.width",a.widthMin,a.widthMax);interval("obstacles.exposed_height",a.heightMin,a.heightMax);interval("obstacles.x",a.xMin,a.xMax);interval("obstacles.y",a.yMin,a.yMax);

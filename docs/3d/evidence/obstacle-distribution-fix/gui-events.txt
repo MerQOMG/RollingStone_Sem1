@@ -1,0 +1,113 @@
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=60 vsync=off
+source=GUI actual physics; helper lines use depth test; latest snapshot bounded to one
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+input_to_draw_ms=17.149400000000981 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+input_to_draw_ms=14.708699999999908 source=native owner=0 editor=-1 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.678099999997698 source=native owner=1 editor=2 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=16.405399999996462 source=native owner=0 editor=-1 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.623200000002726 source=native owner=1 editor=2 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=15.156500000003348 source=native owner=1 editor=2 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=13.46110000000067 source=native owner=0 editor=2 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.652900000001637 source=native owner=1 editor=3 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.488900000017793 source=native owner=0 editor=3 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.148600000012948 source=native owner=1 editor=-1 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+apply config_hash=fnv1a64:6dadda046928d247 barrier=1
+action=apply
+input_to_draw_ms=17.259200000012243 source=native owner=1 editor=4 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=16.963500000002796 source=native owner=0 editor=4 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=15.242000000000644 source=native owner=0 editor=4 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=16.100999999991927 source=native owner=0 editor=4 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.089700000013863 source=native owner=1 editor=-1 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+apply config_hash=fnv1a64:cdc1474c8ced8425 barrier=1
+action=apply
+input_to_draw_ms=17.052500000005466 source=native owner=1 editor=-1 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+action=batch
+state=Running phase=1 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=0 wall=0.0150621
+analysis version=1 trajectories=0 directory=3 C=0 B=0 M=0 unknown=3
+state=Running phase=2 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=0 wall=0.047878700000000003
+analysis version=2 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=3 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=4 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=5 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=6 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=7 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=8 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=9 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=10 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=11 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=12 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=13 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=14 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=15 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=16 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=17 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=18 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=19 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=20 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=21 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=22 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=23 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=24 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=25 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=26 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=27 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=28 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=29 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=30 trajectories=1 directory=3 C=1 B=0 M=1 unknown=2
+state=Running phase=2 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=0.002 wall=7.2887291999999997
+analysis version=31 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=32 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=33 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=34 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=35 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=36 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=37 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=38 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=39 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=40 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=41 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=42 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=43 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=44 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=45 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=46 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=47 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=48 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=49 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=50 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=51 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=52 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=53 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=54 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=55 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=56 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=57 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=58 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=59 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=60 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=61 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=62 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=63 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=64 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=65 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=66 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=67 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=68 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=69 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=70 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+analysis version=71 trajectories=2 directory=3 C=1 B=0 M=1 unknown=2
+timeline action=background_follow_disabled trial=2 cursor=10.336000000000121 following=0 playing=0 physics_updates=8781
+analysis version=72 trajectories=2 directory=3 C=2 B=0 M=2 unknown=1
+state=Running phase=1 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=10.336000000000121 wall=17.632726900000002
+history_pose trial=2 time=10.336000000000121 interpolated=0 available=1 error= physics_updates=9225
+state=Running phase=3 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=10.336000000000121 wall=17.6493951
+analysis version=73 trajectories=2 directory=3 C=2 B=0 M=2 unknown=1
+analysis version=74 trajectories=3 directory=3 C=3 B=1 M=2 unknown=0
+state=Completed phase=4 trial=3 processed=3 C=3 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=10.336000000000121 wall=18.0840295
+input_to_draw_ms=17.502100000001519 source=native owner=1 editor=-1 menu=0 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+action=reset
+state=Idle phase=0 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:cdc1474c8ced8425 sim=0 wall=0
+input_to_draw_ms=21.431300000017472 source=native owner=1 editor=-1 menu=1 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+input_to_draw_ms=17.642799999975978 source=native owner=1 editor=-1 menu=1 yaw=-1.5707963705062866 pitch=1.5697963237762451 distance=104.78093719482422
+exit worker_finished=1 state=Idle hash=fnv1a64:cdc1474c8ced8425

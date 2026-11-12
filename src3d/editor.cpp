@@ -20,7 +20,7 @@ SceneEditor::SceneEditor(const SceneDraft&draft){
     add(4,"history.enabled",u8"分块历史 true/false");add(4,"history.interval",u8"历史间隔 (s / auto)");add(4,"history.cache_mib",u8"历史缓存上限 (MiB)");add(4,"history.display_vertices",u8"全部轨迹显示顶点预算");add(4,"analysis.route_cell",u8"全路径格宽 (m)");add(4,"analysis.contact_cell",u8"首次触板格宽高 (m)");
     add(5,"obstacles.enabled",u8"启用障碍 true/false");add(5,"obstacles.count",u8"障碍数量 (0–500)");add(5,"obstacles.seed",u8"障碍独立种子");add(5,"obstacles.size_mode",u8"relative_to_r / absolute_m");
     add(5,"obstacles.length",u8"长度区间 (r倍数 / m)");add(5,"obstacles.width",u8"宽度区间 (r倍数 / m)");add(5,"obstacles.exposed_height",u8"地面以上高度 (r倍数 / m)");add(5,"obstacles.max_total_height",u8"总高上限 (r倍数 / m)");
-    add(5,"obstacles.automatic_region",u8"自动走廊 true/false");add(5,"obstacles.x",u8"自定义区域 x (m)");add(5,"obstacles.y",u8"自定义区域 y (m)");add(5,"obstacles.min_spacing",u8"足迹最小间距 (m)");add(5,"obstacles.embed_depth",u8"底面埋深 (m)");add(5,"obstacles.mu",u8"障碍接触摩擦系数");add(5,"obstacles.e",u8"障碍恢复系数 (0–1)");sync(draft);
+    add(5,"obstacles.placement",u8"布置 terrain / legacy_corridor");add(5,"obstacles.automatic_region",u8"自动范围 true/false");add(5,"obstacles.x",u8"自定义区域 x (m)");add(5,"obstacles.y",u8"自定义区域 y (m)");add(5,"obstacles.min_spacing",u8"足迹最小间距 (m)");add(5,"obstacles.embed_depth",u8"底面埋深 (m)");add(5,"obstacles.mu",u8"障碍接触摩擦系数");add(5,"obstacles.e",u8"障碍恢复系数 (0–1)");sync(draft);
 }
 void SceneEditor::set(const std::string&key,const std::string&value){for(auto&field:fields)if(field.key==key){if(value.size()>=field.text.size())throw std::runtime_error("editor value too long");field.text.fill(0);std::copy(value.begin(),value.end(),field.text.begin());return;}throw std::runtime_error("unknown editor field");}
 void SceneEditor::sync(const SceneDraft&draft){auto all=values(draft);for(auto&field:fields)set(field.key,all.at(field.key));// Shortest round-tripping decimal for the editor, while CSV/config retain their
@@ -31,6 +31,12 @@ void SceneEditor::sync(const SceneDraft&draft){auto all=values(draft);for(auto&f
                 if(parsed.ec!=std::errc{}||parsed.ptr!=part.data()+part.size()||written.ec!=std::errc{}){valid=false;break;}part.assign(buffer,written.ptr);}
             if(!shorter.empty())shorter+=',';shorter+=part;start=end+1;
         }if(valid)set(field.key,shorter);
+    }
+    for(auto&field:fields){const char*unit=draft.obstacles.relativeToRadius?u8" (r倍数)":u8" (m)";
+        if(field.key=="obstacles.length")field.label=std::string(u8"碎石长度区间")+unit;
+        if(field.key=="obstacles.width")field.label=std::string(u8"碎石宽度区间")+unit;
+        if(field.key=="obstacles.exposed_height")field.label=std::string(u8"地面以上高度")+unit;
+        if(field.key=="obstacles.max_total_height")field.label=std::string(u8"总高上限")+unit;
     }base_=draft;}
 SceneDraft SceneEditor::parse()const{
     auto all=values(base_);for(auto&field:fields)all[field.key]=field.text.data();std::ostringstream out;out<<"schema="<<all.at("schema")<<'\n';std::string section;

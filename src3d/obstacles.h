@@ -4,16 +4,19 @@
 #include <map>
 namespace rs3d {
 struct BarrierSettings;
-constexpr const char* obstacleAlgorithm="fixed-box-obstacles-v1";
+constexpr const char* legacyObstacleAlgorithm="fixed-box-obstacles-v1";
+constexpr const char* obstacleAlgorithm="fixed-box-obstacles-v2";
 constexpr int firstObstacleObjectId=1000;
 struct ObstacleSettings {
-    bool enabled=false,relativeToRadius=true,automaticRegion=true;
-    int count=40;
+    bool enabled=false,relativeToRadius=false,automaticRegion=true,wholeTerrain=true;
+    int count=24;
     std::uint64_t seed=20261112;
-    double lengthMin=.30,lengthMax=.80,widthMin=.30,widthMax=.80,heightMin=.10,heightMax=.40;
-    double xMin=0,xMax=100,yMin=-5,yMax=5,minSpacing=.20,embedDepth=.03,maxTotalHeight=2;
+    double lengthMin=.20,lengthMax=.50,widthMin=.20,widthMax=.50,heightMin=.06,heightMax=.18;
+    double xMin=0,xMax=100,yMin=-5,yMax=5,minSpacing=.75,embedDepth=.03,maxTotalHeight=1;
     double friction=.45,restitution=.20;
 };
+// Missing placement in an old scene preserves its original layout and hashes.
+ObstacleSettings legacyObstacleSettings();
 using Footprint=std::array<Vec3,4>;
 struct Obstacle {
     int id=firstObstacleObjectId;
@@ -24,6 +27,7 @@ struct Obstacle {
     Footprint footprint() const;
 };
 struct ObstacleSet {
+    std::string algorithm=obstacleAlgorithm;
     std::vector<Obstacle> boxes;
     std::string hash,inputHash;
     double xMin=0,xMax=0,yMin=0,yMax=0,actualMaxTotalHeight=0;

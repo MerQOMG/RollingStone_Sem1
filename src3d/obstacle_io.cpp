@@ -16,8 +16,9 @@ void writeObstacleFiles(const ObstacleSet&s,const std::function<void(const std::
         for(size_t i=0;i<o.geometry.vertices.size();++i){auto p=o.geometry.vertices[i];auto v=row();v<<o.id<<','<<i<<','<<p.x<<','<<p.y<<','<<p.z<<'\n';put("obstacle_vertices.csv",v.str());}
         for(size_t i=0;i<o.geometry.faces.size();++i){auto f=o.geometry.faces[i];auto v=row();v<<o.id<<','<<i<<','<<f.a<<','<<f.b<<','<<f.c<<'\n';put("obstacle_faces.csv",v.str());}}
 }
-std::shared_ptr<const ObstacleSet> readObstacleFiles(const std::filesystem::path&directory,const std::string&inputHash,const std::string&expectedHash){
-    auto s=std::make_shared<ObstacleSet>();s->inputHash=inputHash;
+std::shared_ptr<const ObstacleSet> readObstacleFiles(const std::filesystem::path&directory,const std::string&inputHash,const std::string&expectedHash,const std::string&algorithm){
+    require(algorithm==obstacleAlgorithm||algorithm==legacyObstacleAlgorithm,"unsupported obstacle algorithm");
+    auto s=std::make_shared<ObstacleSet>();s->algorithm=algorithm;s->inputHash=inputHash;
     readArchiveCsv(directory/L"obstacles.csv",500,[&](const CsvRow&r){Obstacle o;auto id=archiveInteger(r.at("obstacle_id"));require(id==firstObstacleObjectId+s->boxes.size(),"obstacle ID/order mismatch");o.id=int(id);
         o.center={number(r,"center_x"),number(r,"center_y"),number(r,"center_z")};o.rotation={number(r,"qw"),number(r,"qx"),number(r,"qy"),number(r,"qz")};o.yawDegrees=number(r,"yaw_degrees");o.dimensions={number(r,"length"),number(r,"width"),number(r,"total_height")};o.exposedHeight=number(r,"exposed_height");o.friction=number(r,"mu");o.restitution=number(r,"e");s->boxes.push_back(std::move(o));});
     auto selected=[&](const CsvRow&r)->Obstacle&{auto id=archiveInteger(r.at("obstacle_id"));require(id>=firstObstacleObjectId&&id-firstObstacleObjectId<s->boxes.size(),"unknown obstacle geometry ID");return s->boxes[size_t(id-firstObstacleObjectId)];};

@@ -2,6 +2,7 @@
 #include "trial.h"
 #include "obstacle_io.h"
 #include "jolt_runtime.h"
+#include "editor.h"
 #include <Windows.h>
 #include <Psapi.h>
 #include <iostream>
@@ -17,6 +18,33 @@ template<class F>void rejects(F f){bool failed=false;try{f();}catch(const std::e
 Polyhedron box(Vec3 half){std::vector<Vec3> v;for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})v.push_back({x*half.x,y*half.y,z*half.z});return convexPolyhedron(v);}
 std::uint64_t memory(){PROCESS_MEMORY_COUNTERS_EX p{};p.cb=sizeof(p);check(GetProcessMemoryInfo(GetCurrentProcess(),reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&p),sizeof(p))!=0,"memory query");return p.PrivateUsage;}
 SceneDraft draft(){SceneDraft s;s.obstacles.enabled=true;s.barrier.enabled=true;s.properties[releaseX]={10,12};s.properties[releaseY]={-2,2};return s;}
+void distributionRegression(){
+    int failures=0;auto expect=[&](bool ok,const char*message){std::cout<<(ok?"PASS ":"FAIL ")<<message<<'\n';failures+=!ok;};
+    auto s=draft();s.obstacles.count=12;s.barrierAutoX=false;s.barrier.center.x=25;
+    auto c=freezeConfig(s);double lo=1e300,hi=-1e300,side=0;
+    for(const auto&o:c->obstacles->boxes){lo=std::min(lo,o.center.x);hi=std::max(hi,o.center.x);side=std::max(side,std::abs(o.center.y));}
+    std::cout<<"distribution x="<<lo<<":"<<hi<<" y_abs_max="<<side<<" terrain_end="<<c->terrain->xEnd<<'\n';
+    expect(hi>c->terrain->xFoot&&side>10,"automatic rubble reaches lower slope and terrain sides, beyond an upstream barrier");
+    SceneEditor editor(draft());auto before=freezeConfig(editor.parse());editor.set("geometry.r","3");editor.set("geometry.V","20");auto after=freezeConfig(editor.parse());
+    bool independent=before->obstacles->boxes.size()==after->obstacles->boxes.size();double maxLength=0,maxExposed=0;
+    for(size_t i=0;i<before->obstacles->boxes.size();++i){auto&a=before->obstacles->boxes[i];auto&b=after->obstacles->boxes[i];independent=independent&&norm(a.dimensions-b.dimensions)<1e-12&&std::abs(a.geometry.volume-b.geometry.volume)<1e-12&&a.exposedHeight==b.exposedHeight&&a.yawDegrees==b.yawDegrees;maxLength=std::max(maxLength,a.dimensions.x);maxExposed=std::max(maxExposed,a.exposedHeight);}
+    std::cout<<"default count="<<before->obstacles->boxes.size()<<" max_length="<<maxLength<<" max_exposed="<<maxExposed<<'\n';
+    expect(independent,"editing rock radius/volume leaves rubble size samples unchanged");
+    expect(before->obstacles->boxes.size()<=24&&maxLength<=.6&&maxExposed<=.2,"default rubble stays small and sparse in metres");
+    check(failures==0,"rubble distribution regression");
+}
+void legacyCompatibility(){
+    auto s=draft();s.obstacles=legacyObstacleSettings();s.obstacles.enabled=true;
+    auto c=freezeConfig(s);
+    // Golden values produced by the pre-fix executable, not recomputed by a
+    // second implementation of the new layout code.
+    check(c->hash=="fnv1a64:0edca48da7fda87b","legacy physical config hash changed");
+    check(c->obstacles->inputHash=="fnv1a64:383fd9c3c86e8e8d"&&c->obstacles->hash=="fnv1a64:652f9bbd8f6125f4","legacy obstacle layout changed");
+    auto text=sceneText(s);auto at=text.find("\nplacement=legacy_corridor");check(at!=text.npos,"legacy fixture placement missing");text.erase(at,std::string("\nplacement=legacy_corridor").size());
+    auto old=parseScene(text);check(!old.obstacles.wholeTerrain&&freezeConfig(old)->hash==c->hash,"old scene implicitly upgraded");
+    auto parsed=parseScene(sceneText(draft()));check(parsed.obstacles.wholeTerrain&&!parsed.obstacles.relativeToRadius,"new scene lost independent metre sizes");
+    std::cout<<"PASS v1 golden layout/config hashes and v2 round trip\n";
+}
 void geometry(){
     TerrainMesh t;t.xMin=-2;t.xEnd=2;t.yMin=-2;t.yMax=2;t.vertices={{-2,-2,0},{2,-2,0},{-2,0,1},{2,0,1},{-2,2,0},{2,2,0}};t.faces={{0,1,3},{0,3,2},{2,3,5},{2,5,4}};
     auto f=rectangleFootprint(0,0,1,1,0);auto z=terrainHeightRange(t,{f.begin(),f.end()});check(z.first==.75&&z.second==1,"edge-edge intersection extremum omitted");
@@ -79,4 +107,4 @@ void collision(){
     std::cout<<"O4 support rest and obstacle/elastic filtering PASS\n";
 }
 }
-int main(int argc,char**argv){try{JoltRuntime runtime;JPH::Trace=trace;std::cout<<std::unitbuf<<std::setprecision(12);geometry();deterministic(argc>1?std::filesystem::u8path(argv[1]):std::filesystem::temp_directory_path()/"rs3d_obstacles");capacity();collision();std::cout<<"PASS obstacle core tests\n";return 0;}catch(const std::exception&e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}
+int main(int argc,char**argv){try{JoltRuntime runtime;JPH::Trace=trace;std::cout<<std::unitbuf<<std::setprecision(12);distributionRegression();legacyCompatibility();if(argc>1&&std::string(argv[1])=="--distribution")return 0;geometry();deterministic(argc>1?std::filesystem::u8path(argv[1]):std::filesystem::temp_directory_path()/"rs3d_obstacles");capacity();collision();std::cout<<"PASS obstacle core tests\n";return 0;}catch(const std::exception&e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}

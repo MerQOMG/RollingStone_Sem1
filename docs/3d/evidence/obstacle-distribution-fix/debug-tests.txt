@@ -1,0 +1,14 @@
+Internal ctest changing into directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+Test project C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+    Start  8: config_snapshot
+1/4 Test  #8: config_snapshot ..................   Passed    0.23 sec
+    Start 10: batch_output_replay
+2/4 Test #10: batch_output_replay ..............   Passed  172.91 sec
+    Start 14: fixed_obstacles
+3/4 Test #14: fixed_obstacles ..................   Passed  145.82 sec
+    Start 17: archive_analysis_transactions
+4/4 Test #17: archive_analysis_transactions ....   Passed   11.70 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Total Test time (real) = 330.67 sec

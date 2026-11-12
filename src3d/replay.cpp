@@ -41,7 +41,7 @@ bool matchesReplay(const Snapshot&a,const ReplayInput&r){
 }
 ReplayInput loadReplay(const std::filesystem::path&directory,std::uint64_t id){
     require(!std::filesystem::exists(directory/L"INCOMPLETE.txt")&&std::filesystem::exists(directory/L"FILES_COMPLETE.txt"),"uncommitted output transaction");auto m=manifest(directory/L"manifest.ini");require(m.at("status")!="io_error","I/O-failed transaction");require(m.at("schema")=="1"||m.at("schema")=="2"||m.at("schema")=="3","unsupported result schema");std::shared_ptr<const ObstacleSet> saved;
-    if(m.at("schema")!="1")saved=readObstacleFiles(directory,m.at("obstacle_input_hash"),m.at("obstacle_hash"));
+    if(m.at("schema")!="1")saved=readObstacleFiles(directory,m.at("obstacle_input_hash"),m.at("obstacle_hash"),m.count("obstacle_algorithm")?m.at("obstacle_algorithm"):legacyObstacleAlgorithm);
     validateResultFiles(directory,int(integer(m.at("schema"))));
     auto config=freezeConfig(loadScene(directory/L"scene.ini",false),saved);require(config->hash==m.at("run_config_hash"),"configuration hash mismatch");
     Row selected;rows(directory/L"trials.csv",[&](const Row&r){if(integer(r.at("trial_id"))==id){require(selected.empty(),"duplicate trial");selected=r;}});require(!selected.empty()&&selected.at("has_initial")=="1"&&selected.at("has_shape")=="1","trial has no replayable initial state");

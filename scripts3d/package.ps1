@@ -13,7 +13,7 @@ Get-ChildItem -LiteralPath (Join-Path $root 'build/3d/bin') -Filter 'rs3d_*.exe'
 Copy-Item -LiteralPath (Join-Path $root 'configs3d') -Destination $target -Recurse
 $docs = Join-Path $target 'docs'
 New-Item -ItemType Directory -Path $docs | Out-Null
-foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md','ELASTIC_BARRIER.md','ANALYSIS_AND_TIMELINE.md','OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md')) {
+foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md','ELASTIC_BARRIER.md','ANALYSIS_AND_TIMELINE.md','OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md','OBSTACLE_DISTRIBUTION_FIX.md')) {
     Copy-Item -LiteralPath (Join-Path $root ('docs/3d/'+$name)) -Destination $docs
 }
 $readme = @'

@@ -1,0 +1,32 @@
+[
+  {
+    "Case": "before",
+    "File": "shape_vertices.csv",
+    "SHA256": "C8B0EC2789F49062222465CDD4469019F00D2A401232A9E69068A31698EFAE62"
+  },
+  {
+    "Case": "before",
+    "File": "shape_faces.csv",
+    "SHA256": "A89B09398F1D9C9D16877BC22AF1293E462D0121CD1B0D093A56648E04811044"
+  },
+  {
+    "Case": "final",
+    "File": "shape_vertices.csv",
+    "SHA256": "C8B0EC2789F49062222465CDD4469019F00D2A401232A9E69068A31698EFAE62"
+  },
+  {
+    "Case": "final",
+    "File": "shape_faces.csv",
+    "SHA256": "A89B09398F1D9C9D16877BC22AF1293E462D0121CD1B0D093A56648E04811044"
+  },
+  {
+    "Case": "off",
+    "File": "shape_vertices.csv",
+    "SHA256": "C8B0EC2789F49062222465CDD4469019F00D2A401232A9E69068A31698EFAE62"
+  },
+  {
+    "Case": "off",
+    "File": "shape_faces.csv",
+    "SHA256": "A89B09398F1D9C9D16877BC22AF1293E462D0121CD1B0D093A56648E04811044"
+  }
+]

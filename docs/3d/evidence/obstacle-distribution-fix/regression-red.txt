@@ -1,0 +1,6 @@
+distribution x=6.42770095396:22.9692974572 y_abs_max=7.15547268085 terrain_end=99.0665656247
+FAIL automatic rubble reaches lower slope and terrain sides, beyond an upstream barrier
+default count=40 max_length=1.59358660899 max_exposed=0.797060754313
+FAIL editing rock radius/volume leaves rubble size samples unchanged
+FAIL default rubble stays small and sparse in metres
+FAIL rubble distribution regression
