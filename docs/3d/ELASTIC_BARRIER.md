@@ -8,6 +8,10 @@
 ./run_elastic_3d.cmd
 ```
 
+该入口现在默认打开 `configs3d/parameterized_elastic.ini`：55.6m 参数化坡面、坡脚自动定位的36m宽/8m高弹性挡板，M=2000kg、k=500000N/m、c=30000N·s/m。板中心x=`auto`（坡面终点前10m），z=`auto`（按实际地形支撑高度放置）；修改坡面后继续自动定位。地面摩擦0.2、恢复系数0.15是该演示的明确输入，均可编辑。
+
+原平地演示保留为 `run_elastic_3d.cmd --config configs3d/elastic_barrier.ini`。切换地形并成功应用时，相机自动调整到新地形的完整视野；其他参数修改保留视角。
+
 点击“单次”观看当前落石撞击、板后退和回弹；点击“批量”先显示两次真实预览，再后台计算余下试验。左侧“挡板”组第一页面可设置 enabled=true、mode=elastic、质量 M、刚度 k 和阻尼 c，点“应用更改”生效。mode=rigid 恢复静态挡板，enabled=false 关闭挡板。旧 INI 不含 mode 时仍按 rigid 读取。参数修改、保存/加载、运行锁定、暂停/继续和取消规则与其他场景参数相同。
 
 弹性模式在视口顶部显示实际位移 q、法向速度、支承力、弹簧储能和阻尼耗能。显示和拾取使用每步实际 Jolt 板位姿，不能用原固定中心替代。中心坐标是弹簧零位，initial_displacement 和 initial_velocity 是开始时的轴向位移与速度；auto 只决定零位的初始支撑高度。

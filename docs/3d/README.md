@@ -42,7 +42,7 @@ python scripts3d/audit_batch.py "results3d/run_实际目录"
 
 正式窗口使用顶部运行栏、左侧参数分页、中央三维视口、底部状态栏。操作步骤：
 
-1. 从参数组选择地形，设置类型、宽度、横坡或沟槽，点击“应用更改”。各数值带单位；可输入固定数或 `lower,upper` 区间，枚举使用字段提示的 ASCII 文本。
+1. 从参数组选择地形，设置类型、宽度、横坡或沟槽，点击“应用更改”。地形实际变化后自动重新取景，避免从flat切到parameterized时旧相机落在坡面下面；材料等其他编辑保留视角。各数值带单位；可输入固定数或 `lower,upper` 区间，枚举使用字段提示的 ASCII 文本。
 2. 设置 k/r/V、密度、材料和初值。只有应用成功才替换场景；非法值保留供修改，字段附近和底部显示错误。改动尚未应用时不能启动运行。
 3. 在明确的“设置释放点”模式下点选地形，填入世界 x/y 并计算实体支撑高度。也可数值编辑释放位置和间隙。
 4. 可选启用挡板：有限宽度、高度、厚度、中心和绕 Z 方位角一起用于显示与刚体碰撞；`auto` 高度使底边落在覆盖区域最高支撑处。mode=rigid 为静态刚性板；mode=elastic 为质量—弹簧—阻尼支承板，可设置 M/k/c，实际运动与碰撞耦合。详见 [弹性挡板](ELASTIC_BARRIER.md)。
@@ -97,7 +97,7 @@ python scripts3d/audit_performance.py results3d/perf_background
 
 本机验收覆盖76,800个地形三角面、单个k<=100刚体、一个有限挡板（静态刚性或单轴弹簧阻尼支承）；显示压力负载为50条各2000点的静态轨迹，正式应用只保存前两条预览轨迹，后台不显示动画。不能据此推断可同时物理模拟50块石头。固定预算为帧P95<=33.334ms/P99<=50ms、峰值512MiB、软件响应P95<=50ms/最大250ms；最终真实预览/后台均通过。当前弹性挡板追加版的原稳定专用场景回归1000次45.39秒、零失败/超时，普通坡面结果仍按真实终止状态报告。
 
-当前独立发行目录为`build/3d/package/RollingStone3D-elastic`，双击其中的`run_elastic_3d.cmd`打开弹性碰撞示例，`run_3d.cmd`打开默认场景；源码入口仍是仓库根目录的同名命令。原自然形状版和v1发行目录保留。大体积发行包和结果未提交Git，换机器须按本文重建或复制发行目录，并提供有权使用的中文字体。真实输出示例在`results3d/natural_v3_final1000/run_20261112_084735_13532_1`；其中manifest、trials、voxel_probability、collector_yz和projection_xy/xz给出配置、状态与概率。
+当前独立发行目录为`build/3d/package/RollingStone3D-parameterized-elastic`，双击其中的`run_elastic_3d.cmd`打开参数化坡面与弹性挡板碰撞示例，`run_3d.cmd`打开默认场景；源码入口仍是仓库根目录的同名命令。原平地弹性版、自然形状版和v1发行目录保留。大体积发行包和结果未提交Git，换机器须按本文重建或复制发行目录，并提供有权使用的中文字体。真实输出示例在`results3d/natural_v3_final1000/run_20261112_084735_13532_1`；其中manifest、trials、voxel_probability、collector_yz和projection_xy/xz给出配置、状态与概率。
 
 
 查看自然落石：`run_3d.cmd --config configs3d/natural_preview.ini`。这个12×12m平地场景便于观察形状；点击“重新随机”查看不同样本，默认坡面仍可正常使用。新旧采样器使用相同seed时形状会不同，旧结果请通过--replay读取实际顶点；完整运行身份包含manifest中的sampler和radius_definition，不能只凭参数hash混合统计。

@@ -51,8 +51,9 @@ void verifyScene(SceneModels&models,const SessionView&view,std::ostream&log){
             for(auto corner:diagnostic.barrierWorldCorners)nearest=std::min(nearest,norm(corner-Vec3{actual.x,actual.y,actual.z}));maximum=std::max(maximum,nearest);}
         require(maximum<2e-5,"rendered barrier differs from actual Jolt body/shape");log<<"PASS actual Jolt barrier readback versus rendered mesh max_m="<<maximum<<'\n';}
     if(scene->barrier.enabled&&scene->barrier.elastic){
-        Trial moving(*scene,{4,true});double maximum=0,displacement=0;
-        for(int step=0;step<2000;++step){auto state=moving.step();require(state.reason!=StopReason::numericFailure,"moving barrier physics failure");
+        const int steps=view.config->source.terrain.type==TerrainType::parameterized?6000:2000;
+        Trial moving(*scene,{steps*.002,true});double maximum=0,displacement=0;
+        for(int step=0;step<steps;++step){auto state=moving.step();require(state.reason!=StopReason::numericFailure,"moving barrier physics failure");
             if(step%100!=0)continue;models.update(scene,state);auto actual=moving.diagnostics();const auto&m=models.barrier.meshes[0];
             displacement=std::max(displacement,std::abs(state.barrier.displacement));
             for(int i=0;i<m.vertexCount;++i){auto rendered=Vector3Transform({m.vertices[3*i],m.vertices[3*i+1],m.vertices[3*i+2]},models.barrier.transform);double nearest=1e300;

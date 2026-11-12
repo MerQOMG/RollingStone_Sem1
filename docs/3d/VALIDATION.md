@@ -466,3 +466,24 @@ elastic_delivery_perf_preview / elastic_delivery_perf_background 在普通渲染
 应用exe SHA256为 `7b8555f2ea3e4223c95d838d312f680ee37eceb1b66dbb2f7a808f3a76c73d77`；src3d实际源码字节SHA256为 `6936044c6d3199bcc35e789b08bd68fc89dcfd61475072270eb14d26968013cd`，按CMake大小写敏感路径排序独立重算，与实际输出manifest一致。首次独立重算使用WindowsPath默认不区分大小写排序不匹配，改用路径字符串的大小写敏感顺序后吻合；未改源码或接受错误hash。Git行结束规范化与前版同理。
 
 本追加只在全部门槛通过后做一次任务提交；构建时HEAD如实为 `b82885cd7791e91eab16549e111ce62a8c1d7c1b`（任务途中用户独立提交了后续规划文档），交付功能身份以source_tree_sha256为准，不伪造构建后的Git号。最终包为 build/3d/package/RollingStone3D-elastic，入口run_elastic_3d.cmd；旧v1/natural包、二维源码、用户的RollingStone.sln/IMPLEMENTATION_PLAN.md及独立后续规划均保留。包清单SHA256与最终暂存保护审计独立保存，无push。
+
+
+## 2026-11-12：parameterized切换显示修复与坡面弹性挡板
+
+用户确认显示故障发生于flat切换parameterized。原生复现从natural_preview.ini开始，只编辑terrain.type后“应用更改”，参数与COM已更新，视口全空；旧相机仍target=(6,0,1.53243637)、distance=25.2356243。只点击“相机重置”立即恢复全坡面，排除地形未生成。原始证据 results3d/parameterized_switch_before/blank.png、blank-camera.ini、events.txt；直接启动default.ini本来能显示，与编辑路径缺失相机更新区别明确。
+
+修复位于app.cpp的实际Apply回调：成功替换场景后比较实际地形contentHash，变化时按新场景重新取景；其他修改保留用户旋转/平移/缩放，输入拒绝时原场景与相机一起保留。加载场景和“相机重置”的既有行为保留。没有改变物理、随机流或地形公式。
+
+先增加实际Apply路径图形回归，再修复：parameterized_camera_red退出1，flat→parameterized有1363个地形/落石点在视口外，错误“applied terrain/rock is outside camera viewport”。修复后的Release/Debug真实窗口自检退出0：正向切换、坡高改60m、反向切回flat均outside=0，占视口最大方向约59.3%/59.6%/49.8%；材料、当前类型不使用的地形参数不重置视角，非法宽度拒绝且保留场景和相机。parameterized_switch_fixed原生重复同一操作后自动显示完整坡面，未点击相机重置；其后用户实际启动的一次模拟也正常结束。原生输入过程中中文输入法候选框阻止枚举直接录入，切换英文输入后确认实际字符串，未把输入工具动作成功当作参数已更新。
+
+按用户随后要求，新增configs3d/parameterized_elastic.ini，并将run_elastic_3d.cmd默认指向该场景。55.6m坡高/40m地形宽度、36m宽/8m高有限板，x=auto定位在坡脚终点前10m、z=auto按实体支撑高度放置；M2000kg/k500000N/m/c30000N·s/m，地面mu=.2/e=.15，固定seed20261112，r2/V7/k20–50。flat_length40使切换回平地时仍有空间放置自动挡板；原平地elastic_barrier.ini保留，可显式--config调用。没有自动覆盖用户保存场景的固定挡板坐标。
+
+parameterized_elastic_first与最终配置parameterized_elastic_gui/headless均N=C3、0失败/超时、21695逻辑步/86780子步，全部resting且touched=1。三次最大后退位移1.736352033/1.944128349/1.690864292m，物理阻尼耗能725654.5604/825825.9843/687395.0329J；轨迹中的板速度均既有正值又有负值，验证真实后退及回弹。独立CSV/能量/概率审计通过，结果不是此前那个没有碰撞的参数化夹具。
+
+parameterized_elastic_gui/audit.json：实际headless、preview0、preview2在30/60/0FPS共五模式，每批N=C3，13份确定性CSV逐字节一致；应用自有旋转/resize/最小化/暂停序列完成。这是实际窗口与控制器证据，不替代前述原生编辑复验。
+
+将已有移动板几何自检在parameterized场景的观察区间从4s扩展到12s，以覆盖下坡后真实碰撞；该改变仅影响--app-self-test。最终Release/Debug的parameterized_elastic_final/_debug均退出0，观测板位移1.728073342m时，Jolt读回/显示角点最大差5.230207222e-6m<2e-5m，移动射线拾取与36组投影/DPI检查通过，完整释放图形资源。已查看真实帧缓冲，坡面与坡脚弹性板可见；五模式CSV验证在这个仅扩大自检观察区间的末段调整之前完成，普通运行路径没有后续变化。
+
+参数化弹性候选在中文空格目录、普通cmd且PATH仅System32下实际启动，入口run_elastic_3d.cmd完成GUI单次C1和headless N2；缺字体/配置、文件型输出根正确退出1，真实CSV独立审计通过。见build/3d/parameterized-elastic-deployment.txt。本次未改数值核心或普通帧绘制路径，原5000形状/动力学/统计/六轮性能验收沿用前版记录，不冒称重新执行这些门槛。
+
+最终exe SHA256 `64c886296e14d6ceb533b4d972b2b0279401a4e98e6d90260870c5562b359967`，src3d字节SHA256 `de58df1b43f583bbab02ec567c22b61c530efe4a6de76f31a6c6aa9c0bffd481`，独立按CMake大小写敏感顺序重算一致。构建时HEAD如实为 `eb3dbf0ea58d24471817d0e5174e4904c4c48759`；该用户并行规划提交已保留。最终包build/3d/package/RollingStone3D-parameterized-elastic沿用同一已验证exe，旧包保留。只提交本次相机修复、自检、新配置/入口与文档，二维及两受保护文件未改，不push。

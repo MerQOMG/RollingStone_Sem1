@@ -27,6 +27,33 @@ struct Target {RenderTexture2D value{};~Target(){if(value.id)UnloadRenderTexture
 std::string number(double value){std::ostringstream out;out<<std::setprecision(17)<<value;return out.str();}
 double percentile(std::vector<double>v,double p){if(v.empty())return 0;std::sort(v.begin(),v.end());return v[size_t(p*(v.size()-1))];}
 OrbitCamera fitted(const PhysicsScene&scene){OrbitCamera c;const auto&t=*scene.terrain;double low=1e300,high=-1e300;for(auto v:t.vertices){low=std::min(low,v.z);high=std::max(high,v.z);}high=std::max(high,scene.initial.shapeOrigin.z+scene.radius);c.target={float((t.xMin+t.xEnd)/2),0,float((low+high)/2)};double radius=.5*norm(Vec3{t.xEnd-t.xMin,t.yMax-t.yMin,high-low});c.distance=float(std::clamp(radius/std::sin(22.5*pi/180)*1.12,25.0,750.0));return c;}
+void verifyTerrainCameraChanges(Session&session,SceneEditor&editor,OrbitCamera&orbit,const std::function<void()>&apply,std::ostream&log){
+    auto require=[](bool ok,const char*message){if(!ok)throw std::runtime_error(message);};
+    auto same=[](const OrbitCamera&a,const OrbitCamera&b){return a.target.x==b.target.x&&a.target.y==b.target.y&&a.target.z==b.target.z&&a.yaw==b.yaw&&a.pitch==b.pitch&&a.distance==b.distance;};
+    // Exercise the actual Apply callback, then independently project the real
+    // terrain/rock into the viewport. Initial-scene pose checks miss this bug.
+    auto visible=[&](const char*label){auto view=session.view();auto camera=orbit.camera();auto forward=Vector3Normalize(Vector3Subtract(camera.target,camera.position));float xmin=960,xmax=0,ymin=584,ymax=0;int outside=0;
+        auto point=[&](Vec3 world){auto v=ui::vector(world);auto pixel=GetWorldToScreenEx(v,camera,960,584);
+            if(Vector3DotProduct(Vector3Subtract(v,camera.position),forward)<=0||!std::isfinite(pixel.x+pixel.y)||pixel.x<0||pixel.x>960||pixel.y<0||pixel.y>584)++outside;
+            xmin=std::min(xmin,pixel.x);xmax=std::max(xmax,pixel.x);ymin=std::min(ymin,pixel.y);ymax=std::max(ymax,pixel.y);};
+        for(auto v:view.scene->terrain->vertices)point(v);
+        for(auto v:view.scene->shape.vertices)point(view.snapshot.shapeOrigin+view.snapshot.rotation.matrix()*(v-view.scene->shape.center));
+        log<<"terrain_camera case="<<label<<" outside="<<outside<<" projected_span="<<std::max((xmax-xmin)/960,(ymax-ymin)/584)<<'\n';
+        require(outside==0,"applied terrain/rock is outside camera viewport");require(std::max((xmax-xmin)/960,(ymax-ymin)/584)>.15f,"applied terrain remains too small in stale camera");};
+    const auto original=session.draft();const auto originalCamera=orbit;
+    SceneDraft flat;flat.terrain.type=TerrainType::flat;flat.terrain.flatLength=12;flat.terrain.width=12;flat.properties[releaseX]={6,6};
+    editor.sync(flat);apply();orbit=fitted(*session.view().scene);
+    editor.set("terrain.type","parameterized");apply();visible("flat_to_parameterized");
+    orbit.distance=8;editor.set("terrain.height","60");apply();visible("changed_slope_height");
+    editor.set("terrain.type","flat");apply();visible("parameterized_to_flat");
+    orbit.yaw=.7f;orbit.pitch=.35f;orbit.distance=17;orbit.target.x+=1;const auto custom=orbit;
+    editor.set("material.density","2700");apply();require(same(orbit,custom),"material edit reset user camera");
+    editor.set("terrain.height","50");apply();require(same(orbit,custom),"inactive terrain parameter reset user camera");
+    const auto scene=session.view().scene;editor.set("terrain.width","-1");bool rejected=false;try{apply();}catch(const std::exception&){rejected=true;}
+    require(rejected&&session.view().scene==scene&&same(orbit,custom),"rejected terrain edit changed scene/camera");
+    editor.sync(original);apply();orbit=originalCamera;
+    log<<"PASS actual Apply terrain-switch/height framing, unchanged-terrain camera preservation and rejected-edit rollback\n";
+}
 const char* phaseName(SessionPhase phase){switch(phase){case SessionPhase::idle:return u8"空闲";case SessionPhase::generating:return u8"正在生成";case SessionPhase::preview:return u8"真实预览";case SessionPhase::background:return u8"后台计算";case SessionPhase::finished:return u8"结束";}return "";}
 const char* stateName(SessionState state){switch(state){case SessionState::idle:return u8"空闲";case SessionState::running:return u8"运行";case SessionState::paused:return u8"暂停";case SessionState::cancelling:return u8"取消中";case SessionState::completed:return u8"完成";case SessionState::failed:return u8"未完成";}return "";}
 void wrap(Font font,const std::string&message,float x,float y,float width,int size,Color color,int maxLines){
@@ -49,9 +76,17 @@ int runApplication(const rs3d::SceneDraft&draft,const AppOptions&opt){
     std::deque<std::vector<Vector3>>trails;std::shared_ptr<const PhysicsScene>lastScene=view.scene;double lastSnapshotTime=-1,start=GetTime(),previous=start,lastCapture=-10,lastPulse=start,segmentStart=start;int repeat=0,pulseSign=1,exerciseStep=0;size_t peak=0;
     std::vector<double>times,latencies;SessionState previousState=view.state;SessionPhase previousPhase=view.phase;std::uint64_t previousTrial=0;double requestTime=-1;std::string requestName;
     log<<std::setprecision(17)<<machineDescription()<<"\nraylib="<<RAYLIB_VERSION<<" raygui=4.0 font="<<opt.font.u8string()<<" fps="<<fps<<" vsync=off\nsource=GUI actual physics; helper lines use depth test; latest snapshot bounded to one\n";
-    auto apply=[&](){auto next=editor.parse();session.apply(next);editor.sync(session.draft());dirty=false;active=-1;error.clear();errorField=-1;message=u8"参数已应用";releaseMode=false;selected={};trails.clear();lastSnapshotTime=-1;log<<"apply config_hash="<<session.view().config->hash<<" barrier="<<next.barrier.enabled<<'\n';};
+    auto apply=[&](){
+        auto next=editor.parse();const auto previousTerrain=session.view().scene->terrain->contentHash;
+        session.apply(next);const auto applied=session.view();
+        // A new terrain can put the old flat-scene camera under the slope.
+        // Reframe only after successful terrain replacement; other edits keep
+        // the user's orbit/pan/zoom, and rejected edits keep the old scene.
+        if(applied.scene->terrain->contentHash!=previousTerrain){orbit=fitted(*applied.scene);log<<"camera_refit terrain="<<applied.scene->terrain->contentHash<<'\n';}
+        editor.sync(session.draft());dirty=false;active=-1;error.clear();errorField=-1;message=u8"参数已应用";releaseMode=false;selected={};trails.clear();lastSnapshotTime=-1;log<<"apply config_hash="<<applied.config->hash<<" barrier="<<next.barrier.enabled<<'\n';
+    };
     auto action=[&](auto operation,const char*name){try{operation();error.clear();errorField=-1;log<<"action="<<name<<"\n";}catch(const std::exception&e){error=std::string(u8"错误，保留原场景： ")+e.what();errorField=std::string(name)=="apply"?lastEdited:-1;log<<"reject action="<<name<<" error="<<e.what()<<'\n';}};
-    if(opt.selfTest){ui::verifyScene(models,view,log);Trial probe(*view.scene,{.1});for(int i=0;i<50;++i)probe.step();auto moving=view;moving.snapshot=probe.snapshot();models.update(moving.scene,moving.snapshot);for(auto local:moving.scene->shape.vertices){auto expected=moving.snapshot.shapeOrigin+moving.snapshot.rotation.matrix()*(local-moving.scene->shape.center);auto rendered=Vector3Transform(ui::vector(local-moving.scene->shape.center),models.rock.transform);if(norm(expected-Vec3{rendered.x,rendered.y,rendered.z})>2e-5)throw std::runtime_error("moving physical pose/render mismatch");}models.update(view.scene,view.snapshot);log<<"PASS real stepped pose render transformation\n";}
+    if(opt.selfTest){verifyTerrainCameraChanges(session,editor,orbit,apply,log);view=session.view();ui::verifyScene(models,view,log);Trial probe(*view.scene,{.1});for(int i=0;i<50;++i)probe.step();auto moving=view;moving.snapshot=probe.snapshot();models.update(moving.scene,moving.snapshot);for(auto local:moving.scene->shape.vertices){auto expected=moving.snapshot.shapeOrigin+moving.snapshot.rotation.matrix()*(local-moving.scene->shape.center);auto rendered=Vector3Transform(ui::vector(local-moving.scene->shape.center),models.rock.transform);if(norm(expected-Vec3{rendered.x,rendered.y,rendered.z})>2e-5)throw std::runtime_error("moving physical pose/render mismatch");}models.update(view.scene,view.snapshot);log<<"PASS real stepped pose render transformation\n";}
     for(;;){
         double now=GetTime(),frameSeconds=now-previous;previous=now;view=session.view();bool busy=!view.workerFinished;
         if(WindowShouldClose()||(opt.duration>0&&now-start>=opt.duration)||(opt.selfTest&&frame>=3)){closing=true;session.cancel();}
