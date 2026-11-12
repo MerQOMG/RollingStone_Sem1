@@ -97,17 +97,19 @@ class BatchOutputFiles {
     std::vector<FILE*> files;
     std::string partialPath,completePath;
 public:
-    BatchOutputFiles() {
+    explicit BatchOutputFiles(const std::string& parent="results") {
         if(!CreateDirectoryA("results",nullptr) && GetLastError()!=ERROR_ALREADY_EXISTS)
             throw BatchIoError("Cannot create results directory.");
+        if(parent!="results" && !CreateDirectoryA(parent.c_str(),nullptr) && GetLastError()!=ERROR_ALREADY_EXISTS)
+            throw BatchIoError("Cannot create terrain output directory.");
         SYSTEMTIME now; GetLocalTime(&now);
         bool created=false;
         for(unsigned int attempt=0;attempt<1000;++attempt) {
             char name[200];
-            std::snprintf(name,sizeof(name),"results/batch_%04u%02u%02u_%02u%02u%02u_%03u_%lu_%u",
+            std::snprintf(name,sizeof(name),"batch_%04u%02u%02u_%02u%02u%02u_%03u_%lu_%u",
                 now.wYear,now.wMonth,now.wDay,now.wHour,now.wMinute,now.wSecond,now.wMilliseconds,
                 (unsigned long)GetCurrentProcessId(),attempt);
-            completePath=name; partialPath=completePath+".partial";
+            completePath=parent+"/"+name; partialPath=completePath+".partial";
             if(GetFileAttributesA(completePath.c_str())!=INVALID_FILE_ATTRIBUTES) continue;
             if(CreateDirectoryA(partialPath.c_str(),nullptr)) { created=true; break; }
             if(GetLastError()!=ERROR_ALREADY_EXISTS) break;
@@ -179,7 +181,47 @@ static double batchToeStart(const HillSlope& hill,double ceiling) {
 }
 struct BatchTracePoint { double t,x,z,speed; };
 
-static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
+static const double BATCH_RELEASE_Z_HIGH = 20.0;      //自定义地形释放窗口的上沿高度（m）
+static const double BATCH_RELEASE_Z_RATIO = 0.75;      //释放窗口下沿高度 = 上沿高度 x 该比例
+
+static void batchReleaseWindow(const HillSlope& hill, const TerrainSettings* terrain, double& xMin, double& xMax)      //计算释放点 x 的取值范围（m）
+{
+    if (terrain == nullptr)
+    {
+        xMin = 90.0;
+        xMax = 100.0;
+        return;
+    }
+
+    const DynamicArray<Point>& p = hill.getPoints();
+    size_t n = p.size();
+
+    Point upper = p[n - 3];
+    Point foot = p[n - 2];
+
+    double steepTan = upper.z / (foot.x - upper.x);
+    double zHigh = std::min(BATCH_RELEASE_Z_HIGH, upper.z);
+    double zLow = BATCH_RELEASE_Z_RATIO * zHigh;
+
+    xMin = foot.x - zHigh / steepTan;
+    xMax = foot.x - zLow / steepTan;
+}
+
+static std::string batchOutputDir(const TerrainSettings* terrain)      //输出目录：自定义地形分组目录；每次运行在其下新建独立批次目录
+{
+    if (terrain == nullptr)
+    {
+        return "";
+    }
+
+    char buf[200];
+    std::snprintf(buf, sizeof(buf), "results/terrain_%g_%g_%g_%g_%g_%g",
+                  terrain->topHeight, terrain->steepDeg, terrain->benchStart,
+                  terrain->benchLength, terrain->benchDeg, terrain->toeLength);
+    return buf;
+}
+
+static int runBatchSimulationImpl(int nTrials, unsigned int seed, const HillSlope& hill, const TerrainSettings* terrain) {
     if(nTrials<2 || nTrials>20000) throw std::invalid_argument("Trial count must be 2..20000.");
     PhysicsParameterGuard restorePhysics;
     if (seed == 0) seed = (unsigned int)std::time(nullptr);
@@ -190,7 +232,6 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
     const double MAX_BATCH_TIME = 30.0;
     const double TRAJ_SAMPLE_DT = 0.05;
 
-    HillSlope hill;
     const double endX = (double)hill.getEndX();
     const double collectorX = endX - 10.0;   // 坡脚平台上的虚拟收集器 x=110 m
 
@@ -208,7 +249,9 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
     std::vector<int> colHits(nCols, 0), colStamp(nCols, -1);
     std::vector<int> impactHits(nRows, 0);
 
-    BatchOutputFiles outputs;
+    double releaseXMin=0,releaseXMax=0;
+    batchReleaseWindow(hill,terrain,releaseXMin,releaseXMax);
+    BatchOutputFiles outputs(terrain?batchOutputDir(terrain):"results");
     FILE* fpTrials=outputs.open("batch_trials.csv");
     FILE* fpGrid=outputs.open("route_probability_grid.csv");
     FILE* fpProfile=outputs.open("route_profile_x.csv");
@@ -232,7 +275,7 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
     batchPrint(fpTraj, "trial,time,x,z,speed\n");
 
     std::mt19937 rng(seed);
-    std::uniform_real_distribution<double> ux(90.0, 100.0);
+    std::uniform_real_distribution<double> ux(releaseXMin, releaseXMax);
     std::normal_distribution<double> nV0(10.0, 1.0);
     std::normal_distribution<double> nR(2.0, 0.20);
     std::normal_distribution<double> nArea(3.0, 0.30);
@@ -250,6 +293,11 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
     std::printf("Running %d Monte-Carlo trials (seed=%u)...\n", nTrials, seed);
     std::printf("Toe region: x in [%.2f, %.2f] m, z in [%.2f, %.2f] m\n",
                 toeStartX, endX, toeZ, toeZ+TOE_HEIGHT);
+
+    if(terrain) std::printf("Terrain: custom H=%g steep=%g benchStart=%g benchLength=%g benchDeg=%g toeLength=%g\n",
+        terrain->topHeight,terrain->steepDeg,terrain->benchStart,terrain->benchLength,terrain->benchDeg,terrain->toeLength);
+    else std::printf("Terrain: original hill slope\n");
+    std::printf("Release window: x in [%.2f, %.2f] m\n",releaseXMin,releaseXMax);
 
     for (int trial = 0; trial < nTrials; ++trial) {
         double x0 = ux(rng);
@@ -476,6 +524,21 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
             batchProbability(impactHits[bin],nCollected10,complete).c_str(),status,nTrials);
     }
 
+    char terrainText[6][32];
+    for (int i = 0; i < 6; ++i)
+    {
+        std::snprintf(terrainText[i], sizeof(terrainText[i]), "-");
+    }
+    if (terrain != nullptr)
+    {
+        double values[6] = { terrain->topHeight, terrain->steepDeg, terrain->benchStart,
+                             terrain->benchLength, terrain->benchDeg, terrain->toeLength };
+        for (int i = 0; i < 6; ++i)
+        {
+            std::snprintf(terrainText[i], sizeof(terrainText[i]), "%g", values[i]);
+        }
+    }
+
     batchPrint(fpSummary,
         "run_status,n_trials,seed,toe_start_x,toe_height,"
         "n_entered_toe,p_entered_toe,"
@@ -487,10 +550,11 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
         "mean_final_x,std_final_x,mean_final_z,std_final_z,"
         "mean_max_speed,std_max_speed,"
         "mean_path_length,std_path_length,"
-        "mean_sim_time,std_sim_time,toe_base_z,dt_s,time_limit_s,barrier_enabled\n");
+        "mean_sim_time,std_sim_time,toe_base_z,dt_s,time_limit_s,barrier_enabled,"
+        "terrain,top_height,steep_deg,bench_start,bench_length,bench_deg,toe_length,release_x_min,release_x_max\n");
     batchPrint(fpSummary,
         "%s,%d,%u,%.3f,%.3f,%d,%s,%d,%s,%d,%s,%d,%s,%d,%s,%d,%.6f,%d,%.6f,%d,"
-        "%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.12g,%.12g,%.12g,0\n",
+        "%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.12g,%.12g,%.12g,0,%s,%s,%s,%s,%s,%s,%s,%.12g,%.12g\n",
         status, nTrials, seed, toeStartX, TOE_HEIGHT,
         nEntered, batchProbability(nEntered,nTrials,complete).c_str(),
         nCollector, batchProbability(nCollector,nTrials,complete).c_str(),
@@ -504,7 +568,9 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
         batchMean(sumFZ, nSuccess), batchStd(sumFZ, sumFZ2, nSuccess),
         batchMean(sumMaxV, nSuccess), batchStd(sumMaxV, sumMaxV2, nSuccess),
         batchMean(sumPath, nSuccess), batchStd(sumPath, sumPath2, nSuccess),
-        batchMean(sumTime, nSuccess), batchStd(sumTime, sumTime2, nSuccess),toeZ,DT,MAX_BATCH_TIME);
+        batchMean(sumTime, nSuccess), batchStd(sumTime, sumTime2, nSuccess),toeZ,DT,MAX_BATCH_TIME,
+        terrain?"custom":"original",terrainText[0],terrainText[1],terrainText[2],
+        terrainText[3],terrainText[4],terrainText[5],releaseXMin,releaseXMax);
 
     const std::string outputPath=outputs.finish(complete);
     std::printf(complete?"Batch simulation finished.\n":"Batch INCOMPLETE: failed or timed-out trials; probabilities are blank.\n");
@@ -531,8 +597,8 @@ static int runBatchSimulationImpl(int nTrials, unsigned int seed) {
 }
 
 
-static int runBatchSimulation(int nTrials,unsigned int seed) {
-    try { return runBatchSimulationImpl(nTrials,seed); }
+static int runBatchSimulation(int nTrials,unsigned int seed,const HillSlope& hill,const TerrainSettings* terrain) {
+    try { return runBatchSimulationImpl(nTrials,seed,hill,terrain); }
     catch(const std::exception& e) { std::fprintf(stderr,"Batch FAILED: %s\n",e.what()); return 1; }
 }
 static int batchSelfTest() {
@@ -574,6 +640,54 @@ static int batchSelfTest() {
         std::printf("PASS batch: strict input, segment traversal, unique hits, grid boundaries, incomplete probabilities and fractional terrain.\n");
         return 0;
     } catch(const std::exception& e) { std::fprintf(stderr,"FAIL batch: %s\n",e.what()); return 1; }
+}
+
+static int runBatchCommand(int nTrials, unsigned int seed, int argc, char** argv)      //解析可选的 6 个地形参数后启动批量模拟
+{
+    if (argc <= 4)
+    {
+        HillSlope originalHill;
+        return runBatchSimulation(nTrials, seed, originalHill, nullptr);
+    }
+
+    if (argc != 10)
+    {
+        std::fprintf(stderr, "Usage: --batch N seed [H steepDeg benchStart benchLength benchDeg toeLength]\n"
+                             "The 6 terrain numbers must be given together.\n");
+        return 2;
+    }
+
+    TerrainSettings terrain;
+    double* fields[6] = { &terrain.topHeight, &terrain.steepDeg, &terrain.benchStart,
+                          &terrain.benchLength, &terrain.benchDeg, &terrain.toeLength };
+
+    for (int i = 0; i < 6; ++i)
+    {
+        char* endPtr = nullptr;
+        errno=0;
+        double value = std::strtod(argv[4 + i], &endPtr);
+
+        if (endPtr == argv[4 + i] || *endPtr != '\0' || errno==ERANGE || !std::isfinite(value))
+        {
+            std::fprintf(stderr, "Invalid terrain number: %s\n", argv[4 + i]);
+            return 2;
+        }
+
+        *fields[i] = value;
+    }
+
+    HillSlope customHill;
+    try
+    {
+        customHill = HillSlope(buildTerrain(terrain));
+    }
+    catch (const std::exception& ex)
+    {
+        std::fprintf(stderr, "Invalid terrain: %s\n", ex.what());
+        return 3;
+    }
+
+    return runBatchSimulation(nTrials, seed, customHill, &terrain);
 }
 
 #endif // BATCH_STATS_H
