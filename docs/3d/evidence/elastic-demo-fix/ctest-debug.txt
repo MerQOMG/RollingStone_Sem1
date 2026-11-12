@@ -1,0 +1,12 @@
+Internal ctest changing into directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+Test project C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+    Start  8: config_snapshot
+1/3 Test  #8: config_snapshot ..................   Passed    0.12 sec
+    Start 12: elastic_barrier
+2/3 Test #12: elastic_barrier ..................   Passed    4.26 sec
+    Start 13: elastic_combined_demo
+3/3 Test #13: elastic_combined_demo ............   Passed   49.20 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =  53.59 sec

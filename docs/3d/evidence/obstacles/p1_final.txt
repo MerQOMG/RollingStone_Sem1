@@ -1,0 +1,8 @@
+P1: 1000 x 60s at explicit 100Hz and auto 50Hz, all-trial display
+R3 exact endpoints, zero duration, q/-q, shortest arc and dynamic barrier PASS
+archive=C:\Users\shell\Documents\Programming\Semester_1\Week_9\results3d\obstacles_f5\p1_final\archives\explicit_100hz trials_selected=1000 frames=6001000 motion_bytes=1849268024 decoded_cache_peak=123121248 index_block_bytes=2688000 first_block_p95_ms=0.4508 first_block_max_ms=3.0501 cache_hit_p95_ms=0.0003
+H3 full display N=1000 first/last all IDs retained vertices=2000000 PASS
+archive=C:\Users\shell\Documents\Programming\Semester_1\Week_9\results3d\obstacles_f5\p1_final\archives\auto_50hz trials_selected=1000 frames=3001000 motion_bytes=924788024 decoded_cache_peak=123155808 index_block_bytes=1368000 first_block_p95_ms=0.4462 first_block_max_ms=0.8846 cache_hit_p95_ms=0.0003
+H3 full display N=1000 first/last all IDs retained vertices=2000000 PASS
+H3 deterministic 30001-point path first/last/turn and cancelled status PASS
+PASS read-only playback/cache/async request ordering

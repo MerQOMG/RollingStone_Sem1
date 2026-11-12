@@ -1,0 +1,9 @@
+{
+  "SampleFieldsIdentical": true,
+  "GUITrials": 3,
+  "GUIRockRadius": 3,
+  "GUIRockVolume": 20,
+  "ObstacleCount": 24,
+  "MaximumDimensionOrYawDelta": 7.105427357601002E-15,
+  "GuiDirectory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\run_20261112_190318_21816_1"
+}

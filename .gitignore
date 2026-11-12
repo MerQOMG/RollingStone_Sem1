@@ -24,3 +24,10 @@ graphics_winbgim_backup.h
 
 # Locally generated numerical runs; curated reference data lives in examples/
 results/
+
+# Independent 3D dependencies and generated runs
+.deps3d/
+results3d/
+
+# Python acceptance helpers
+scripts3d/__pycache__/

@@ -1,0 +1,11 @@
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=60 vsync=off
+source=read-only archive; helper lines use depth test; latest snapshot bounded to one
+analysis version=1 trajectories=0 directory=3 C=3 B=3 M=0 unknown=0
+state=Completed phase=4 trial=1 processed=3 C=3 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=0 wall=0
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+capture_async frame=0
+history_pose trial=1 time=0 interpolated=0 available=1 error= physics_updates=0
+analysis version=1 trajectories=3 directory=3 C=3 B=3 M=0 unknown=0
+capture_async frame=120
+exit worker_finished=1 state=Completed hash=fnv1a64:a9e90c354a0683d4

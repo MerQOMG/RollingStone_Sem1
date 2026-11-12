@@ -1,0 +1,6 @@
+distribution x=1.30949797025:93.3339353983 y_abs_max=18.1409258789 terrain_end=99.0665656247
+PASS automatic rubble reaches lower slope and terrain sides, beyond an upstream barrier
+default count=24 max_length=0.48533337251 max_exposed=0.179510178603
+PASS editing rock radius/volume leaves rubble size samples unchanged
+PASS default rubble stays small and sparse in metres
+PASS v1 golden layout/config hashes and v2 round trip

@@ -1,0 +1,237 @@
+k=4 radius=0 V=2.66667 mass=6933.33
+k=8 radius=0 V=8 mass=20800
+PASS ABI: RVec3=DVec3 size=32 exceptions=1 double=1 deterministic=1; body create/remove/destroy
+PASS input ownership: panel/editor/modal/viewport, multi-button capture, drag-out, focus-loss
+PASS G2/G3 explicit k=4 V=2.66667 Ixx=1.06667 engine_V_rel=5.96046e-08
+PASS G2/G3 explicit k=8 V=8 Ixx=5.33333 engine_V_rel=0
+PASS G2/G3 explicit k=6 V=1.33333 Ixx=0.266667 engine_V_rel=2.98023e-08
+PASS G4 invalid inputs, legacy k4..9 and seed gold
+PASS deterministic generation, same-k retry, 64-attempt failure, independent next trial, bounded cancellation
+PASS requested geometry suite
+same-k samples=48 distinct_degree_signatures=33 bipyramids=0 maximum_two_hub_fraction=0.285714
+PASS actual 72-shape geometry gallery and same-k topology diversity
+PASS terrain default x_end=99.0666 h(30)=34.0086 triangles=8080 hash=fnv1a64:1611be23d4ad29ba
+PASS exact break/end lines, shared winding, cross-slope/groove references, plane/diagonal/ridge release support
+D1 velocity_rel=7.91714947274e-06 position_error_m=0.00250632961772 angular_momentum_max_rel=0.000341641371511
+PASS D1
+D2 speed=2 target_e=0.45 measured_e=0.450000107288 tilted=0 min_omega_y=-4.59986138068e-09
+D2 speed=5 target_e=0.45 measured_e=0.449999666214 tilted=0 min_omega_y=0
+D2 speed=0.1 target_e=1 measured_e=2.72407234547e-07 tilted=0 min_omega_y=-2.99306464058e-08
+D2 speed=2 target_e=0.45 measured_e=0.438110977411 tilted=1 min_omega_y=-3.54836368561
+PASS D2
+D3 rest_time=2.252 subsequent_s=10 position_drift_m=0 rotation_degrees=0 max_energy_ratio=1
+PASS D3
+D4 flipped_diagonal_max_path_difference_m=0.000201821730288
+PASS D4
+D5 elastic_energy_growth=0.000480479302396 max_actual_plane_penetration_m=0 contacts=144
+D5 50mps thin=0 max_penetration_m=0 min_COM_z=0.524217547849 contacts=8
+D5 50mps board thin=0 max_penetration_m=2.14576722612e-07 contacts=2
+D5 50mps thin=1 max_penetration_m=0 min_COM_z=4.93438526664 contacts=2
+D5 50mps board thin=1 max_penetration_m=0.00789588876069 contacts=13
+PASS D5
+D6 dt=0.002 collision_steps=4 peak_z=2.12097214633
+D6 dt=0.001 collision_steps=4 peak_z=2.1215381385
+D6 dt=0.0005 collision_steps=4 peak_z=2.1209541474
+D6 coarse_fine_rel=1.1103912773e-05 middle_fine_rel=0.000360276136802
+D6 complex_slope dt=0.002 time=3 COM=22.240744082,-2.40182680731,38.4637749017
+D6 complex_slope dt=0.001 time=3 COM=22.2197855772,-2.52676690231,38.3085524465
+D6 complex_slope dt=0.0005 time=3 COM=22.2181963593,-2.52909738534,38.3031039625
+D6 complex_slope endpoint_difference_coarse_fine_m=0.20620705745 middle_fine_m=0.00613536811991 (reported sensitivity, no long-chaotic pointwise gate)
+PASS D6
+D7 mode=0 hits=27 final_normal_v=-1.75024616718 first_distance=0.609999760054 min_omega_z=0
+D7 mode=1 hits=0 final_normal_v=5 first_distance=0 min_omega_z=0
+D7 mode=2 hits=0 final_normal_v=5 first_distance=0 min_omega_z=0
+D7 mode=3 hits=0 final_normal_v=5 first_distance=0 min_omega_z=0
+D7 mode=4 hits=29 final_normal_v=-0.511898159981 first_distance=0.609999760054 min_omega_z=-4.95292282104
+D7 mode=5 hits=27 final_normal_v=-1.75024655618 first_distance=0.609999936644 min_omega_z=0
+PASS D7
+RR coefficient=0 removed_rotational_energy_J=0
+RR coefficient=0.2 removed_rotational_energy_J=727.485676051
+RR coefficient=100 removed_rotational_energy_J=861.974761929
+PASS airborne/zero/positive rolling resistance and air work; capped RR removed=861.974761929
+friction pair_mu=0 vx_after_0.2s=3
+friction pair_mu=0.6 vx_after_0.2s=1.82285344601
+PASS dissipation
+PASS termination resting/upstream/downstream/lateral/timeout/cancel and initial overlap rejection
+PASS termination
+physics tests=9 failed=0
+E1 oscillator dt=0.002 q=0.000175473716393 analytic=0.000171943658956 abs_error=3.53005743654e-06 damp_J=39699.6547338 support_residual_J=340.323669031
+E1 oscillator dt=0.001 q=0.000173807543309 analytic=0.000171943658956 abs_error=1.86388435259e-06 damp_J=39868.947363 support_residual_J=171.030485051
+E2 yaw=0 rock_v=2.49999976158 plate_v=2.5 impulse=4999.99976251
+E2 yaw=35 rock_v=2.50000040292 plate_v=2.50000040292 impulse=5000.0007051
+E4 finite mode=0 hits=0 min_omega_z=0 energy_ratio=1
+E4 finite mode=1 hits=0 min_omega_z=0 energy_ratio=1
+E4 finite mode=2 hits=0 min_omega_z=0 energy_ratio=1
+E4 finite mode=3 hits=590 min_omega_z=-8.80119419098 energy_ratio=1
+E4 impact boundary M=1 k=0 c=0 depth=1.89580831034e-08 manifold_depth=4.09781932831e-08 energy_ratio=1
+E4 impact boundary M=1 k=0 c=30000 depth=0.000100412647962 manifold_depth=0.000103335791209 energy_ratio=1
+E4 impact boundary M=1 k=0 c=10000000 depth=1.94768059458e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=1 k=500000 c=0 depth=0.000231096143699 manifold_depth=4.47851452918e-05 energy_ratio=1
+E4 impact boundary M=1 k=500000 c=30000 depth=0.000100411522272 manifold_depth=0.000105542283563 energy_ratio=1
+E4 impact boundary M=1 k=500000 c=10000000 depth=1.94747453719e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=1 k=100000000 c=0 depth=4.98458114784e-05 manifold_depth=3.10716245622e-06 energy_ratio=1
+E4 impact boundary M=1 k=100000000 c=30000 depth=1.90988238558e-08 manifold_depth=4.09781932831e-08 energy_ratio=1
+E4 impact boundary M=1 k=100000000 c=10000000 depth=1.97138199098e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=0 c=0 depth=1.85728072921e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=0 c=30000 depth=2.69683599896e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=0 c=10000000 depth=1.95900593525e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=500000 c=0 depth=1.8572920979e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=500000 c=30000 depth=4.7457570318e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=500000 c=10000000 depth=1.95900806688e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=100000000 c=0 depth=1.95267908509e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=100000000 c=30000 depth=1.96274854147e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=2000 k=100000000 c=10000000 depth=1.9594283529e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=0 c=0 depth=2.08157899806e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=0 c=30000 depth=2.0825339675e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=0 c=10000000 depth=2.08008135161e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=500000 c=0 depth=2.0818973212e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=500000 c=30000 depth=2.08257944223e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=500000 c=10000000 depth=2.08008135161e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=100000000 c=0 depth=2.08294324011e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=100000000 c=30000 depth=2.08376178534e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 impact boundary M=10000000 k=100000000 c=10000000 depth=2.08008152924e-08 manifold_depth=3.72529029846e-08 energy_ratio=1
+E4 27 mass/stiffness/damping boundary impact combinations PASS
+E3 zero stiffness/damping, stiff boundaries, support-aware termination PASS
+E5 impact dt=0.002 peak_q=0.143849681617 return_v=-1.03463685513
+E5 impact dt=0.001 peak_q=0.144111790313 return_v=-1.03840887547
+E5 impact dt=0.0005 peak_q=0.144243132874 return_v=-1.04030144215
+PASS elastic support numerical tests
+PASS S1 manual face/edge/corner/outer/clip fixtures and 4000 independent oracle segments + reversals
+PASS S1/S4/S5 dedup, first collector, N/C bounds, incomplete formal blank, projection counts
+PASS config strict parsing, immutable snapshot, seed stream, toe references, UTF-8 atomic round trip
+0.5 v=1.42486 omega=1.30247 K=27963.8 P=161911 RR=3033.53 contact=249 applied=249 rejected=0
+1 v=1.34836 omega=1.82559 K=32799.5 P=131623 RR=9853.95 contact=498 applied=498 rejected=0
+1.5 v=0.283568 omega=0.276294 K=1138.02 P=150197 RR=12153.3 contact=747 applied=747 rejected=0
+2 v=0.884638 omega=1.19781 K=14124.8 P=129032 RR=15276.7 contact=997 applied=997 rejected=0
+2.5 v=0.299343 omega=0.339718 K=1411.71 P=134601 RR=18684.5 contact=1247 applied=1247 rejected=0
+3 v=0.673553 omega=0.861925 K=7840.42 P=126396 RR=20065.5 contact=1493 applied=1493 rejected=0
+3.5 v=0.139426 omega=0.18878 K=350.853 P=129500 RR=22318.2 contact=1742 applied=1742 rejected=0
+4 v=0.270455 omega=0.366191 K=1320.17 P=127977 RR=22852.4 contact=1992 applied=1992 rejected=0
+4.5 v=0.25235 omega=0.324614 K=1106.63 P=125656 RR=24582.6 contact=2239 applied=2239 rejected=0
+5 v=0.193734 omega=0.244501 K=634.842 P=124859 RR=25341.1 contact=2489 applied=2489 rejected=0
+5.5 v=0.114737 omega=0.155362 K=237.617 P=124602 RR=26045.2 contact=2737 applied=2737 rejected=0
+6 v=0.0712304 omega=0.101359 K=96.4202 P=124403 RR=26347.3 contact=2987 applied=2987 rejected=0
+6.5 v=9.26002e-13 omega=4.52522e-13 K=9.12227e-21 P=124350 RR=26456.4 contact=3237 applied=3219 rejected=0
+7 v=5.97616e-13 omega=2.82748e-13 K=3.78723e-21 P=124350 RR=26456.4 contact=3487 applied=3219 rejected=0
+7.5 v=1.10462e-12 omega=7.79483e-13 K=1.41428e-20 P=124350 RR=26456.4 contact=3737 applied=3236 rejected=0
+8 v=3.44015e-12 omega=1.69682e-12 K=1.25099e-19 P=124350 RR=26456.4 contact=3987 applied=3247 rejected=0
+resting
+v3 stable face id=325 reasons=resting,resting times=2,2 flipped_diagonal_max_path_difference_m=1.32594e-07
+v3 stable face id=850 reasons=resting,resting times=2,2 flipped_diagonal_max_path_difference_m=2.76671e-08
+PASS S2 identical observer preview=0/2 inputs/states/all deterministic CSV; N2/N3 routing (not GUI pacing)
+PASS S5 actual vertices/faces/pose/terrain/material replay, position error=0
+PASS S4 retries/exhaustion/numeric failure/timeout, no replacement slots, blank formal probabilities
+PASS controlled generation/step cancellation and pause/resume determinism
+PASS S4 unwritable root, injected stream write failure, transaction marker
+PASS late I/O failure invalidates partially written probabilities; paused cancellation joins worker
+PASS real commit lock child_file=0 transient=1 initial_win32=32 commit_ms=30.4396
+PASS real commit lock child_file=0 transient=0 initial_win32=32 commit_ms=114.322
+PASS real commit lock child_file=1 transient=1 initial_win32=5 commit_ms=33.2569
+PASS real commit lock child_file=1 transient=0 initial_win32=5 commit_ms=118.54
+PASS elastic batch/preview CSV identity and full barrier state/energy/impulse replay
+PASS batch suite; evidence root=C:\Users\shell\AppData\Local\Temp\RollingStone3D batch 中文目录 with spaces
+PASS editor round trip, exact uint64 seeds, invalid numbers, ranges and barrier binding
+PASS real 1x playback clock, two preview phases then background; wall=4.13194 preview_sim=4
+PASS immutable paused configuration and exact frozen-preview single run
+MEASURE paused cancellation worker_finish_ms=31.2398 cancel_trial_ms=15.2354 total_output_ms=30.1668 grid_cells=4000
+PASS paused worker cancellation, numerical-side confirmation_ms=31.2398 (not OS-to-draw latency)
+PASS moving elastic support pause/resume and cancellation snapshot
+mode=0 ordinary=8 resolved_ccd=0 geometric=2400 candidates=2400 discarded=0 ground=0 positive_gap=4.9463528633e-06 max_lambda=6.18294048309 thresholds=8/8/8
+mode=1 ordinary=4 resolved_ccd=0 geometric=0 candidates=4 discarded=0 ground=0 positive_gap=0.0119999631291 max_lambda=59375 thresholds=4/4/4
+mode=2 ordinary=1872 resolved_ccd=0 geometric=1916 candidates=2184 discarded=0 ground=0 positive_gap=0.0119999780303 max_lambda=9128.6640625 thresholds=1872/1872/1872
+mode=3 ordinary=0 resolved_ccd=0 geometric=0 candidates=1402 discarded=0 ground=0 positive_gap=0 max_lambda=0 thresholds=0/0/0
+mode=4 ordinary=0 resolved_ccd=4 geometric=8 candidates=8 discarded=0 ground=0 positive_gap=3.72529029846e-09 max_lambda=1899.99987793 thresholds=4/4/4
+mode=5 ordinary=1248 resolved_ccd=4 geometric=1348 candidates=2120 discarded=0 ground=0 positive_gap=0 max_lambda=9901.72558594 thresholds=1252/1252/1252
+mode=6 ordinary=4 resolved_ccd=0 geometric=0 candidates=4 discarded=0 ground=11954 positive_gap=0.013701554656 max_lambda=59241.3515625 thresholds=4/4/4
+CCD cancellation discarded=4 resolved=4
+PASS solver observation fixtures
+expected rejection: zero-area footprint
+expected rejection: obstacle layout failed: accepted=0 requested=40 seed=20261112 candidates=200 boundary=200
+expected rejection: obstacles.count outside [0,500]
+O3 exact clipping, edge-only extrema, collinear and invalid/empty layouts PASS
+O1 body readback N=2 preview=0 PASS
+O1 body readback N=3 preview=0 PASS
+O1 body readback N=1000 preview=0 PASS
+O1 body readback N=2 preview=2 PASS
+O1 body readback N=3 preview=2 PASS
+O1 body readback N=1000 preview=2 PASS
+O1/O2 frozen N=2/3/1000, restart, actual geometry reload, independent seed=0 PASS hash=fnv1a64:652f9bbd8f6125f4
+O5 count=0 bodies=16 pairs=1024 contacts=1024 temp_bytes=10485760 temp_peak_bytes=1049457 measured_private_allocation_delta=15007744
+expected rejection: injected insufficient body capacity
+O5 count=40 bodies=48 pairs=1024 contacts=1536 temp_bytes=11534336 temp_peak_bytes=1493873 measured_private_allocation_delta=13299712
+expected rejection: injected insufficient body capacity
+O5 count=500 bodies=508 pairs=8128 contacts=16256 temp_bytes=41680896 temp_peak_bytes=14270833 measured_private_allocation_delta=50581504
+expected rejection: injected insufficient body capacity
+O4 mode=0 contacts=2 min_v=-40.0032501221 max_depth=0 max_omega=0.0182765456852
+expected rejection: initial solid penetrates obstacle
+O4 mode=1 contacts=0 min_v=50 max_depth=0 max_omega=0
+expected rejection: initial solid penetrates obstacle
+O4 mode=2 contacts=0 min_v=50 max_depth=0 max_omega=0
+expected rejection: initial solid penetrates obstacle
+O4 mode=3 contacts=1 min_v=-32.1171607971 max_depth=0 max_omega=39.4282295644
+expected rejection: initial solid penetrates obstacle
+O4 support rest and obstacle/elastic filtering PASS
+PASS obstacle core tests
+H1/H2 full XY exact DDA, release, altitude, repeats and bounds PASS
+C1/C2/C3/C4 point grouping, moving frame, corners, unknowns and two denominators PASS
+real first mode=0 status=hit reason= points=4 interval=0:0.0005
+real first mode=1 status=hit reason= points=4 interval=0.0275:0.028
+real first mode=2 status=hit reason= points=4 interval=0.0275:0.028
+real first mode=3 status=no_hit reason= points=0 interval=0:0
+real first mode=4 status=hit reason= points=4 interval=0:0.0005
+real first mode=5 status=hit reason= points=4 interval=0:0.0005
+real first mode=6 status=hit reason= points=4 interval=0.0275:0.028
+C3 dt=0.002 elastic=0 interval=0.0275:0.028 gap=0.012 impulse=59375 method=solved_constraint local=3,3
+C3 dt=0.001 elastic=0 interval=0.0275:0.02775 gap=0.012 impulse=59375 method=solved_constraint local=3,3
+C3 dt=0.002 elastic=1 interval=0.0275:0.028 gap=0.012 impulse=9128.14 method=solved_constraint local=3,3
+C3 dt=0.001 elastic=1 interval=0.0275:0.02775 gap=0.012 impulse=701.086 method=solved_constraint local=3,3
+PASS analysis tests
+expected rejection: motion block header/index mismatch
+expected rejection: motion block header/index mismatch
+expected rejection: bad/truncated motion block index
+legacy CSV actual frames and missing barrier history PASS
+R1/R2 source equality, contact brackets, cancellation, zero duration, all-trial directory and corruption PASS frames=305 frame_bytes=308 auto_1000_nominal=925096024 maximum=9245028024
+archive verified N=3 recorded_trial_ids=3 B=3 M=0 unknown=0
+archive verified N=3 recorded_trial_ids=3 B=3 M=0 unknown=0
+archive verified N=3 recorded_trial_ids=0 B=3 M=0 unknown=0
+R2 independent schema=1 actual CSV / missing history / physics updates=0 PASS
+R2 independent schema=2 actual CSV / missing history / physics updates=0 PASS
+R2 actual 130-vertex/256-face archive opens without sampling/integration PASS
+expected rejection: first-contact world/local mismatch
+expected rejection: missing registered result file: scene.ini
+archive verified N=3 recorded_trial_ids=1 B=0 M=0 unknown=3
+injection scene.ini PASS
+injection manifest.ini PASS
+injection trials.csv PASS
+injection shape_vertices.csv PASS
+injection shape_faces.csv PASS
+injection terrain_vertices.csv PASS
+injection terrain_faces.csv PASS
+injection voxel_probability.csv PASS
+injection collector_yz.csv PASS
+injection collector_summary.csv PASS
+injection projection_xy.csv PASS
+injection projection_xz.csv PASS
+injection trajectory.csv PASS
+injection barrier_trajectory.csv PASS
+injection barrier_trials.csv PASS
+injection attempt_rejections.csv PASS
+injection obstacles.csv PASS
+injection obstacle_vertices.csv PASS
+injection obstacle_faces.csv PASS
+injection route_heatmap_xy.csv PASS
+injection barrier_first_contact.csv PASS
+injection barrier_first_contact_points.csv PASS
+injection barrier_first_contact_heatmap.csv PASS
+injection motion.bin PASS
+injection motion_index.csv PASS
+injection FILES_COMPLETE.txt PASS
+injection rename PASS
+R1/R2/R4 H2 C5/C6 preview=0/2, history on/off, intervals, events with stride=0, all-file transactions PASS
+R3 exact endpoints, zero duration, q/-q, shortest arc and dynamic barrier PASS
+archive=C:\Users\shell\AppData\Local\Temp\rs3d_playback trials_selected=4 frames=2404 motion_bytes=740936 decoded_cache_peak=657504 index_block_bytes=1952 first_block_p95_ms=0.2929 first_block_max_ms=0.2944 cache_hit_p95_ms=0.0002
+H3 full display N=2 first/last all IDs retained vertices=5002 PASS
+H3 full display N=3 first/last all IDs retained vertices=7503 PASS
+H3 full display N=1000 first/last all IDs retained vertices=9000 PASS
+H3 deterministic 30001-point path first/last/turn and cancelled status PASS
+PASS read-only playback/cache/async request ordering

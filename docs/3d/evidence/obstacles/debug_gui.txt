@@ -1,0 +1,25 @@
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=60 vsync=off
+source=GUI actual physics; helper lines use depth test; latest snapshot bounded to one
+camera_refit terrain=fnv1a64:28f8aff032417dc1
+apply config_hash=fnv1a64:c6bf6919fb956b00 barrier=0
+camera_refit terrain=fnv1a64:4292a0870b14b30e
+apply config_hash=fnv1a64:999110df9724feec barrier=0
+terrain_camera case=flat_to_parameterized outside=0 projected_span=0.59314256906509399
+camera_refit terrain=fnv1a64:b06d3d96d75fcdff
+apply config_hash=fnv1a64:26c58eda94d6edd4 barrier=0
+terrain_camera case=changed_slope_height outside=0 projected_span=0.59583097696304321
+camera_refit terrain=fnv1a64:28f8aff032417dc1
+apply config_hash=fnv1a64:4c16b0f7ec23f1d1 barrier=0
+terrain_camera case=parameterized_to_flat outside=0 projected_span=0.4983595609664917
+apply config_hash=fnv1a64:4f1b30d72b9d1af2 barrier=0
+apply config_hash=fnv1a64:b47fb38fa5065107 barrier=0
+camera_refit terrain=fnv1a64:1611be23d4ad29ba
+apply config_hash=fnv1a64:0edca48da7fda87b barrier=1
+PASS actual Apply terrain-switch/height framing, unchanged-terrain camera preservation and rejected-edit rollback
+PASS actual Jolt barrier readback versus rendered mesh max_m=2.3699831785961578e-06
+PASS actual canonical model pose, 36 viewport/DPI/camera cases, nearest rock/terrain/empty/barrier picks
+PASS real stepped pose render transformation
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+capture_async frame=2
+exit worker_finished=1 state=Idle hash=fnv1a64:0edca48da7fda87b

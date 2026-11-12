@@ -1,0 +1,9 @@
+processed=1 complete=1 failures=0
+processed=2 complete=2 failures=0
+processed=3 complete=3 failures=0
+processed=50 complete=50 failures=0
+processed=100 complete=100 failures=0
+status=complete N=100 C=100 failures=0 timeouts=0 unstarted=0 updates=621052 internal_steps=2484208
+generation_s=0.7712371 physics_s=19.2455005 recording_s=0.0853988 statistics_s=1.0800455 output_s=0.1139344 wall_s=21.3669559
+output=results3d/obstacle-distribution-fix/final\run_20261112_185659_22228_1
+error=

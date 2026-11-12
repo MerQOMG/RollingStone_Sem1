@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-12",
+  "base_commit": "1b5404e69358f184af317a10367ccc3336c2ae8f",
+  "source_tree_sha256": "3ba9e365f6fc8590b594a8818b15f028e4346ac9a62d7bd8181040a62fdf0581",
+  "binary_sha256": "9C9DF5A06294D56E18B64ACC4BA1AB7274B7861D38E3D404692751E1EF7D4C85",
+  "algorithm": "fixed-box-obstacles-v2",
+  "release_tests": "18/18",
+  "debug_related_tests": "4/4",
+  "native_gui": "r2/V7 -> r3/V20; N3 complete; 24 rubble dimensions within 1e-12; read-only reload 0 physics updates",
+  "metric": "final COM.x >= terrain.xFoot (79.0665656247m); not an ever-crossed probability",
+  "cases": [
+    {
+      "Case": "before",
+      "N": 100,
+      "FinalAtToe": 17,
+      "ObstacleContacts": 95,
+      "ObstacleCount": 40,
+      "Reasons": [
+        {
+          "Name": "downstream",
+          "Count": 7
+        },
+        {
+          "Name": "lateral",
+          "Count": 4
+        },
+        {
+          "Name": "resting",
+          "Count": 89
+        }
+      ],
+      "Directory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacle-distribution-fix\\before\\run_20261112_184658_20804_1"
+    },
+    {
+      "Case": "final",
+      "N": 100,
+      "FinalAtToe": 45,
+      "ObstacleContacts": 58,
+      "ObstacleCount": 24,
+      "Reasons": [
+        {
+          "Name": "downstream",
+          "Count": 13
+        },
+        {
+          "Name": "lateral",
+          "Count": 7
+        },
+        {
+          "Name": "resting",
+          "Count": 80
+        }
+      ],
+      "Directory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacle-distribution-fix\\final\\run_20261112_185659_22228_1"
+    },
+    {
+      "Case": "off",
+      "N": 100,
+      "FinalAtToe": 46,
+      "ObstacleContacts": 0,
+      "ObstacleCount": 0,
+      "Reasons": [
+        {
+          "Name": "downstream",
+          "Count": 13
+        },
+        {
+          "Name": "lateral",
+          "Count": 6
+        },
+        {
+          "Name": "resting",
+          "Count": 81
+        }
+      ],
+      "Directory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacle-distribution-fix\\off\\run_20261112_185233_11644_1"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "before-run.txt",
+      "sha256": "3706AAD3065C966C3AA7AC6B5DD218EB53E976F3438773BDF8F449FDF218562D"
+    },
+    {
+      "file": "comparison.json",
+      "sha256": "C304E16AEBA993849556735A245980E28CE82B1727E5B807762AD92E6D76EC9B"
+    },
+    {
+      "file": "debug-tests.txt",
+      "sha256": "BA9A98C4D466060F1137E07CDA387B3529AFA10CBF3D0DA4C9CA58D86E829100"
+    },
+    {
+      "file": "final-run.txt",
+      "sha256": "F2B1D135FA71AB134466A4B2407C61A1D63C86FAB9CEAB394AC34179971CB6F9"
+    },
+    {
+      "file": "gui-check.json",
+      "sha256": "01ABE3DE39314C310C6FABD6F340D7D79F0B9859FDDA846EACE2C61810C3627F"
+    },
+    {
+      "file": "gui-events.txt",
+      "sha256": "5EC3653C70DD721222E4AB3144EEEAD095E57CC5D5D017D59F917DDB62888B8F"
+    },
+    {
+      "file": "legacy-results.txt",
+      "sha256": "71F520ACC88A36292B282AD70292C605A3CE5E17FF310DE7EF57B4FE08EE60D0"
+    },
+    {
+      "file": "off-run.txt",
+      "sha256": "C0117AAD8E7304DA8E9899C94E75E3FA5D6DF65E3546B269F7F3EB1793E8D0B7"
+    },
+    {
+      "file": "regression-final.txt",
+      "sha256": "9C96D4AB03CB4D11BF88A39A5815761C8C7DDBBE9A3251D1867532A3FE8B6D83"
+    },
+    {
+      "file": "regression-red.txt",
+      "sha256": "6000A6899EAE45553E1B90C19CAC973AD47257792CD7655B5A024CFC81C12CF9"
+    },
+    {
+      "file": "release-tests.txt",
+      "sha256": "2AD41F4AA13FDB83878082474E5000B63B2D473BDDC5EE1A957268E606ED4ADF"
+    },
+    {
+      "file": "sample-identity.json",
+      "sha256": "96BC5E542068AD0E9EB0563AF1425B5B8566A10E54F5CA0F18114941CAA3E97A"
+    }
+  ]
+}

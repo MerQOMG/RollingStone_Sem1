@@ -1,0 +1,68 @@
+[
+  {
+    "Case": "before",
+    "N": 100,
+    "FinalAtToe": 17,
+    "ObstacleContacts": 95,
+    "ObstacleCount": 40,
+    "Reasons": [
+      {
+        "Name": "downstream",
+        "Count": 7
+      },
+      {
+        "Name": "lateral",
+        "Count": 4
+      },
+      {
+        "Name": "resting",
+        "Count": 89
+      }
+    ],
+    "Directory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacle-distribution-fix\\before\\run_20261112_184658_20804_1"
+  },
+  {
+    "Case": "final",
+    "N": 100,
+    "FinalAtToe": 45,
+    "ObstacleContacts": 58,
+    "ObstacleCount": 24,
+    "Reasons": [
+      {
+        "Name": "downstream",
+        "Count": 13
+      },
+      {
+        "Name": "lateral",
+        "Count": 7
+      },
+      {
+        "Name": "resting",
+        "Count": 80
+      }
+    ],
+    "Directory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacle-distribution-fix\\final\\run_20261112_185659_22228_1"
+  },
+  {
+    "Case": "off",
+    "N": 100,
+    "FinalAtToe": 46,
+    "ObstacleContacts": 0,
+    "ObstacleCount": 0,
+    "Reasons": [
+      {
+        "Name": "downstream",
+        "Count": 13
+      },
+      {
+        "Name": "lateral",
+        "Count": 6
+      },
+      {
+        "Name": "resting",
+        "Count": 81
+      }
+    ],
+    "Directory": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacle-distribution-fix\\off\\run_20261112_185233_11644_1"
+  }
+]

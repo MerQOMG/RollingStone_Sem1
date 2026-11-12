@@ -1,0 +1,106 @@
+Start testing: Nov 12 16:49 中国标准时间
+----------------------------------------------------------
+15/18 Testing: full_path_first_contact
+15/18 Test: full_path_first_contact
+Command: "C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d/bin/rs3d_analysis_tests.exe"
+Directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+"full_path_first_contact" start time: Nov 12 16:49 中国标准时间
+Output:
+----------------------------------------------------------
+H1/H2 full XY exact DDA, release, altitude, repeats and bounds PASS
+C1/C2/C3/C4 point grouping, moving frame, corners, unknowns and two denominators PASS
+real first mode=0 status=hit reason= points=4 interval=0:0.0005
+real first mode=1 status=hit reason= points=4 interval=0.0275:0.028
+real first mode=2 status=hit reason= points=4 interval=0.0275:0.028
+real first mode=3 status=no_hit reason= points=0 interval=0:0
+real first mode=4 status=hit reason= points=4 interval=0:0.0005
+real first mode=5 status=hit reason= points=4 interval=0:0.0005
+real first mode=6 status=hit reason= points=4 interval=0.0275:0.028
+C3 dt=0.002 elastic=0 interval=0.0275:0.028 gap=0.012 impulse=59375 method=solved_constraint local=3,3
+C3 dt=0.001 elastic=0 interval=0.0275:0.02775 gap=0.012 impulse=59375 method=solved_constraint local=3,3
+C3 dt=0.002 elastic=1 interval=0.0275:0.028 gap=0.012 impulse=9128.14 method=solved_constraint local=3,3
+C3 dt=0.001 elastic=1 interval=0.0275:0.02775 gap=0.012 impulse=701.086 method=solved_constraint local=3,3
+PASS analysis tests
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"full_path_first_contact" end time: Nov 12 16:49 中国标准时间
+"full_path_first_contact" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/18 Testing: archive_analysis_transactions
+17/18 Test: archive_analysis_transactions
+Command: "C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d/bin/rs3d_archive_tests.exe"
+Directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+"archive_analysis_transactions" start time: Nov 12 16:49 中国标准时间
+Output:
+----------------------------------------------------------
+archive verified N=3 recorded_trial_ids=3 B=3 M=0 unknown=0
+archive verified N=3 recorded_trial_ids=3 B=3 M=0 unknown=0
+archive verified N=3 recorded_trial_ids=0 B=3 M=0 unknown=0
+R2 independent schema=1 actual CSV / missing history / physics updates=0 PASS
+R2 independent schema=2 actual CSV / missing history / physics updates=0 PASS
+R2 actual 130-vertex/256-face archive opens without sampling/integration PASS
+expected rejection: first-contact world/local mismatch
+expected rejection: missing registered result file: scene.ini
+archive verified N=3 recorded_trial_ids=1 B=0 M=0 unknown=3
+injection scene.ini PASS
+injection manifest.ini PASS
+injection trials.csv PASS
+injection shape_vertices.csv PASS
+injection shape_faces.csv PASS
+injection terrain_vertices.csv PASS
+injection terrain_faces.csv PASS
+injection voxel_probability.csv PASS
+injection collector_yz.csv PASS
+injection collector_summary.csv PASS
+injection projection_xy.csv PASS
+injection projection_xz.csv PASS
+injection trajectory.csv PASS
+injection barrier_trajectory.csv PASS
+injection barrier_trials.csv PASS
+injection attempt_rejections.csv PASS
+injection obstacles.csv PASS
+injection obstacle_vertices.csv PASS
+injection obstacle_faces.csv PASS
+injection route_heatmap_xy.csv PASS
+injection barrier_first_contact.csv PASS
+injection barrier_first_contact_points.csv PASS
+injection barrier_first_contact_heatmap.csv PASS
+injection motion.bin PASS
+injection motion_index.csv PASS
+injection FILES_COMPLETE.txt PASS
+injection rename PASS
+R1/R2/R4 H2 C5/C6 preview=0/2, history on/off, intervals, events with stride=0, all-file transactions PASS
+<end of output>
+Test time =   2.86 sec
+----------------------------------------------------------
+Test Passed.
+"archive_analysis_transactions" end time: Nov 12 16:49 中国标准时间
+"archive_analysis_transactions" time elapsed: 00:00:02
+----------------------------------------------------------
+
+18/18 Testing: readonly_playback
+18/18 Test: readonly_playback
+Command: "C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d/bin/rs3d_playback_tests.exe"
+Directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+"readonly_playback" start time: Nov 12 16:49 中国标准时间
+Output:
+----------------------------------------------------------
+R3 exact endpoints, zero duration, q/-q, shortest arc and dynamic barrier PASS
+archive=C:\Users\shell\AppData\Local\Temp\rs3d_playback trials_selected=4 frames=2404 motion_bytes=740936 decoded_cache_peak=657504 index_block_bytes=1952 first_block_p95_ms=0.6146 first_block_max_ms=0.6475 cache_hit_p95_ms=0.0005
+H3 full display N=2 first/last all IDs retained vertices=5002 PASS
+H3 full display N=3 first/last all IDs retained vertices=7503 PASS
+H3 full display N=1000 first/last all IDs retained vertices=9000 PASS
+H3 deterministic 30001-point path first/last/turn and cancelled status PASS
+PASS read-only playback/cache/async request ordering
+<end of output>
+Test time =   0.31 sec
+----------------------------------------------------------
+Test Passed.
+"readonly_playback" end time: Nov 12 16:49 中国标准时间
+"readonly_playback" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 12 16:49 中国标准时间

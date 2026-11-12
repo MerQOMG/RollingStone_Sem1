@@ -1,0 +1,39 @@
+#include "session.h"
+#include "jolt_runtime.h"
+#include "editor.h"
+#include <iostream>
+using namespace rs3d;
+using Clock=std::chrono::steady_clock;
+void check(bool value,const char*message){if(!value)throw std::runtime_error(message);}
+template<class F>void reject(F fn){bool failed=false;try{fn();}catch(const std::exception&){failed=true;}check(failed,"operation should have been rejected");}
+template<class F>void waitFor(Session&s,F condition,double seconds=15){auto deadline=Clock::now()+std::chrono::duration<double>(seconds);while(!condition(s.view())&&Clock::now()<deadline)std::this_thread::sleep_for(std::chrono::milliseconds(1));if(!condition(s.view())){s.cancel();throw std::runtime_error("session wait timed out");}}
+int main(){try{JoltRuntime runtime;SceneDraft draft;draft.terrain.type=TerrainType::flat;draft.terrain.width=20;draft.stableFaceRelease=true;draft.releaseGap=0;draft.maxTime=10;draft.properties[restitutionValue]={0,0};draft.count=3;draft.trajectoryStride=0;draft.outputRoot=std::filesystem::temp_directory_path()/L"RollingStone3D session tests";
+    SceneEditor editor(draft);check(sceneText(editor.parse())==sceneText(draft),"editor round trip changed scene");
+    editor.set("run.seed","18446744073709551615");check(editor.parse().masterSeed==UINT64_MAX,"editor rounded 64-bit seed");
+    for(auto bad:{"nan","inf","-1","2junk"}){editor.sync(draft);editor.set("geometry.r",bad);reject([&]{editor.parse();});}
+    editor.sync(draft);editor.set("barrier.center_x","15");editor.set("barrier.width","4");editor.set("barrier.yaw_degrees","25");auto edited=editor.parse();check(edited.barrier.center.x==15&&edited.barrier.width==4&&edited.barrier.yawDegrees==25,"editor did not bind barrier");
+    editor.sync(draft);editor.set("barrier.mode","elastic");editor.set("barrier.mass","1500");editor.set("barrier.stiffness","300000");editor.set("barrier.damping","20000");
+    auto support=editor.parse();check(support.barrier.elastic&&support.barrier.mass==1500&&support.barrier.stiffness==300000&&support.barrier.damping==20000,"elastic editor fields not bound");
+    editor.set("barrier.mass","0");reject([&]{editor.parse();});
+    editor.sync(draft);editor.set("initial.x","9,11");check(editor.parse().properties[releaseX].upper==11,"editor range binding");
+    std::cout<<"PASS editor round trip, exact uint64 seeds, invalid numbers, ranges and barrier binding\n";
+    Session session(draft);auto before=session.view();auto invalid=draft;invalid.geometry.volume=-1;reject([&]{session.apply(invalid);});check(session.view().scene==before.scene&&session.view().config->hash==before.config->hash,"invalid edit replaced scene");session.randomize();auto random=session.view();check(session.draft().previewSeed!=draft.previewSeed&&random.config->hash==before.config->hash,"preview RNG changed formal batch hash");
+    session.startBatch();reject([&]{session.apply(draft);});auto start=Clock::now();bool sawFirst=false,sawSecond=false,sawBackground=false;while(session.busy()){
+        auto state=session.view();if(state.phase==SessionPhase::preview){sawFirst|=state.trialId==1;sawSecond|=state.trialId==2;}sawBackground|=state.phase==SessionPhase::background;
+        check(state.config->hash==before.config->hash,"running configuration changed");std::this_thread::sleep_for(std::chrono::milliseconds(1));}
+    auto completed=session.view();check(completed.state==SessionState::completed&&completed.result->statistics.completed()==3&&sawFirst&&sawSecond&&sawBackground,"preview phases/counts");double simulated=completed.result->trials[0].last.time+completed.result->trials[1].last.time;double elapsed=std::chrono::duration<double>(Clock::now()-start).count();check(elapsed>=simulated-.05,"preview computed ahead of playback clock");
+    BatchControl control;auto direct=runBatch(freezeConfig(draft),control);check(direct.statistics.voxelHits()==completed.result->statistics.voxelHits(),"paced versus direct statistics");for(size_t i=0;i<3;++i)check(norm(direct.trials[i].last.center-completed.result->trials[i].last.center)==0,"paced versus direct trajectory");std::cout<<"PASS real 1x playback clock, two preview phases then background; wall="<<elapsed<<" preview_sim="<<simulated<<'\n';
+    session.reset();auto exact=session.view().scene;auto previewSeed=session.draft().previewSeed;session.startSingle();waitFor(session,[](auto s){return s.phase==SessionPhase::preview&&s.snapshot.time>=.02;});session.pause(true);waitFor(session,[](auto s){return s.pauseAcknowledged;});auto frozen=session.view();std::this_thread::sleep_for(std::chrono::milliseconds(40));check(session.view().snapshot.time==frozen.snapshot.time,"pause advanced displayed state");reject([&]{session.randomize();});session.pause(false);waitFor(session,[](auto s){return s.workerFinished;});auto single=session.view();check(single.result->trials.size()==1&&single.result->trials[0].input.seed==trialSeed(previewSeed,1),"single did not use preview seed");check(single.result->trials[0].canonicalCenter.x==exact->shape.center.x&&single.result->trials[0].initial.shapeOrigin.z==exact->initial.shapeOrigin.z,"single regenerated preview");std::cout<<"PASS immutable paused configuration and exact frozen-preview single run\n";
+    session.reset();session.startBatch();waitFor(session,[](auto s){return s.phase==SessionPhase::preview&&s.snapshot.time>=.02;});session.pause(true);waitFor(session,[](auto s){return s.pauseAcknowledged;});auto cancelStart=Clock::now();session.cancel();waitFor(session,[](auto s){return s.processed==1;});auto cancelledTrialAt=Clock::now();waitFor(session,[](auto s){return s.workerFinished;});auto cancelled=session.view();check(cancelled.result->status==BatchStatus::cancelled&&cancelled.result->unstarted()==2,"session cancellation status");double latency=std::chrono::duration<double,std::milli>(Clock::now()-cancelStart).count();std::cout<<"MEASURE paused cancellation worker_finish_ms="<<latency<<" cancel_trial_ms="<<std::chrono::duration<double,std::milli>(cancelledTrialAt-cancelStart).count()<<" total_output_ms="<<cancelled.result->timing.output*1000<<" grid_cells="<<cancelled.result->statistics.grid().count()<<std::endl;check(latency<=250,"cancel status response exceeds frozen max budget");std::cout<<"PASS paused worker cancellation, numerical-side confirmation_ms="<<latency<<" (not OS-to-draw latency)\n";
+    auto elasticDraft=draft;elasticDraft.barrier.enabled=true;elasticDraft.barrier.elastic=true;elasticDraft.barrierAutoX=false;elasticDraft.barrierAutoZ=false;elasticDraft.barrier.center={16,0,3};elasticDraft.barrier.initialDisplacement=.4;
+    Session elasticSession(elasticDraft);elasticSession.startSingle();waitFor(elasticSession,[](auto s){return s.snapshot.time>=.04;});
+    elasticSession.pause(true);waitFor(elasticSession,[](auto s){return s.pauseAcknowledged;});auto pausedBarrier=elasticSession.view().snapshot;
+    check(std::abs(pausedBarrier.barrier.velocity)>.01,"pause fixture support is not moving");std::this_thread::sleep_for(std::chrono::milliseconds(40));
+    auto unchanged=elasticSession.view().snapshot;check(unchanged.time==pausedBarrier.time&&unchanged.barrier.displacement==pausedBarrier.barrier.displacement&&unchanged.barrier.dampingEnergy==pausedBarrier.barrier.dampingEnergy,"paused support advanced");
+    elasticSession.pause(false);waitFor(elasticSession,[&](auto s){return s.snapshot.time>pausedBarrier.time+.02;});elasticSession.cancel();waitFor(elasticSession,[](auto s){return s.workerFinished;});
+    auto elasticCancelled=elasticSession.view();check(elasticCancelled.result->status==BatchStatus::cancelled&&elasticCancelled.result->trials[0].hasPhysicsState,"moving support cancellation lost final state");
+    std::cout<<"PASS moving elastic support pause/resume and cancellation snapshot\n";
+    return 0;
+}catch(const std::exception&e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}
+
+

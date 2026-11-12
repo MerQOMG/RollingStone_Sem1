@@ -1,0 +1,19 @@
+# Copy of event log excluding capture_async heartbeat lines.
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=0 vsync=off
+source=GUI actual physics; helper lines use depth test; latest snapshot bounded to one
+analysis version=1 trajectories=0 directory=3 C=3 B=3 M=0 unknown=0
+state=Completed phase=4 trial=1 processed=3 C=3 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=0 wall=0
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+history_pose trial=1 time=0 interpolated=0 available=1 error= physics_updates=0
+analysis version=1 trajectories=3 directory=3 C=3 B=3 M=0 unknown=0
+input_to_draw_ms=1.0372999999930244 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+timeline action=play_pause trial=1 cursor=0 following=0 playing=1 physics_updates=0
+history_pose trial=1 time=0.27346350005936282 interpolated=1 available=1 error= physics_updates=0
+history_pose trial=1 time=0.52512740005937397 interpolated=1 available=1 error= physics_updates=0
+history_pose trial=1 time=0.79070040005936315 interpolated=1 available=1 error= physics_updates=0
+history_pose trial=1 time=1.0407747000593717 interpolated=1 available=1 error= physics_updates=0
+history_pose trial=1 time=1.2921113000593736 interpolated=1 available=1 error= physics_updates=0
+history_pose trial=1 time=1.5619954000593723 interpolated=1 available=1 error= physics_updates=0
+history_pose trial=1 time=1.7280000000000013 interpolated=0 available=1 error= physics_updates=0
+exit worker_finished=1 state=Completed hash=fnv1a64:a9e90c354a0683d4

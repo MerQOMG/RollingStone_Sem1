@@ -1,0 +1,17 @@
+{
+  "head": "73550f624f1975808905081150eff0838a8051a4",
+  "files": {
+    "RollingStone.sln": {
+      "sha256": "b17d44cc220737bf23a8ed698f2dd6603330e4f6ce0b1f5d79a8b623b22b5907",
+      "size": 947
+    },
+    "docs/3d/IMPLEMENTATION_PLAN.md": {
+      "sha256": "12336a7cec804fd4f5f2fdc1cf20cf8d8a07e855217db3ecd581756164d02205",
+      "size": 62630
+    },
+    "docs/3d/OBSTACLES_HEATMAP_TIMELINE_PLAN.md": {
+      "sha256": "67a8e453bab39f149b4f9f978075c054c12c8bb5ebfeff2d319cc179ba93e48b",
+      "size": 48861
+    }
+  }
+}

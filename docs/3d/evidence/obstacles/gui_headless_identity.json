@@ -1,0 +1,65 @@
+{
+  "gui": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacles_f4\\中文 空格\\实际结果\\run_20261112_172236_18788_1",
+  "headless": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacles_f5\\gui_identity\\headless\\run_20261112_174029_25564_1",
+  "command": [
+    "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\build\\3d\\bin\\RollingStone3D.exe",
+    "--config",
+    "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacles_f4\\中文 空格\\实际结果\\run_20261112_172236_18788_1\\scene.ini",
+    "--headless",
+    "--preview",
+    "0",
+    "--output",
+    "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacles_f5\\gui_identity\\headless"
+  ],
+  "executable_sha256": "4c3487a030c3cf674f326fe64f3e5008b5f66d74cb196d867c0cac85dc5daca5",
+  "identical_files": {
+    "attempt_rejections.csv": "1497bf272d19ae72eb5cc737baa1b2138cc78630c58a38cc3d8d72278b088d14",
+    "barrier_first_contact.csv": "33d2f3fb1d248d343e0ffd6dcff51865941af2330a5a2bb1349e4aec998cef1c",
+    "barrier_first_contact_heatmap.csv": "9fd8c1d27c5fc56667f1232607a801ca19dbffa4d024e6f07f7f28f89f64b028",
+    "barrier_first_contact_points.csv": "7a27a5df20b5cc53c50ab4356222a93d01ddd9313fdd865489a857730319dd4d",
+    "barrier_trajectory.csv": "f172ef2f50f2824177bb49a946e0e59cd3269a01ff6e943bb070620a61d42d57",
+    "barrier_trials.csv": "ee47a5b06e44c5ee29c61486aa50512c042e40ba0b79f72834e37c3dbe3d40d9",
+    "collector_summary.csv": "5f94e1f4826d5265115f1630387d181eab39a4b27c9f25c0307a66d4174b4cd7",
+    "collector_yz.csv": "60c359f2621e564a1442578a0cd8bdd164c6c7de58b957cd4b1914a47a943d4b",
+    "obstacles.csv": "73da990a5da2cf2ba3cdb6091bedd0b90a4a935d0028bedfb9872bd6680bb063",
+    "obstacle_faces.csv": "5c8d2d922f91ba6a090d6b795a8a0990a651aff2c1753e8d309d5362392ab448",
+    "obstacle_vertices.csv": "87a4df896d560fed874f0b3ecd8f0006d8f54da90ea446e614a0a4a5e70099c8",
+    "projection_xy.csv": "04c6da1a97f5ac2602240b0a04ce37eed497fe456eb7c874f463da2dffb369f3",
+    "projection_xz.csv": "d7592be45ee9a4176c9435017efcb40431220ba8fa04e0bbec119f011597488e",
+    "route_heatmap_xy.csv": "1b4c736a9224e7c725ed3dca0cd320cb26c98dc5ad5d453c1d27ad1c482d16ab",
+    "shape_faces.csv": "5f35d65018c8830539677e1d534b29730c220af1ac7f4d35be3c7ca8600abae6",
+    "shape_vertices.csv": "a3535abdfd7cf7e6dc95b11ead87d5f7df0eb3a45b3bdbd28eb4e2a3753ec998",
+    "terrain_faces.csv": "b7f8bd9e2e54a5ecd1c482555c2c9b8814bc93b7d5f2755e568233fddc6021a5",
+    "terrain_vertices.csv": "7ee6caf67cc524bbc3da592cb611fda0ad3290a3ef02696db84155f7cbe8e7e7",
+    "trajectory.csv": "bdd1c23a24f989f4cbf050a4a80e7567336d4aa583d89980672c41ab30789aa4",
+    "voxel_probability.csv": "8195ca9ca62aa92777a61adcd8d0ac95f6ed4a68bdef636d95c874faa2f88a3a"
+  },
+  "identical_motion_frames": {
+    "1": {
+      "frames": 216,
+      "sha256": "06dc9be6d177acb48b04e040beced492fd516ebfbdd5f812f29d07361991fbd5",
+      "status": [
+        "upstream",
+        ""
+      ]
+    },
+    "2": {
+      "frames": 504,
+      "sha256": "0c1819e2c3ff45e1ea9a9b85f404f054d33378d7a5a5ed35b3bc5c66444d665f",
+      "status": [
+        "upstream",
+        ""
+      ]
+    },
+    "3": {
+      "frames": 85,
+      "sha256": "f9616cc4675e5919a04788b0e08b0d9dc1d9b8f23e39d34155634be1ac068bb1",
+      "status": [
+        "upstream",
+        ""
+      ]
+    }
+  },
+  "trial_rows": 3,
+  "all_non_timing_trial_columns_identical": true
+}
