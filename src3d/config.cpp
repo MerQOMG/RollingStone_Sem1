@@ -30,6 +30,9 @@ std::string sceneText(const SceneDraft&s,bool output){
     const auto&b=s.barrier;o<<"\n[barrier]\nenabled="<<b.enabled<<"\ncenter_x=";if(s.barrierAutoX)o<<"auto";else o<<b.center.x;
     o<<"\ncenter_y="<<b.center.y<<"\ncenter_z=";if(s.barrierAutoZ)o<<"auto";else o<<b.center.z;
     o<<"\nwidth="<<b.width<<"\nheight="<<b.height<<"\nthickness="<<b.thickness<<"\nyaw_degrees="<<b.yawDegrees<<"\nmu="<<b.friction<<"\ne="<<b.restitution;
+    // Preserve legacy schema=1 physical hashes when the rigid extension is default.
+    if(output||b.elastic||b.mass!=2000||b.stiffness!=500000||b.damping!=30000||b.initialDisplacement!=0||b.initialVelocity!=0)
+        o<<"\nmode="<<(b.elastic?"elastic":"rigid")<<"\nmass="<<b.mass<<"\nstiffness="<<b.stiffness<<"\ndamping="<<b.damping<<"\ninitial_displacement="<<b.initialDisplacement<<"\ninitial_velocity="<<b.initialVelocity;
     o<<"\n[statistics]\nheight_reference="<<(s.heightReference==HeightReference::toeCenter?"toe_center":"toe_min")<<"\nautomatic_box="<<s.automaticGrid;
     for(int i=0;i<3;++i)o<<"\nlower_"<<"xyz"[i]<<'='<<s.grid.lower[i]<<"\nupper_"<<"xyz"[i]<<'='<<s.grid.upper[i]<<"\ncell_"<<"xyz"[i]<<'='<<s.grid.cell[i];
     o<<"\ncollector_x=";if(s.automaticCollector)o<<"auto";else o<<s.collectorX;
@@ -48,7 +51,7 @@ std::shared_ptr<const RunConfig> freezeConfig(const SceneDraft&s){
     auto config=std::make_shared<RunConfig>();config->source=s;config->terrain=std::make_shared<TerrainMesh>(buildTerrain(s.terrain));auto&t=*config->terrain;
     if(s.stableFaceRelease)require(s.terrain.type==TerrainType::flat&&s.terrain.flatSlopeX==0&&s.terrain.crossSlopeDegrees==0&&s.terrain.grooveAmplitude==0,"stable_face fixture requires a horizontal plane");
     require(s.properties[releaseX].lower>=t.xMin&&s.properties[releaseX].upper<=t.xEnd&&s.properties[releaseY].lower>=t.yMin&&s.properties[releaseY].upper<=t.yMax,"release x/y range outside terrain");
-    config->barrier=s.barrier;auto&b=config->barrier;
+    validateBarrierSettings(s.barrier);config->barrier=s.barrier;auto&b=config->barrier;
     for(double v:{b.center.x,b.center.y,b.center.z,b.width,b.height,b.thickness,b.yawDegrees,b.friction,b.restitution})require(std::isfinite(v),"non-finite barrier parameter");
     require(b.width>0&&b.height>0&&b.thickness>0&&b.friction>=0&&b.restitution>=0&&b.restitution<=1,"invalid barrier dimensions/material");
     if(s.barrierAutoX)b.center.x=t.xEnd-10;
@@ -78,6 +81,8 @@ SceneDraft parseScene(const std::string&utf8){
     num("material.density",s.density);num("material.air_density",s.airDensity);num("initial.gap",s.releaseGap);take("initial.orientation",[&](auto&x){require(x=="sampled"||x=="stable_face","orientation must be sampled/stable_face");s.stableFaceRelease=x=="stable_face";});for(int i=0;i<propertyCount;++i)take(std::string("initial.")+propertyNames[i],[&](auto&x){s.properties[i]=range(x);});
     auto&b=s.barrier;flag("barrier.enabled",b.enabled);take("barrier.center_x",[&](auto&x){s.barrierAutoX=x=="auto";if(!s.barrierAutoX)b.center.x=number(x);});num("barrier.center_y",b.center.y);take("barrier.center_z",[&](auto&x){s.barrierAutoZ=x=="auto";if(!s.barrierAutoZ)b.center.z=number(x);});
     num("barrier.width",b.width);num("barrier.height",b.height);num("barrier.thickness",b.thickness);num("barrier.yaw_degrees",b.yawDegrees);num("barrier.mu",b.friction);num("barrier.e",b.restitution);
+    take("barrier.mode",[&](auto&x){require(x=="rigid"||x=="elastic","barrier.mode must be rigid/elastic");b.elastic=x=="elastic";});
+    num("barrier.mass",b.mass);num("barrier.stiffness",b.stiffness);num("barrier.damping",b.damping);num("barrier.initial_displacement",b.initialDisplacement);num("barrier.initial_velocity",b.initialVelocity);
     take("statistics.height_reference",[&](auto&x){require(x=="toe_center"||x=="toe_min","unknown height reference");s.heightReference=x=="toe_center"?HeightReference::toeCenter:HeightReference::toeMin;});flag("statistics.automatic_box",s.automaticGrid);
     for(int i=0;i<3;++i){std::string axis(1,"xyz"[i]);take("statistics.lower_"+axis,[&](auto&x){s.grid.lower[i]=number(x);});take("statistics.upper_"+axis,[&](auto&x){s.grid.upper[i]=number(x);});take("statistics.cell_"+axis,[&](auto&x){s.grid.cell[i]=number(x);});}
     take("statistics.collector_x",[&](auto&x){s.automaticCollector=x=="auto";if(!s.automaticCollector)s.collectorX=number(x);});

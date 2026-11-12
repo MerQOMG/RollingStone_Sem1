@@ -7,6 +7,7 @@
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Core/JobSystemSingleThreaded.h>
 #include "physics.h"
+#include "elastic_support.h"
 #include "engine_geometry.h"
 #include <map>
 
@@ -24,7 +25,7 @@ bool barrierOverlaps(const PhysicsScene&s){
     const auto&b=s.barrier;const auto rockRotation=s.initial.rotation.matrix(),boardRotation=axisRotation({0,0,1},b.yawDegrees*pi/180);
     std::vector<Vec3> rock,board,axes;
     for(auto p:s.shape.vertices)rock.push_back(s.initial.shapeOrigin+rockRotation*(p-s.shape.center));
-    for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})board.push_back(b.center+boardRotation*Vec3{x*b.thickness/2,y*b.width/2,z*b.height/2});
+    for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})board.push_back(initialBarrierCenter(b)+boardRotation*Vec3{x*b.thickness/2,y*b.width/2,z*b.height/2});
     for(Vec3 axis:{Vec3{1,0,0},{0,1,0},{0,0,1}})axes.push_back(boardRotation*axis);
     for(auto f:s.shape.faces){axes.push_back(cross(rock[f.b]-rock[f.a],rock[f.c]-rock[f.a]));
         for(Vec3 edge:{rock[f.b]-rock[f.a],rock[f.c]-rock[f.b],rock[f.a]-rock[f.c]})for(int i=0;i<3;++i)axes.push_back(cross(edge,axes[i]));}
@@ -35,21 +36,21 @@ bool barrierOverlaps(const PhysicsScene&s){
 }
 class Broad final:public JPH::BroadPhaseLayerInterface {
 public:JPH::uint GetNumBroadPhaseLayers()const override{return 2;}
-    JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer layer)const override{return JPH::BroadPhaseLayer(static_cast<JPH::uint8>(layer));}
+    JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer layer)const override{return JPH::BroadPhaseLayer(static_cast<JPH::uint8>(layer==0?0:1));}
 };
 class Pair final:public JPH::ObjectLayerPairFilter {
-public:bool ShouldCollide(JPH::ObjectLayer a,JPH::ObjectLayer b)const override{return a||b;}
+public:bool ShouldCollide(JPH::ObjectLayer a,JPH::ObjectLayer b)const override{return a==1||b==1;}
 };
 class Filter final:public JPH::ObjectVsBroadPhaseLayerFilter {
-public:bool ShouldCollide(JPH::ObjectLayer a,JPH::BroadPhaseLayer b)const override{return a||b.GetValue();}
+public:bool ShouldCollide(JPH::ObjectLayer a,JPH::BroadPhaseLayer b)const override{return a==1||b.GetValue()==1;}
 };
-float friction(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return a.IsStatic()?a.GetFriction():b.GetFriction();}
-float restitution(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return a.IsStatic()?a.GetRestitution():b.GetRestitution();}
+float friction(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return a.GetUserData()!=rockObjectId?a.GetFriction():b.GetFriction();}
+float restitution(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return a.GetUserData()!=rockObjectId?a.GetRestitution():b.GetRestitution();}
 struct ContactAnchor {Vec3 staticPoint,rockLocal;};
 struct GroundContact {Vec3 normal;std::vector<ContactAnchor>anchors;};
 class Contacts final:public JPH::ContactListener {
     void record(const JPH::Body&a,const JPH::Body&b,const JPH::ContactManifold&m,const JPH::ContactSettings&s){
-        const auto&fixed=a.IsStatic()?a:b;const auto&rock=a.IsDynamic()?a:b;
+        const auto&fixed=a.GetUserData()!=rockObjectId?a:b;const auto&rock=a.GetUserData()==rockObjectId?a:b;
         metrics.maxPenetration=std::max(metrics.maxPenetration,double(m.mPenetrationDepth));
         if(fixed.GetUserData()==terrainObjectId){
             ++metrics.ground;if(m.mPenetrationDepth>=-slop)++metrics.touchingGround;
@@ -63,12 +64,12 @@ class Contacts final:public JPH::ContactListener {
                 contact.anchors.push_back({ps,inverseRotation*(pr-vec(rock.GetCenterOfMassPosition()))});}
             ground[{a.GetID(),m.mSubShapeID1,b.GetID(),m.mSubShapeID2}]=std::move(contact);
         }else if(fixed.GetUserData()==barrierObjectId){
-            ++metrics.barrier;if(m.mPenetrationDepth>=-slop)++metrics.touchingBarrier;
+            ++barrierCounter;++metrics.barrier;if(m.mPenetrationDepth>=-slop)++metrics.touchingBarrier;
             metrics.barrierFriction=s.mCombinedFriction;metrics.barrierRestitution=s.mCombinedRestitution;
         }
     }
 public:
-    double slop=0;
+    double slop=0;std::uint64_t barrierCounter=0;
     ContactMetrics metrics;
     std::map<JPH::SubShapeIDPair,GroundContact> ground;
     void OnContactAdded(const JPH::Body&a,const JPH::Body&b,const JPH::ContactManifold&m,JPH::ContactSettings&s)override{record(a,b,m,s);}
@@ -83,6 +84,16 @@ public:
 };
 }
 
+Vec3 barrierAxis(const BarrierSettings&b){return axisRotation({0,0,1},b.yawDegrees*pi/180)*Vec3{1,0,0};}
+Vec3 initialBarrierCenter(const BarrierSettings&b){return b.center+(b.elastic?barrierAxis(b)*b.initialDisplacement:Vec3{});}
+void validateBarrierSettings(const BarrierSettings&b){
+    for(double v:{b.center.x,b.center.y,b.center.z,b.width,b.height,b.thickness,b.yawDegrees,b.friction,b.restitution,b.mass,b.stiffness,b.damping,b.initialDisplacement,b.initialVelocity})require(std::isfinite(v),"non-finite barrier parameter");
+    require(b.width>0&&b.height>0&&b.thickness>0&&b.friction>=0&&b.restitution>=0&&b.restitution<=1,"invalid barrier dimensions/material");
+    require(b.mass>=1&&b.mass<=1e7,"barrier.mass outside [1,1e7] kg");
+    require(b.stiffness>=0&&b.stiffness<=1e8,"barrier.stiffness outside [0,1e8] N/m");
+    require(b.damping>=0&&b.damping<=1e7,"barrier.damping outside [0,1e7] N*s/m");
+    require(std::abs(b.initialDisplacement)<=100&&std::abs(b.initialVelocity)<=100,"barrier initial displacement/velocity outside +/-100");
+}
 InitialState supportedRelease(const Polyhedron&p,const TerrainMesh&t,double x,double y,double gap,Quaternion rotation){
     require(std::isfinite(gap)&&gap>=0,"release gap must be finite and nonnegative");
     return {{x,y,supportHeight(p,t,x,y,rotation.matrix())+gap},rotation,{},{}};
@@ -92,14 +103,14 @@ BarrierSettings groundedBarrier(const TerrainMesh&t,BarrierSettings b){
     auto box=convexPolyhedron(vertices);b.center.z=supportHeight(box,t,b.center.x,b.center.y,axisRotation({0,0,1},b.yawDegrees*pi/180));return b;
 }
 void validatePhysicsScene(const PhysicsScene&s){
-    validatePolyhedron(s.shape);const auto&d=s.dynamics;const auto&b=s.barrier;
+    validatePolyhedron(s.shape);validateBarrierSettings(s.barrier);const auto&d=s.dynamics;const auto&b=s.barrier;
     for(double value:{s.radius,d.density,d.friction,d.restitution,d.airDensity,d.dragCoefficient,d.rollingCoefficient,b.width,b.height,b.thickness,b.yawDegrees,b.friction,b.restitution})require(std::isfinite(value),"non-finite physics parameter");
     require(s.radius>0&&d.density>0&&d.friction>=0&&d.restitution>=0&&d.restitution<=1&&d.airDensity>=0&&d.dragCoefficient>=0&&d.rollingCoefficient>=0,"invalid material parameter");
     require(b.width>0&&b.height>0&&b.thickness>0&&b.friction>=0&&b.restitution>=0&&b.restitution<=1&&finite(b.center),"invalid rigid barrier");
     require(finite(d.gravity)&&finite(s.initial.shapeOrigin)&&finite(s.initial.velocity)&&finite(s.initial.angularVelocity),"non-finite initial state/gravity");
     s.initial.rotation.matrix();
     if(s.terrain){double support=supportHeight(s.shape,*s.terrain,s.initial.shapeOrigin.x,s.initial.shapeOrigin.y,s.initial.rotation.matrix());require(s.initial.shapeOrigin.z>=support-1e-8*s.radius,"initial solid penetrates terrain");}
-    if(b.enabled)require(!barrierOverlaps(s),"initial solid penetrates rigid barrier");
+    if(b.enabled)require(!barrierOverlaps(s),"initial solid penetrates barrier");
 }
 
 struct PhysicsWorld::Impl {
@@ -108,11 +119,12 @@ struct PhysicsWorld::Impl {
     JPH::TempAllocatorImpl allocator{10*1024*1024};
     JPH::JobSystemSingleThreaded jobs{JPH::cMaxPhysicsJobs};
     JPH::RefConst<JPH::Shape> stoneShape;
-    JPH::BodyID rock;std::vector<JPH::BodyID> bodies;
+    JPH::BodyID rock,boardId;std::vector<JPH::BodyID> bodies;
+    BarrierSettings barrierSettings;std::unique_ptr<ElasticSupport> support;
     DynamicsSettings settings;double radius,time=0,rollingRemoved=0,airWork=0;
     Mat3 bodyInertia;
     PhysicsDiagnostics diagnostic;
-    explicit Impl(const PhysicsScene&s):settings(s.dynamics),radius(s.radius){
+    explicit Impl(const PhysicsScene&s):barrierSettings(s.barrier),settings(s.dynamics),radius(s.radius){
         validatePhysicsScene(s);ShapeDiagnostics shapeDiagnostic;
         stoneShape=createCollisionShape(s.shape,s.radius,s.dynamics.density,shapeDiagnostic);
         auto mass=stoneShape->GetMassProperties();diagnostic.mass=mass.mMass;bodyInertia=mat(mass.mInertia);
@@ -121,8 +133,14 @@ struct PhysicsWorld::Impl {
         diagnostic.linearCastMaxPenetration=std::min(0.02,std::max(0.002,0.002*s.radius)/(4*diagnostic.engineInnerRadius));
         system.Init(16,0,1024,1024,broad,filter,pair);system.SetGravity(jvec(settings.gravity));
         JPH::PhysicsSettings physics;physics.mPenetrationSlop=float(diagnostic.slop);physics.mMinVelocityForRestitution=0.15f;
-        physics.mLinearCastThreshold=0.25f;physics.mLinearCastMaxPenetration=float(diagnostic.linearCastMaxPenetration);
-        physics.mUseManifoldReduction=settings.manifoldReduction;physics.mNumVelocitySteps=10;physics.mNumPositionSteps=2;system.SetPhysicsSettings(physics);
+        diagnostic.linearCastThreshold=.25;
+        physics.mLinearCastThreshold=float(diagnostic.linearCastThreshold);physics.mLinearCastMaxPenetration=float(diagnostic.linearCastMaxPenetration);
+        // Extreme support/rock mass ratios require more contact iterations and no
+        // cached impulse warm start when the support mass is eliminated implicitly.
+        // .05 m covers 50 m/s * .0005 s substep travel; legacy rigid settings stay intact.
+        if(s.barrier.enabled&&s.barrier.elastic){physics.mSpeculativeContactDistance=.05f;physics.mConstraintWarmStart=false;}
+        diagnostic.velocityIterations=s.barrier.enabled&&s.barrier.elastic?80:10;
+        physics.mUseManifoldReduction=settings.manifoldReduction;physics.mNumVelocitySteps=diagnostic.velocityIterations;physics.mNumPositionSteps=2;system.SetPhysicsSettings(physics);
         system.SetCombineFriction(friction);system.SetCombineRestitution(restitution);contacts.slop=diagnostic.slop;system.SetContactListener(&contacts);
         auto&bi=system.GetBodyInterface();
         auto add=[&](const JPH::BodyCreationSettings&b){auto id=bi.CreateAndAddBody(b,b.mMotionType==JPH::EMotionType::Dynamic?JPH::EActivation::Activate:JPH::EActivation::DontActivate);require(!id.IsInvalid(),"Jolt body allocation failed");bodies.push_back(id);return id;};
@@ -137,8 +155,12 @@ struct PhysicsWorld::Impl {
         }
         if(s.barrier.enabled){
             const auto&b=s.barrier;JPH::RefConst<JPH::Shape> box=new JPH::BoxShape(JPH::Vec3(float(b.thickness/2),float(b.width/2),float(b.height/2)),0);
-            JPH::BodyCreationSettings board(box,jpos(b.center),JPH::Quat::sRotation(JPH::Vec3::sAxisZ(),float(b.yawDegrees*pi/180)),JPH::EMotionType::Static,0);
-            board.mUserData=barrierObjectId;board.mFriction=float(b.friction);board.mRestitution=float(b.restitution);auto id=add(board);
+            JPH::BodyCreationSettings board(box,jpos(initialBarrierCenter(b)),JPH::Quat::sRotation(JPH::Vec3::sAxisZ(),float(b.yawDegrees*pi/180)),b.elastic?JPH::EMotionType::Dynamic:JPH::EMotionType::Static,b.elastic?2:0);
+            if(b.elastic){board.mAllowedDOFs=JPH::EAllowedDOFs::TranslationX|JPH::EAllowedDOFs::TranslationY;board.mOverrideMassProperties=JPH::EOverrideMassProperties::CalculateInertia;board.mMassPropertiesOverride.mMass=float(b.mass);
+                board.mGravityFactor=0;board.mLinearDamping=0;board.mAngularDamping=0;board.mAllowSleeping=false;
+                board.mLinearVelocity=jvec(barrierAxis(b)*b.initialVelocity);board.mMotionQuality=JPH::EMotionQuality::LinearCast;
+                board.mMaxLinearVelocity=10000;board.mMaxAngularVelocity=10000;}
+            board.mUserData=barrierObjectId;board.mFriction=float(b.friction);board.mRestitution=float(b.elastic?0:b.restitution);auto id=add(board);boardId=id;
             auto actual=bi.GetShape(id);auto half=static_cast<const JPH::BoxShape*>(actual.GetPtr())->GetHalfExtent();auto world=bi.GetWorldTransform(id);int corner=0;diagnostic.hasBarrier=true;
             for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})diagnostic.barrierWorldCorners[corner++]=vec(world*JPH::Vec3(x*half.GetX(),y*half.GetY(),z*half.GetZ()));
         }
@@ -147,10 +169,10 @@ struct PhysicsWorld::Impl {
         body.mLinearDamping=0;body.mAngularDamping=0;body.mApplyGyroscopicForce=true;body.mAllowSleeping=settings.allowSleeping;
         body.mMaxLinearVelocity=10000;body.mMaxAngularVelocity=10000;
         body.mMotionQuality=JPH::EMotionQuality::LinearCast;body.mEnhancedInternalEdgeRemoval=true;
-        // Deliberately different dynamic-body values: pair callbacks must select static surface values.
-        body.mFriction=0.731f;body.mRestitution=0.817f;rock=add(body);system.OptimizeBroadPhase();
+        // Deliberately different dynamic-body values: pair callbacks must select terrain/barrier surface values.
+        body.mFriction=0.731f;body.mRestitution=0.817f;rock=add(body);if(s.barrier.enabled&&s.barrier.elastic)support=std::make_unique<ElasticSupport>(system,boardId,s.barrier,contacts.barrierCounter);system.OptimizeBroadPhase();
     }
-    ~Impl(){auto&bi=system.GetBodyInterface();for(auto id:bodies){bi.RemoveBody(id);bi.DestroyBody(id);}system.SetContactListener(nullptr);}
+    ~Impl(){support.reset();auto&bi=system.GetBodyInterface();for(auto id:bodies){bi.RemoveBody(id);bi.DestroyBody(id);}system.SetContactListener(nullptr);}
     PhysicsSnapshot snapshot()const{
         const auto&bi=system.GetBodyInterface();PhysicsSnapshot s;s.time=time;
         s.center=vec(bi.GetCenterOfMassPosition(rock));s.shapeOrigin=vec(bi.GetPosition(rock));s.rotation=quat(bi.GetRotation(rock));
@@ -158,6 +180,8 @@ struct PhysicsWorld::Impl {
         auto r=s.rotation.matrix();auto inertia=r*bodyInertia*transpose(r);s.angularMomentum=inertia*s.angularVelocity;
         s.kineticEnergy=0.5*diagnostic.mass*norm2(s.velocity)+0.5*dot(s.angularVelocity,s.angularMomentum);
         s.potentialEnergy=-diagnostic.mass*dot(settings.gravity,s.center);s.rollingEnergyRemoved=rollingRemoved;s.airWork=airWork;s.contacts=contacts.metrics;
+        if(support)s.barrier=support->snapshot();
+        else if(barrierSettings.enabled){s.barrier.enabled=true;s.barrier.center=vec(bi.GetPosition(boardId));s.barrier.rotation=quat(bi.GetRotation(boardId));}
         require(finite(s.center)&&finite(s.velocity)&&finite(s.angularVelocity)&&std::isfinite(s.kineticEnergy)&&std::isfinite(s.potentialEnergy),"non-finite physics snapshot");return s;
     }
     void advance(double dt){
@@ -180,7 +204,9 @@ struct PhysicsWorld::Impl {
                 else {++diagnostic.rollingAppliedSteps;rollingRemoved+=initialEnergy-finalEnergy;}
             }
         }
-        contacts.metrics={};auto result=system.Update(float(dt),4,&allocator,&jobs);
+        contacts.metrics={};if(support)support->beginUpdate();auto result=system.Update(float(dt),4,&allocator,&jobs);
+        if(support){support->endUpdate(dt);auto world=bi.GetWorldTransform(boardId);auto half=static_cast<const JPH::BoxShape*>(bi.GetShape(boardId).GetPtr())->GetHalfExtent();int corner=0;
+            for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})diagnostic.barrierWorldCorners[corner++]=vec(world*JPH::Vec3(x*half.GetX(),y*half.GetY(),z*half.GetZ()));}
         if(result!=JPH::EPhysicsUpdateError::None)throw std::runtime_error("Jolt Update error flags="+std::to_string(unsigned(result)));
         time+=dt;++diagnostic.updates;diagnostic.internalSteps+=4;snapshot();
     }

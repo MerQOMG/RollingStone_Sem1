@@ -46,7 +46,7 @@ def main():
         print(f'completed {name}', flush=True)
     reference = runs['headless']
     files = ['shape_vertices.csv', 'shape_faces.csv', 'terrain_vertices.csv', 'terrain_faces.csv',
-             'trajectory.csv', 'voxel_probability.csv', 'collector_yz.csv', 'collector_summary.csv',
+             'trajectory.csv', 'barrier_trajectory.csv', 'barrier_trials.csv', 'voxel_probability.csv', 'collector_yz.csv', 'collector_summary.csv',
              'projection_xy.csv', 'projection_xz.csv', 'attempt_rejections.csv']
     hashes = {name: hashlib.sha256((reference / name).read_bytes()).hexdigest() for name in files}
     expected = physical_trials(reference)

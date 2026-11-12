@@ -20,6 +20,7 @@ public:
     void finish(BatchResult&result);
     void diagnose(BatchResult&result)noexcept;
 };
-struct ReplayInput {PhysicsScene scene;TrialSettings settings;GridSettings grid;double collectorX;TrialInput input;Snapshot expected;};
+struct ReplayInput {PhysicsScene scene;TrialSettings settings;GridSettings grid;double collectorX;TrialInput input;Snapshot expected;bool hasBarrierState=false;};
+bool matchesReplay(const Snapshot&actual,const ReplayInput&replay);
 ReplayInput loadReplay(const std::filesystem::path&directory,std::uint64_t trialId);
 }

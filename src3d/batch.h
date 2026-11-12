@@ -29,7 +29,7 @@ struct TrialRecord {
     ShapeDiagnostics shapeDiagnostics;
     double radius=0,requestedVolume=0,volume=0,innerRadius=0,tau=0,slenderness=0;
     Vec3 canonicalCenter;Mat3 canonicalInertia;
-    bool doubleFallback=false,hasShape=false,hasInitialState=false;
+    bool doubleFallback=false,hasShape=false,hasInitialState=false,hasPhysicsState=false;
     InitialState initial;
     Snapshot first,last;
     PhysicsDiagnostics physics;

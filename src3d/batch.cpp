@@ -41,7 +41,7 @@ BatchResult runBatch(std::shared_ptr<const RunConfig>config,BatchControl&control
                 record.timing.generation=seconds(generationStart);geometryReady=true;record.shapeDiagnostics=generated.diagnostics;const auto&p=generated.geometry;
                 record.hasShape=true;record.volume=p.volume;record.canonicalCenter=p.center;record.canonicalInertia=p.inertia;record.innerRadius=p.innerRadius;record.tau=p.tau;record.slenderness=p.slenderness;record.doubleFallback=p.doubleFallback;
                 ioStart=Clock::now();output->shape(id,p);record.timing.output+=seconds(ioStart);
-                auto physicsStart=Clock::now();scene=o.singleScene?*o.singleScene:makePhysicsScene(*config,record.input,p);record.initial=scene.initial;record.hasInitialState=true;Trial trial(scene,{config->source.maxTime});record.first=trial.snapshot();record.last=record.first;record.timing.physics+=seconds(physicsStart);
+                auto physicsStart=Clock::now();scene=o.singleScene?*o.singleScene:makePhysicsScene(*config,record.input,p);record.initial=scene.initial;record.hasInitialState=true;Trial trial(scene,{config->source.maxTime});record.first=trial.snapshot();record.hasPhysicsState=true;record.last=record.first;record.timing.physics+=seconds(physicsStart);
                 notify(BatchEventKind::trialStarted,id,&scene,&record.first);
                 auto statsStart=Clock::now();visits.visitSegment(record.first.center,record.first.center);record.timing.statistics+=seconds(statsStart);
                 if(config->source.trajectoryStride){ioStart=Clock::now();output->trajectory(id,record.first);record.timing.output+=seconds(ioStart);}

@@ -12,7 +12,7 @@ std::mutex consoleMutex;
 BOOL WINAPI interrupt(DWORD signal){std::lock_guard<std::mutex>lock(consoleMutex);if((signal==CTRL_C_EVENT||signal==CTRL_BREAK_EVENT||signal==CTRL_CLOSE_EVENT)&&activeControl){activeControl->cancel();return TRUE;}return FALSE;}
 std::uint64_t integer(const std::wstring&s){if(s.empty()||s.find_first_not_of(L"0123456789")!=s.npos)throw std::runtime_error("expected unsigned integer");return std::stoull(s);}
 int selfTest(const std::filesystem::path&folder){
-    for(auto name:{L"rs3d_abi.exe",L"rs3d_input_tests.exe",L"rs3d_geometry_tests.exe",L"rs3d_morphology_tests.exe",L"rs3d_terrain_tests.exe",L"rs3d_physics_tests.exe",L"rs3d_statistics_tests.exe",L"rs3d_config_tests.exe",L"rs3d_settling_tests.exe",L"rs3d_batch_tests.exe",L"rs3d_session_tests.exe"}){
+    for(auto name:{L"rs3d_abi.exe",L"rs3d_input_tests.exe",L"rs3d_geometry_tests.exe",L"rs3d_morphology_tests.exe",L"rs3d_terrain_tests.exe",L"rs3d_physics_tests.exe",L"rs3d_elastic_tests.exe",L"rs3d_statistics_tests.exe",L"rs3d_config_tests.exe",L"rs3d_settling_tests.exe",L"rs3d_batch_tests.exe",L"rs3d_session_tests.exe"}){
         auto path=folder/name;std::wstring command=L"\""+path.wstring()+L"\"";STARTUPINFOW startup{};startup.cb=sizeof(startup);PROCESS_INFORMATION process{};
         if(!CreateProcessW(path.c_str(),command.data(),nullptr,nullptr,FALSE,0,nullptr,nullptr,&startup,&process))throw std::runtime_error("cannot start self-test executable; build all test targets");WaitForSingleObject(process.hProcess,INFINITE);DWORD code=1;GetExitCodeProcess(process.hProcess,&code);CloseHandle(process.hThread);CloseHandle(process.hProcess);if(code)return int(code);
     }return 0;
@@ -58,8 +58,9 @@ int wmain(int argc,wchar_t**argv){try{
     }
     if(preview)throw std::runtime_error("headless cannot display previews; use --preview 0");
     if(!replayPath.empty()){
-        auto replay=rs3d::loadReplay(replayPath,replayId);rs3d::Trial trial(replay.scene,replay.settings);while(trial.snapshot().reason==rs3d::StopReason::running)trial.step();auto actual=trial.snapshot();double error=rs3d::norm(actual.center-replay.expected.center);bool same=actual.reason==replay.expected.reason&&std::abs(actual.time-replay.expected.time)<1e-10&&error<=1e-8;
-        std::cout<<std::setprecision(17)<<"replay trial="<<replayId<<" reason="<<rs3d::stopReasonName(actual.reason)<<" position_error_m="<<error<<" pass="<<same<<'\n';return same?0:1;
+        auto replay=rs3d::loadReplay(replayPath,replayId);rs3d::Trial trial(replay.scene,replay.settings);while(trial.snapshot().reason==rs3d::StopReason::running)trial.step();auto actual=trial.snapshot();double error=rs3d::norm(actual.center-replay.expected.center);bool same=rs3d::matchesReplay(actual,replay);
+        double barrierError=replay.hasBarrierState?rs3d::norm(actual.barrier.center-replay.expected.barrier.center):0;
+        std::cout<<std::setprecision(17)<<"replay trial="<<replayId<<" reason="<<rs3d::stopReasonName(actual.reason)<<" position_error_m="<<error<<" barrier_position_error_m="<<barrierError<<" pass="<<same<<'\n';return same?0:1;
     }
     if(single&&count)throw std::runtime_error("--single and --batch are mutually exclusive");if(single)draft.count=1;auto config=rs3d::freezeConfig(draft);rs3d::BatchControl control;{std::lock_guard<std::mutex>lock(consoleMutex);activeControl=&control;}SetConsoleCtrlHandler(interrupt,TRUE);
     rs3d::BatchOptions options;options.observer=[](const rs3d::BatchEvent&e){if(e.kind==rs3d::BatchEventKind::trialFinished&&(e.trialId<=3||e.trialId%50==0))std::cout<<"processed="<<e.processed<<" complete="<<e.completed<<" failures="<<e.failures<<'\n';};

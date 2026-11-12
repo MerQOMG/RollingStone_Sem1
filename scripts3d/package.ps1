@@ -7,11 +7,12 @@ $binary = Join-Path $root 'build/3d/bin/RollingStone3D.exe'
 if (!(Test-Path -LiteralPath $binary)) { throw 'Run build_3d.cmd Release first.' }
 New-Item -ItemType Directory -Path $target | Out-Null
 Copy-Item -LiteralPath $binary -Destination $target
+Copy-Item -LiteralPath (Join-Path $root 'run_elastic_3d.cmd') -Destination $target
 Get-ChildItem -LiteralPath (Join-Path $root 'build/3d/bin') -Filter 'rs3d_*.exe' | Copy-Item -Destination $target
 Copy-Item -LiteralPath (Join-Path $root 'configs3d') -Destination $target -Recurse
 $docs = Join-Path $target 'docs'
 New-Item -ItemType Directory -Path $docs | Out-Null
-foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md')) {
+foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md','ELASTIC_BARRIER.md')) {
     Copy-Item -LiteralPath (Join-Path $root ('docs/3d/'+$name)) -Destination $docs
 }
 Copy-Item -LiteralPath (Join-Path $root 'docs/3d/images') -Destination (Join-Path $docs 'images') -Recurse

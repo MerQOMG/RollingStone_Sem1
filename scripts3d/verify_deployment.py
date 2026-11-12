@@ -17,6 +17,8 @@ from audit_batch import audit
 parser = argparse.ArgumentParser()
 parser.add_argument('package', type=Path)
 parser.add_argument('--suffix', default='')
+parser.add_argument('--launcher', default='run_3d.cmd')
+parser.add_argument('--gui-config', default='configs3d/user_case_10_20_7_20.ini')
 args = parser.parse_args()
 package = args.package.resolve()
 root = package.parent
@@ -37,7 +39,7 @@ evidence.mkdir(exist_ok=False)
 def run(name, flags, expected):
     # Paths are generated locally; reject cmd metacharacters before constructing
     # the single /c argument. list2cmdline handles spaces and embedded quotes.
-    values = ['run_3d.cmd', *map(str, flags)]
+    values = [args.launcher, *map(str, flags)]
     assert not any(any(c in value for c in '&|<>^%!\r\n') for value in values)
     command = subprocess.list2cmdline(values)
     completed = subprocess.run(f'"{env["COMSPEC"]}" /d /s /c "{command}"', cwd=package, env=env,
@@ -49,7 +51,7 @@ def run(name, flags, expected):
 
 results = root / ('输出 数据' + args.suffix)
 run('help', ['--help'], 0)
-run('gui', ['--config', 'configs3d/user_case_10_20_7_20.ini', '--single', '--exit-after-run',
+run('gui', ['--config', args.gui_config, '--single', '--exit-after-run',
             '--capture', '--font', font, '--evidence', evidence / '窗口', '--output', results / 'GUI'], 0)
 run('headless', ['--config', 'configs3d/batch_throughput.ini', '--batch', '2', '--headless',
                  '--output', results / '数值'], 0)

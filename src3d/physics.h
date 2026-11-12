@@ -4,9 +4,11 @@
 namespace rs3d {
 constexpr int terrainObjectId=1,rockObjectId=2,barrierObjectId=3;
 struct BarrierSettings {
-    bool enabled=false;
+    bool enabled=false,elastic=false;
     Vec3 center{0,0,0};
     double width=10,height=5,thickness=0.2,yawDegrees=0,friction=0.45,restitution=0.45;
+    double mass=2000,stiffness=500000,damping=30000;
+    double initialDisplacement=0,initialVelocity=0;
 };
 struct DynamicsSettings {
     double density=2600,friction=0.45,restitution=0.45,airDensity=1.225,dragCoefficient=1,rollingCoefficient=0.02;
@@ -37,12 +39,24 @@ struct ContactMetrics {
     double maxPenetration=0;
     double groundFriction=0,groundRestitution=0,barrierFriction=0,barrierRestitution=0;
 };
+struct BarrierSnapshot {
+    bool enabled=false,elastic=false,touched=false,settled=true;
+    Vec3 center;
+    Quaternion rotation;
+    double displacement=0,velocity=0,supportForce=0,contactForce=0;
+    double kineticEnergy=0,springEnergy=0,dampingEnergy=0,supportWorkResidual=0;
+    double contactImpulse=0,maxDisplacement=0,peakSupportForce=0,peakContactForce=0;
+};
+void validateBarrierSettings(const BarrierSettings&barrier);
+Vec3 barrierAxis(const BarrierSettings&barrier);
+Vec3 initialBarrierCenter(const BarrierSettings&barrier);
 struct PhysicsSnapshot {
     double time=0;
     Vec3 center,shapeOrigin,velocity,angularVelocity,angularMomentum;
     Quaternion rotation;
     double kineticEnergy=0,potentialEnergy=0,rollingEnergyRemoved=0,airWork=0;
     ContactMetrics contacts;
+    BarrierSnapshot barrier;
     bool active=false;
 };
 struct PhysicsDiagnostics {

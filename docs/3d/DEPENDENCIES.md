@@ -17,3 +17,12 @@
 raylib使用固定源码附带GLFW、OpenGL 3.3桌面后端及其内嵌第三方代码；相关许可见该固定树的 `src/external` 与 `src/external/glfw`。不另外下载GLFW。raygui仅在 `prototype.cpp` 定义实现。音频模块关闭。
 
 中文字体默认 `C:/Windows/Fonts/simhei.ttf`；只在本机读取，不随程序提交或分发。可用 `--font` 指定有权使用的中文TTF/TTC；宽字符路径以filesystem/ifstream读字节，再交给LoadFontFromMemory。缺文件或缺必需字形明确失败，不静默显示乱码。
+
+
+## 2026-11-12：raylib 5.5 构建定义修复
+
+现有锁定提交和 /MT、/MTd、/fp:precise 均保留。上游 CUSTOMIZE_BUILD 从 config.h 扫描宏时把条件分支中的 MAX_MESH_VERTEX_BUFFERS=9 和 =7 都加入编译行；GPU skinning 同时开启，UploadMesh 会访问下标7/8。项目的 src3d/cmake/Graphics.cmake 在创建 raylib 目标后移除这两个冲突值，明确设置单一 MAX_MESH_VERTEX_BUFFERS=9。不修改缓存中的上游源码，不升级依赖。
+
+scripts3d/audit_build.ps1 现在从 Release/Debug 的实际 CL.command.1.tlog 验证该宏唯一且等于9。Debug实际应用自检补充 CRT heap check 并把测试诊断写stderr，避免无人值守测试卡在运行库对话框。需要通过完整创建、绘制和资源释放的实际GUI自检，不能仅凭无窗口单元测试证明图形内存安全。
+
+正式应用另外通过 rlgl 公开接口轮换三组渲染批缓冲。批刷新长帧曾在该改动后再次出现，结束不用的捕获会话后独立复测恢复；没有确定驱动内部的因果链。图形负载、坐标、几何、物理步及锁定版本不变，最终结论仅取完整运行验收，失败与复测数据见 VALIDATION.md。

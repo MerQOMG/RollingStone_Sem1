@@ -15,7 +15,7 @@ const Snapshot&Trial::step(double dt){
             else if(current_.center.x>terrain_->xEnd)current_.reason=StopReason::downstream;
             else if(current_.center.y<terrain_->yMin||current_.center.y>terrain_->yMax)current_.reason=StopReason::lateral;
         }
-        if(norm(current_.velocity)<0.05&&norm(current_.angularVelocity)<0.05)quietTime_+=dt;else quietTime_=0;
+        if(norm(current_.velocity)<0.05&&norm(current_.angularVelocity)<0.05&&current_.barrier.settled)quietTime_+=dt;else quietTime_=0;
         if(!settings_.diagnosticContinue&&current_.reason==StopReason::running&&quietTime_>=2-1e-12)current_.reason=StopReason::resting;
         if(current_.reason==StopReason::running&&current_.time>=settings_.timeLimit-1e-12)current_.reason=StopReason::timeout;
     }catch(const std::exception&e){current_.reason=StopReason::numericFailure;current_.error=e.what();}

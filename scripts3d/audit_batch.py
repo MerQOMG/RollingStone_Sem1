@@ -63,6 +63,35 @@ def audit(folder):
         for trial in trials:
             if trial['has_shape'] == '1':
                 assert observed[int(trial['trial_id'])] == expected_count(trial)
+    if (folder / 'barrier_trials.csv').exists():
+        import math
+        scene = configparser.ConfigParser(interpolation=None)
+        scene.read_string('[root]\n' + (folder / 'scene.ini').read_text(encoding='utf-8'))
+        mass = scene.getfloat('barrier', 'mass', fallback=2000)
+        stiffness = scene.getfloat('barrier', 'stiffness', fallback=500000)
+        damping = scene.getfloat('barrier', 'damping', fallback=30000)
+        final = list(csv.DictReader((folder / 'barrier_trials.csv').open(encoding='utf-8')))
+        assert [r['trial_id'] for r in final] == [r['trial_id'] for r in trials]
+        for state, trial in zip(final, trials):
+            assert state['reason'] == trial['reason'] and float(state['time']) == float(trial['final_time'])
+            assert int(state['has_state']) <= int(trial['has_initial'])
+        previous = {}
+        for state in csv.DictReader((folder / 'barrier_trajectory.csv').open(encoding='utf-8')):
+            assert None not in state and all(v is not None for v in state.values())
+            key = state['trial_id']; t = float(state['time']); loss = float(state['damper_loss_J'])
+            assert all(math.isfinite(float(v)) for v in state.values())
+            assert t >= previous.get(key, (-1, 0))[0] and loss >= previous.get(key, (-1, 0))[1] - 1e-8
+            previous[key] = t, loss
+            if state['elastic'] == '1':
+                q, v = float(state['displacement_m']), float(state['velocity_m_s'])
+                for field, expected_value in [('kinetic_J', .5*mass*v*v), ('spring_J', .5*stiffness*q*q), ('support_force_N', stiffness*q+damping*v)]:
+                    assert abs(float(state[field])-expected_value) <= 1e-6*max(1, abs(expected_value)), (field, state)
+                assert float(state['max_abs_displacement_m']) >= abs(q)-1e-8
+                assert float(state['peak_abs_contact_substep_average_N']) >= abs(float(state['contact_force_step_average_N']))-1e-5
+        for state in final:
+            if state['trial_id'] in previous:
+                assert float(state['time']) >= previous[state['trial_id']][0]
+                assert float(state['damper_loss_J']) >= previous[state['trial_id']][1]-1e-8
     hashes = {name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
               for name in (folder / 'FILES_COMPLETE.txt').read_text().splitlines()}
     result = dict(status='pass', batch_status=meta['status'], N=n, C=c, probability_rows=rows,

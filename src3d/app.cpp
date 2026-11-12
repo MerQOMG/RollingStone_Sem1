@@ -8,10 +8,20 @@
 #include <sstream>
 #include <iomanip>
 #include <deque>
+#ifdef _DEBUG
+#include <crtdbg.h>
+#endif
 namespace {
 using namespace rs3d;
-const char*labels=u8"单次运行批量暂停继续取消重置重新随机保存加载相机俯视侧视线框轨迹统计落石初值材料地形挡板应用更改设置释放点结束选点上一页下一页当前选择无空闲正在生成真实预览后台计算完成失败取消中已处理正常截断请求数量耗时秒本批参数哈希鼠标右键拖动旋转中键平移滚轮缩放世界向上比例每轴米质心速度自旋配置加载失败输入必须是有限数值范围错误保留原场景保存成功相机文件中文目录输出场景验证测试文件空间独立种子仅在空闲重新随机请点击地形释放点已更新运行期间参数锁定固定值或逗号分隔区间例显示关闭窗口正在安全取消未完成批次正式概率为空文件全部写入已完成总计静止上游下游横向退出超时几何数值错误单击对象高亮保存视角读取视角请先应用未应用更改帧率不限恢复即将关闭选择参数组正确最近交点单位确认文本编辑菜单";
+const char*labels=u8"单次运行批量暂停继续取消重置重新随机保存加载相机俯视侧视线框轨迹统计落石初值材料地形挡板应用更改设置释放点结束选点上一页下一页当前选择无空闲正在生成真实预览后台计算完成失败取消中已处理正常截断请求数量耗时秒本批参数哈希鼠标右键拖动旋转中键平移滚轮缩放世界向上比例每轴米质心速度自旋配置加载失败输入必须是有限数值范围错误保留原场景保存成功相机文件中文目录输出场景验证测试文件空间独立种子仅在空闲重新随机请点击地形释放点已更新运行期间参数锁定固定值或逗号分隔区间例显示关闭窗口正在安全取消未完成批次正式概率为空文件全部写入已完成总计静止上游下游横向退出超时几何数值错误单击对象高亮保存视角读取视角请先应用未应用更改帧率不限恢复即将关闭选择参数组正确最近交点单位确认文本编辑菜单弹性位移支承力阻尼耗能储能回弹刚性";
 struct Window {Window(){SetConfigFlags(FLAG_WINDOW_RESIZABLE|FLAG_WINDOW_HIGHDPI|FLAG_WINDOW_ALWAYS_RUN);InitWindow(1280,720,"RollingStone3D - 3D rigid-body simulation");if(!IsWindowReady())throw std::runtime_error("OpenGL window initialization failed");SetWindowMinSize(800,600);SetExitKey(KEY_NULL);}~Window(){CloseWindow();}};
+// raylib 5.5 defaults to one stream buffer. Reusing it for offscreen 3D and
+// GUI flushes can stall on the Intel driver; rotate the public rlgl batches.
+struct RenderBatchOwner {
+    rlRenderBatch value{};
+    RenderBatchOwner(){value=rlLoadRenderBatch(3,8192);rlSetRenderBatchActive(&value);}
+    ~RenderBatchOwner(){rlSetRenderBatchActive(nullptr);rlUnloadRenderBatch(value);}
+};
 struct FontOwner {Font value{};~FontOwner(){if(value.texture.id)UnloadFont(value);}};
 struct Target {RenderTexture2D value{};~Target(){if(value.id)UnloadRenderTexture(value);}void resize(int width,int height){if(value.texture.width==width&&value.texture.height==height)return;if(value.id)UnloadRenderTexture(value);value=LoadRenderTexture(width,height);if(!value.id||!value.depth.id)throw std::runtime_error("viewport color/depth allocation failed");}};
 std::string number(double value){std::ostringstream out;out<<std::setprecision(17)<<value;return out.str();}
@@ -25,10 +35,13 @@ void wrap(Font font,const std::string&message,float x,float y,float width,int si
 }
 }
 int runApplication(const rs3d::SceneDraft&draft,const AppOptions&opt){
+#ifdef _DEBUG
+    if(opt.selfTest){for(int type:{_CRT_WARN,_CRT_ERROR,_CRT_ASSERT}){_CrtSetReportMode(type,_CRTDBG_MODE_FILE);_CrtSetReportFile(type,_CRTDBG_FILE_STDERR);}}
+#endif
     using namespace rs3d;if(!std::filesystem::is_regular_file(opt.font))throw std::runtime_error("CJK font not found; use --font path");
     Session session(draft);SceneEditor editor(draft);std::filesystem::create_directories(opt.evidence);std::ofstream log(opt.evidence/L"events.txt"),framesFile(opt.evidence/L"frames.csv");if(!log||!framesFile)throw std::runtime_error("GUI evidence directory is not writable");
     framesFile<<"repeat,frames,p50_ms,p95_ms,p99_ms,peak_working_set_bytes,input_p95_ms,input_max_ms,input_samples,width,height,viewport_w,viewport_h,dpi_x,dpi_y,fps_limit\n";
-    Window window;FontOwner font;font.value=ui::loadFont(opt.font,std::string(labels)+u8"：，。；（）已参数读取加载应用"+editor.glyphs()+draft.outputRoot.u8string()+opt.evidence.u8string());GuiSetFont(font.value);GuiSetStyle(DEFAULT,TEXT_SIZE,18);GuiSetStyle(DEFAULT,BACKGROUND_COLOR,0x1a232fff);
+    Window window;RenderBatchOwner renderBatch;FontOwner font;font.value=ui::loadFont(opt.font,std::string(labels)+u8"：，。；（）已参数读取加载应用"+editor.glyphs()+draft.outputRoot.u8string()+opt.evidence.u8string());GuiSetFont(font.value);GuiSetStyle(DEFAULT,TEXT_SIZE,18);GuiSetStyle(DEFAULT,BACKGROUND_COLOR,0x1a232fff);
     GuiSetStyle(DEFAULT,BASE_COLOR_NORMAL,0x293646ff);GuiSetStyle(DEFAULT,TEXT_COLOR_NORMAL,0xe0e8f2ff);GuiSetStyle(DEFAULT,BORDER_COLOR_NORMAL,0x65758aff);GuiSetStyle(DEFAULT,BASE_COLOR_FOCUSED,0x405873ff);GuiSetStyle(DEFAULT,TEXT_COLOR_FOCUSED,0xffffffff);GuiSetStyle(DEFAULT,TEXT_COLOR_PRESSED,0xffffffff);GuiSetStyle(DEFAULT,BASE_COLOR_PRESSED,0x397b93ff);GuiSetStyle(DEFAULT,TEXT_COLOR_DISABLED,0x8492a4ff);GuiSetStyle(DEFAULT,BASE_COLOR_DISABLED,0x27303bff);
     int fps=opt.fps;SetTargetFPS(fps);ui::SceneModels models;auto view=session.view();models.update(view.scene,view.snapshot);OrbitCamera orbit=fitted(*view.scene);Target target;InputRouter router;ui::Pick selected;
     bool wire=false,showTrails=true,showStats=true,menu=false,releaseMode=false,dirty=false,closing=false,resetPending=false,autoStarted=false;int group=0,page=0,active=-1,frame=0,lastGroup=0,lastEdited=-1,errorField=-1;
@@ -74,10 +87,12 @@ int runApplication(const rs3d::SceneDraft&draft,const AppOptions&opt){
         auto owner=updateCamera(orbit,router,cameraInput);auto camera=orbit.camera();
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)&&owner==InputOwner::viewport&&!menu&&active<0){selected=models.pick(ui::viewportRay({(mouse.x-viewport.x)*dpi.x,(mouse.y-viewport.y)*dpi.y},camera,tw,th));log<<"pick id="<<selected.id<<" distance="<<selected.distance<<" world="<<selected.point.x<<','<<selected.point.y<<','<<selected.point.z<<'\n';
             if(releaseMode&&!busy){if(selected.id==terrainObjectId){editor.set("initial.x",number(selected.point.x));editor.set("initial.y",number(selected.point.y));dirty=true;action(apply,"release_point");if(error.empty())message=u8"释放点已更新";}else message=u8"请点击地形";}else if(selected.id){group=selected.id==terrainObjectId?2:(selected.id==barrierObjectId?3:0);page=0;}}
-        BeginTextureMode(target.value);ClearBackground({24,35,49,255});BeginMode3D(camera);models.draw(wire,selected.id);
+        double renderStart=GetTime();
+        BeginTextureMode(target.value);ClearBackground({24,35,49,255});BeginMode3D(camera);double targetReady=GetTime();models.draw(wire,selected.id);double modelEnd=GetTime();
         if(showTrails)for(const auto&trail:trails)for(size_t i=1;i<trail.size();++i)DrawLine3D(trail[i-1],trail[i],{246,191,83,255});
         if(showStats){auto lo=view.config->grid.lower,hi=view.config->grid.upper;DrawCubeWiresV(ui::vector((lo+hi)/2),ui::vector(hi-lo),SKYBLUE);float x=float(view.config->collectorX);DrawLine3D({x,float(lo.y),float(lo.z)},{x,float(hi.y),float(lo.z)},MAGENTA);DrawLine3D({x,float(hi.y),float(lo.z)},{x,float(hi.y),float(hi.z)},MAGENTA);DrawLine3D({x,float(hi.y),float(hi.z)},{x,float(lo.y),float(hi.z)},MAGENTA);DrawLine3D({x,float(lo.y),float(hi.z)},{x,float(lo.y),float(lo.z)},MAGENTA);}
-        float axisLength=5;auto origin=ui::vector(view.snapshot.center);DrawLine3D(origin,Vector3Add(origin,{axisLength,0,0}),RED);DrawLine3D(origin,Vector3Add(origin,{0,axisLength,0}),GREEN);DrawLine3D(origin,Vector3Add(origin,{0,0,axisLength}),BLUE);EndMode3D();EndTextureMode();
+        float axisLength=5;auto origin=ui::vector(view.snapshot.center);DrawLine3D(origin,Vector3Add(origin,{axisLength,0,0}),RED);DrawLine3D(origin,Vector3Add(origin,{0,axisLength,0}),GREEN);DrawLine3D(origin,Vector3Add(origin,{0,0,axisLength}),BLUE);double helpersEnd=GetTime();EndMode3D();double flushEnd=GetTime();EndTextureMode();
+        double renderEnd=GetTime();
         BeginDrawing();ClearBackground({18,25,35,255});DrawTexturePro(target.value.texture,{0,0,float(tw),-float(th)},viewport,{0,0},0,WHITE);DrawRectangle(0,52,320,height-136,{26,35,47,255});
         if(menu)GuiLock();if(busy||dirty||closing)GuiDisable();
         if(GuiButton({12,10,70,32},u8"单次"))action([&]{session.startSingle();active=-1;trails.clear();},"single");
@@ -99,17 +114,25 @@ int runApplication(const rs3d::SceneDraft&draft,const AppOptions&opt){
         if(GuiButton({16,float(height-174),140,28},u8"保存视角"))action([&]{ui::saveCamera(cameraPath,orbit);message=u8"相机保存成功";},"save_camera");if(GuiButton({164,float(height-174),140,28},u8"读取视角"))action([&]{orbit=ui::loadCamera(cameraPath);message=u8"相机已加载";},"load_camera");
         ui::text(font.value,TextFormat("%d / %d",page+1,pages),228,170,14);ui::text(font.value,busy?u8"运行期间参数锁定":u8"固定值或区间：例 0,1",16,float(height-100),14,{164,187,207,255});
         GuiUnlock();if(GuiDropdownBox({16,136,194,30},u8"落石 / 批次;初值 / 材料;地形;挡板;统计 / 输出",&group,menu)){menu=!menu;active=-1;}
-        DrawRectangle(328,60,std::max(1,width-336),75,{16,24,36,218});ui::text(font.value,std::string(u8"本批参数哈希 ")+view.config->hash,338,67,16);ui::text(font.value,TextFormat("t %.3f s   COM (%.3f, %.3f, %.3f) m",view.snapshot.time,view.snapshot.center.x,view.snapshot.center.y,view.snapshot.center.z),338,90,16);ui::text(font.value,TextFormat("|v| %.3f m/s   |omega| %.3f rad/s   k %d   r %.2f m",norm(view.snapshot.velocity),norm(view.snapshot.angularVelocity),int(view.scene->shape.vertices.size()),view.scene->radius),338,112,16);
+        DrawRectangle(328,60,std::max(1,width-336),view.snapshot.barrier.elastic?121:75,{16,24,36,218});ui::text(font.value,std::string(u8"本批参数哈希 ")+view.config->hash,338,67,16);ui::text(font.value,TextFormat("t %.3f s   COM (%.3f, %.3f, %.3f) m",view.snapshot.time,view.snapshot.center.x,view.snapshot.center.y,view.snapshot.center.z),338,90,16);ui::text(font.value,TextFormat("|v| %.3f m/s   |omega| %.3f rad/s   k %d   r %.2f m",norm(view.snapshot.velocity),norm(view.snapshot.angularVelocity),int(view.scene->shape.vertices.size()),view.scene->radius),338,112,16);
+        if(view.snapshot.barrier.elastic){const auto&b=view.snapshot.barrier;
+            ui::text(font.value,TextFormat(u8"弹性挡板 q %.3f m  v %.3f m/s  支承力 %.2f kN",b.displacement,b.velocity,b.supportForce/1000),338,135,16);
+            ui::text(font.value,TextFormat(u8"储能 %.2f kJ  阻尼耗能 %.2f kJ",b.springEnergy/1000,b.dampingEnergy/1000),338,157,16);}
         const char*names[]{u8"无",u8"地形",u8"落石",u8"挡板"};ui::text(font.value,std::string(u8"选择：")+names[selected.id]+"   "+(releaseMode?u8"请点击地形":""),334,float(height-133),16,YELLOW);ui::text(font.value,u8"右拖旋转 / 中拖平移 / 滚轮缩放 | Z 向上 | 每轴 5 m",334,float(height-108),15);
         DrawRectangle(0,height-84,width,84,{14,20,29,255});std::string summary=std::string(stateName(view.state))+" / "+phaseName(view.phase)+"  "+u8"已处理 "+std::to_string(view.processed)+"/"+std::to_string(view.config->source.count)+u8"  正常 "+std::to_string(view.completed)+u8"  失败/截断 "+std::to_string(view.failures)+"  "+std::string(TextFormat("%.1f",view.wallSeconds))+" s";ui::text(font.value,summary,16,float(height-76),18);
         std::string detail=closing?u8"关闭窗口：正在安全取消":(!error.empty()?error:(!view.error.empty()?view.error:message));if(view.result&&error.empty()&&view.error.empty()&&!closing){detail=std::string(u8"输出： ")+view.result->directory.u8string()+"  status="+batchStatusName(view.result->status);if(view.result->status!=BatchStatus::complete)detail+=u8"  未完成批次，正式概率为空";}
         wrap(font.value,detail,16,float(height-49),float(width-32),16,error.empty()?Color{174,198,219,255}:ORANGE,2);
         if((opt.capture&&now-lastCapture>=2)||(opt.selfTest&&frame==2)){ui::capture(opt.evidence/L"framebuffer.png");lastCapture=now;log<<"capture frame="<<frame<<'\n';}
-        EndDrawing();if(inputTime>=0){double latency=(GetTime()-inputTime)*1000;latencies.push_back(latency);log<<"input_to_draw_ms="<<latency<<" source="<<(pulse?"scripted_controller":"native")<<" owner="<<int(owner)<<" editor="<<active<<" menu="<<menu<<" yaw="<<orbit.yaw<<" pitch="<<orbit.pitch<<" distance="<<orbit.distance<<'\n';}
+        double uiEnd=GetTime();EndDrawing();double drawEnd=GetTime();
+        if(opt.benchmark&&drawEnd-previous>.05)log<<"slow_frame prepare_ms="<<(renderStart-previous)*1000<<" render3d_ms="<<(renderEnd-renderStart)*1000<<" target_ms="<<(targetReady-renderStart)*1000<<" models_ms="<<(modelEnd-targetReady)*1000<<" helpers_ms="<<(helpersEnd-modelEnd)*1000<<" flush_ms="<<(flushEnd-helpersEnd)*1000<<" ui_ms="<<(uiEnd-renderEnd)*1000<<" present_ms="<<(drawEnd-uiEnd)*1000<<" focused="<<IsWindowFocused()<<" minimized="<<IsWindowMinimized()<<"\n";
+        if(inputTime>=0){double latency=(GetTime()-inputTime)*1000;latencies.push_back(latency);log<<"input_to_draw_ms="<<latency<<" source="<<(pulse?"scripted_controller":"native")<<" owner="<<int(owner)<<" editor="<<active<<" menu="<<menu<<" yaw="<<orbit.yaw<<" pitch="<<orbit.pitch<<" distance="<<orbit.distance<<'\n';}
         if(++frame%30==0){peak=std::max(peak,peakWorkingSet());log.flush();}
         if(opt.benchmark&&now-segmentStart>5)times.push_back(frameSeconds*1000);if(opt.benchmark&&now-segmentStart>=35){framesFile<<++repeat<<','<<times.size()<<','<<percentile(times,.5)<<','<<percentile(times,.95)<<','<<percentile(times,.99)<<','<<peak<<','<<percentile(latencies,.95)<<','<<percentile(latencies,1)<<','<<latencies.size()<<','<<width<<','<<height<<','<<tw<<','<<th<<','<<dpi.x<<','<<dpi.y<<','<<fps<<'\n';framesFile.flush();times.clear();latencies.clear();segmentStart=GetTime();if(repeat==3){closing=true;session.cancel();}}
     }
     auto final=session.view();log<<"exit worker_finished="<<final.workerFinished<<" state="<<sessionStateName(final.state)<<" hash="<<final.config->hash<<'\n';if(final.result)log<<"result_directory="<<final.result->directory.u8string()<<" status="<<batchStatusName(final.result->status)<<'\n';log.close();framesFile.close();if(!log||!framesFile)throw std::runtime_error("GUI evidence flush failed");
+#ifdef _DEBUG
+    if(opt.selfTest&&!_CrtCheckMemory())throw std::runtime_error("CRT heap corruption before renderer teardown");
+#endif
     if(!error.empty()||!final.error.empty())return 1;
     return final.result&&final.result->status!=BatchStatus::complete?(final.result->status==BatchStatus::cancelled?2:1):0;
 }
