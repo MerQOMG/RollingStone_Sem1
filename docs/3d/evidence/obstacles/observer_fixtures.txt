@@ -1,0 +1,9 @@
+mode=0 ordinary=8 resolved_ccd=0 geometric=2400 candidates=2400 discarded=0 ground=0 positive_gap=4.9463528633e-06 max_lambda=6.18294048309 thresholds=8/8/8
+mode=1 ordinary=4 resolved_ccd=0 geometric=0 candidates=4 discarded=0 ground=0 positive_gap=0.0119999631291 max_lambda=59375 thresholds=4/4/4
+mode=2 ordinary=1872 resolved_ccd=0 geometric=1916 candidates=2184 discarded=0 ground=0 positive_gap=0.0119999780303 max_lambda=9128.6640625 thresholds=1872/1872/1872
+mode=3 ordinary=0 resolved_ccd=0 geometric=0 candidates=1402 discarded=0 ground=0 positive_gap=0 max_lambda=0 thresholds=0/0/0
+mode=4 ordinary=0 resolved_ccd=4 geometric=8 candidates=8 discarded=0 ground=0 positive_gap=3.72529029846e-09 max_lambda=1899.99987793 thresholds=4/4/4
+mode=5 ordinary=1248 resolved_ccd=4 geometric=1348 candidates=2120 discarded=0 ground=0 positive_gap=0 max_lambda=9901.72558594 thresholds=1252/1252/1252
+mode=6 ordinary=4 resolved_ccd=0 geometric=0 candidates=4 discarded=0 ground=11954 positive_gap=0.013701554656 max_lambda=59241.3515625 thresholds=4/4/4
+CCD cancellation discarded=4 resolved=4
+PASS solver observation fixtures

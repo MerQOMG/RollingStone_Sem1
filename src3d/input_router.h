@@ -1,6 +1,15 @@
 #pragma once
 namespace rs3d {
 enum class InputOwner { none, controls, viewport };
+// A timeline drag owns input until release, even outside the slider. A short
+// press+release within one rendered frame must still perform a seek.
+inline bool updateTimelineCapture(bool& captured,bool focused,bool enabled,bool pressed,bool down,bool inside) {
+    if(!focused||!enabled){captured=false;return false;}
+    if(pressed&&inside)captured=true;
+    bool seek=captured&&(pressed||down);
+    if(!down)captured=false;
+    return seek;
+}
 // Capture belongs to the surface where the press began until every button is released.
 // Losing focus releases capture; an active editor/modal blocks viewport shortcuts too.
 class InputRouter {

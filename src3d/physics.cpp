@@ -4,15 +4,20 @@
 #include <Jolt/Physics/Collision/ContactListener.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Constraints/ContactConstraintManager.h>
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Core/JobSystemSingleThreaded.h>
 #include "physics.h"
 #include "elastic_support.h"
+#include "contact_observer.h"
 #include "engine_geometry.h"
+#include "build_version.h"
 #include <map>
+#include <atomic>
 
 namespace rs3d {
 namespace {
+std::atomic<std::uint64_t> updateCounter{0};
 JPH::Vec3 jvec(Vec3 v){return {float(v.x),float(v.y),float(v.z)};}
 JPH::RVec3 jpos(Vec3 v){return {v.x,v.y,v.z};}
 Vec3 vec(JPH::Vec3Arg v){return {v.GetX(),v.GetY(),v.GetZ()};}
@@ -44,19 +49,39 @@ public:bool ShouldCollide(JPH::ObjectLayer a,JPH::ObjectLayer b)const override{r
 class Filter final:public JPH::ObjectVsBroadPhaseLayerFilter {
 public:bool ShouldCollide(JPH::ObjectLayer a,JPH::BroadPhaseLayer b)const override{return a==1||b.GetValue()==1;}
 };
-float friction(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return a.GetUserData()!=rockObjectId?a.GetFriction():b.GetFriction();}
-float restitution(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return a.GetUserData()!=rockObjectId?a.GetRestitution():b.GetRestitution();}
+// Keep the validated fixed pool, with a detectable emergency allocation instead
+// of Jolt's process-wide abort. An overflow invalidates the trial after Update.
+class CheckedTempAllocator final:public JPH::TempAllocator {
+    JPH::TempAllocatorImpl pool_;
+    std::size_t current_=0,peak_=0;
+public:
+    bool overflow=false;
+    explicit CheckedTempAllocator(std::size_t bytes):pool_(bytes){}
+    void* Allocate(JPH::uint bytes)override{
+        if(!bytes)return nullptr;current_+=bytes;peak_=std::max(peak_,current_);
+        if(pool_.CanAllocate(bytes))return pool_.Allocate(bytes);
+        overflow=true;auto p=JPH::AlignedAllocate(bytes,JPH_RVECTOR_ALIGNMENT);if(!p)throw std::bad_alloc();return p;
+    }
+    void Free(void*p,JPH::uint bytes)override{if(!p)return;current_-=bytes;if(pool_.OwnsMemory(p))pool_.Free(p,bytes);else JPH::AlignedFree(p);}
+    std::size_t size()const{return pool_.GetSize();}
+    std::size_t peak()const{return peak_;}
+};
+float friction(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return contactMaterial(a.GetUserData(),a.GetFriction(),a.GetRestitution(),b.GetUserData(),b.GetFriction(),b.GetRestitution()).friction;}
+float restitution(const JPH::Body&a,const JPH::SubShapeID&,const JPH::Body&b,const JPH::SubShapeID&){return contactMaterial(a.GetUserData(),a.GetFriction(),a.GetRestitution(),b.GetUserData(),b.GetFriction(),b.GetRestitution()).restitution;}
 struct ContactAnchor {Vec3 staticPoint,rockLocal;};
 struct GroundContact {Vec3 normal;std::vector<ContactAnchor>anchors;};
 class Contacts final:public JPH::ContactListener {
     void record(const JPH::Body&a,const JPH::Body&b,const JPH::ContactManifold&m,const JPH::ContactSettings&s){
+        if(!contactMaterial(a.GetUserData(),a.GetFriction(),a.GetRestitution(),b.GetUserData(),b.GetFriction(),b.GetRestitution()).recognized){++metrics.unknown;return;}
         const auto&fixed=a.GetUserData()!=rockObjectId?a:b;const auto&rock=a.GetUserData()==rockObjectId?a:b;
         metrics.maxPenetration=std::max(metrics.maxPenetration,double(m.mPenetrationDepth));
-        if(fixed.GetUserData()==terrainObjectId){
-            ++metrics.ground;if(m.mPenetrationDepth>=-slop)++metrics.touchingGround;
-            metrics.groundFriction=s.mCombinedFriction;metrics.groundRestitution=s.mCombinedRestitution;
+        if(fixed.GetUserData()==terrainObjectId||fixed.GetUserData()>=firstObstacleObjectId){
+            bool obstacle=fixed.GetUserData()>=firstObstacleObjectId;
+            if(obstacle){++metrics.obstacle;if(m.mPenetrationDepth>=-slop)++metrics.touchingObstacle;}
+            else {++metrics.ground;if(m.mPenetrationDepth>=-slop)++metrics.touchingGround;metrics.groundFriction=s.mCombinedFriction;metrics.groundRestitution=s.mCombinedRestitution;}
             if(m.mRelativeContactPointsOn1.empty())return;
             Vec3 normal=vec(m.mWorldSpaceNormal)*(a.IsStatic()?1:-1);
+            if(obstacle&&normal.z<=1e-6)return; // Walls are not weight-bearing support.
             GroundContact contact;contact.normal=normal;auto inverseRotation=transpose(quat(rock.GetRotation()).matrix());
             for(unsigned index=0;index<m.mRelativeContactPointsOn1.size();++index){
                 Vec3 ps=vec(a.IsStatic()?m.GetWorldSpaceContactPointOn1(index):m.GetWorldSpaceContactPointOn2(index));
@@ -85,6 +110,18 @@ public:
 }
 
 Vec3 barrierAxis(const BarrierSettings&b){return axisRotation({0,0,1},b.yawDegrees*pi/180)*Vec3{1,0,0};}
+PairMaterial contactMaterial(std::uint64_t a,float muA,float eA,std::uint64_t b,float muB,float eB){
+    if((a==rockObjectId)==(b==rockObjectId))return {};
+    auto surface=a==rockObjectId?b:a;
+    if(surface!=terrainObjectId&&surface!=barrierObjectId&&!(surface>=firstObstacleObjectId&&surface<firstObstacleObjectId+500))return {};
+    return a==rockObjectId?PairMaterial{muB,eB,true}:PairMaterial{muA,eA,true};
+}
+PhysicsCapacity physicsCapacity(std::size_t count){
+    require(count<=500,"obstacle capacity exceeds supported count 500");
+    PhysicsCapacity c;c.bodies=unsigned(std::max(std::size_t(16),count+8));
+    c.pairs=std::max(1024u,16*c.bodies);c.contacts=std::max(1024u,32*c.bodies);
+    require(c.bodies<=JPH::BodyID::cMaxBodyIndex&&c.pairs<=JPH::ContactConstraintManager::cMaxBodyPairsLimit&&c.contacts<=JPH::ContactConstraintManager::cMaxContactConstraintsLimit,"physics capacity exceeds engine limits");return c;
+}
 Vec3 initialBarrierCenter(const BarrierSettings&b){return b.center+(b.elastic?barrierAxis(b)*b.initialDisplacement:Vec3{});}
 void validateBarrierSettings(const BarrierSettings&b){
     for(double v:{b.center.x,b.center.y,b.center.z,b.width,b.height,b.thickness,b.yawDegrees,b.friction,b.restitution,b.mass,b.stiffness,b.damping,b.initialDisplacement,b.initialVelocity})require(std::isfinite(v),"non-finite barrier parameter");
@@ -111,27 +148,35 @@ void validatePhysicsScene(const PhysicsScene&s){
     s.initial.rotation.matrix();
     if(s.terrain){double support=supportHeight(s.shape,*s.terrain,s.initial.shapeOrigin.x,s.initial.shapeOrigin.y,s.initial.rotation.matrix());require(s.initial.shapeOrigin.z>=support-1e-8*s.radius,"initial solid penetrates terrain");}
     if(b.enabled)require(!barrierOverlaps(s),"initial solid penetrates barrier");
+    if(s.obstacles){require(s.obstacles->boxes.size()<=500,"too many obstacle bodies");
+        for(const auto&o:s.obstacles->boxes){validateObstacle(o);PhysicsScene check=s;check.obstacles.reset();check.barrier.enabled=true;check.barrier.elastic=false;check.barrier.center=o.center;check.barrier.thickness=o.dimensions.x;check.barrier.width=o.dimensions.y;check.barrier.height=o.dimensions.z;check.barrier.yawDegrees=o.yawDegrees;
+            require(!barrierOverlaps(check),"initial solid penetrates obstacle");}}
 }
 
 struct PhysicsWorld::Impl {
     Broad broad;Pair pair;Filter filter;Contacts contacts;
+    ContactObserver observer;
     JPH::PhysicsSystem system;
-    JPH::TempAllocatorImpl allocator{10*1024*1024};
+    CheckedTempAllocator allocator;
     JPH::JobSystemSingleThreaded jobs{JPH::cMaxPhysicsJobs};
     JPH::RefConst<JPH::Shape> stoneShape;
     JPH::BodyID rock,boardId;std::vector<JPH::BodyID> bodies;
+    std::shared_ptr<const ObstacleSet> obstacles;std::vector<JPH::BodyID> obstacleIds;
     BarrierSettings barrierSettings;std::unique_ptr<ElasticSupport> support;
     DynamicsSettings settings;double radius,time=0,rollingRemoved=0,airWork=0;
     Mat3 bodyInertia;
     PhysicsDiagnostics diagnostic;
-    explicit Impl(const PhysicsScene&s):barrierSettings(s.barrier),settings(s.dynamics),radius(s.radius){
+    explicit Impl(const PhysicsScene&s):allocator(10*1024*1024+std::size_t(physicsCapacity(s.obstacles?s.obstacles->boxes.size():0).contacts-1024)*2048),barrierSettings(s.barrier),settings(s.dynamics),radius(s.radius){
         validatePhysicsScene(s);ShapeDiagnostics shapeDiagnostic;
         stoneShape=createCollisionShape(s.shape,s.radius,s.dynamics.density,shapeDiagnostic);
         auto mass=stoneShape->GetMassProperties();diagnostic.mass=mass.mMass;bodyInertia=mat(mass.mInertia);
         diagnostic.engineInnerRadius=stoneShape->GetInnerRadius();
         diagnostic.slop=std::min({1e-3,1e-4*s.radius,0.01*s.shape.innerRadius});
         diagnostic.linearCastMaxPenetration=std::min(0.02,std::max(0.002,0.002*s.radius)/(4*diagnostic.engineInnerRadius));
-        system.Init(16,0,1024,1024,broad,filter,pair);system.SetGravity(jvec(settings.gravity));
+        obstacles=s.obstacles;diagnostic.capacity=physicsCapacity(obstacles?obstacles->boxes.size():0);
+        diagnostic.temporaryAllocatorBytes=allocator.size();
+        if(s.diagnosticBodyCapacity){require(s.diagnosticBodyCapacity>=diagnostic.capacity.bodies,"injected insufficient body capacity");diagnostic.capacity.bodies=s.diagnosticBodyCapacity;}
+        system.Init(diagnostic.capacity.bodies,0,diagnostic.capacity.pairs,diagnostic.capacity.contacts,broad,filter,pair);system.SetGravity(jvec(settings.gravity));
         JPH::PhysicsSettings physics;physics.mPenetrationSlop=float(diagnostic.slop);physics.mMinVelocityForRestitution=0.15f;
         diagnostic.linearCastThreshold=.25;
         physics.mLinearCastThreshold=float(diagnostic.linearCastThreshold);physics.mLinearCastMaxPenetration=float(diagnostic.linearCastMaxPenetration);
@@ -153,6 +198,11 @@ struct PhysicsWorld::Impl {
             JPH::BodyCreationSettings ground(built.Get(),JPH::RVec3::sZero(),JPH::Quat::sIdentity(),JPH::EMotionType::Static,0);
             ground.mUserData=terrainObjectId;ground.mFriction=float(settings.friction);ground.mRestitution=float(settings.restitution);add(ground);
         }
+        if(obstacles)for(const auto&o:obstacles->boxes){
+            JPH::BoxShapeSettings box(jvec(o.dimensions*.5),0);auto built=box.Create();if(built.HasError())throw std::runtime_error("obstacle BoxShape: "+std::string(built.GetError().c_str()));
+            JPH::BodyCreationSettings fixed(built.Get(),jpos(o.center),jquat(o.rotation),JPH::EMotionType::Static,0);
+            fixed.mUserData=o.id;fixed.mFriction=float(o.friction);fixed.mRestitution=float(o.restitution);obstacleIds.push_back(add(fixed));
+        }
         if(s.barrier.enabled){
             const auto&b=s.barrier;JPH::RefConst<JPH::Shape> box=new JPH::BoxShape(JPH::Vec3(float(b.thickness/2),float(b.width/2),float(b.height/2)),0);
             JPH::BodyCreationSettings board(box,jpos(initialBarrierCenter(b)),JPH::Quat::sRotation(JPH::Vec3::sAxisZ(),float(b.yawDegrees*pi/180)),b.elastic?JPH::EMotionType::Dynamic:JPH::EMotionType::Static,b.elastic?2:0);
@@ -170,9 +220,9 @@ struct PhysicsWorld::Impl {
         body.mMaxLinearVelocity=10000;body.mMaxAngularVelocity=10000;
         body.mMotionQuality=JPH::EMotionQuality::LinearCast;body.mEnhancedInternalEdgeRemoval=true;
         // Deliberately different dynamic-body values: pair callbacks must select terrain/barrier surface values.
-        body.mFriction=0.731f;body.mRestitution=0.817f;rock=add(body);if(s.barrier.enabled&&s.barrier.elastic)support=std::make_unique<ElasticSupport>(system,boardId,s.barrier,contacts.barrierCounter);system.OptimizeBroadPhase();
+        body.mFriction=0.731f;body.mRestitution=0.817f;rock=add(body);if(s.barrier.enabled&&s.barrier.elastic)support=std::make_unique<ElasticSupport>(system,boardId,s.barrier,contacts.barrierCounter);system.OptimizeBroadPhase();system.AddStepListener(&observer);
     }
-    ~Impl(){support.reset();auto&bi=system.GetBodyInterface();for(auto id:bodies){bi.RemoveBody(id);bi.DestroyBody(id);}system.SetContactListener(nullptr);}
+    ~Impl(){system.RemoveStepListener(&observer);support.reset();auto&bi=system.GetBodyInterface();for(auto id:bodies){bi.RemoveBody(id);bi.DestroyBody(id);}system.SetContactListener(nullptr);}
     PhysicsSnapshot snapshot()const{
         const auto&bi=system.GetBodyInterface();PhysicsSnapshot s;s.time=time;
         s.center=vec(bi.GetCenterOfMassPosition(rock));s.shapeOrigin=vec(bi.GetPosition(rock));s.rotation=quat(bi.GetRotation(rock));
@@ -204,16 +254,29 @@ struct PhysicsWorld::Impl {
                 else {++diagnostic.rollingAppliedSteps;rollingRemoved+=initialEnergy-finalEnergy;}
             }
         }
-        contacts.metrics={};if(support)support->beginUpdate();auto result=system.Update(float(dt),4,&allocator,&jobs);
+        contacts.metrics={};if(support)support->beginUpdate();observer.begin(diagnostic.updates,time);
+        struct Scope {Scope(rs3d_observer::Sink* s){rs3d_observer::sink=s;}~Scope(){rs3d_observer::sink=nullptr;}} scope(settings.observeContacts?&observer:nullptr);
+        ++updateCounter;auto result=system.Update(float(dt),4,&allocator,&jobs);
+        diagnostic.temporaryAllocatorPeakBytes=allocator.peak();
+        if(allocator.overflow)throw std::runtime_error("Jolt temporary allocator budget exceeded; trial invalidated");
+        diagnostic.observerOverflow=diagnostic.observerOverflow||observer.overflow();
         if(support){support->endUpdate(dt);auto world=bi.GetWorldTransform(boardId);auto half=static_cast<const JPH::BoxShape*>(bi.GetShape(boardId).GetPtr())->GetHalfExtent();int corner=0;
             for(int x:{-1,1})for(int y:{-1,1})for(int z:{-1,1})diagnostic.barrierWorldCorners[corner++]=vec(world*JPH::Vec3(x*half.GetX(),y*half.GetY(),z*half.GetZ()));}
         if(result!=JPH::EPhysicsUpdateError::None)throw std::runtime_error("Jolt Update error flags="+std::to_string(unsigned(result)));
-        time+=dt;++diagnostic.updates;diagnostic.internalSteps+=4;snapshot();
+        time+=dt;++diagnostic.updates;diagnostic.internalSteps+=observer.substeps();snapshot();
     }
 };
 PhysicsWorld::PhysicsWorld(const PhysicsScene&s):impl_(std::make_unique<Impl>(s)){}
+std::uint64_t physicsUpdateCount(){return updateCounter.load();}
 PhysicsWorld::~PhysicsWorld()=default;
 void PhysicsWorld::advance(double dt){impl_->advance(dt);}
 PhysicsSnapshot PhysicsWorld::snapshot()const{return impl_->snapshot();}
-PhysicsDiagnostics PhysicsWorld::diagnostics()const{return impl_->diagnostic;}
+PhysicsDiagnostics PhysicsWorld::diagnostics()const{auto d=impl_->diagnostic;d.contactObservationAvailable=RS3D_CONTACT_OBSERVER&&impl_->settings.observeContacts;return d;}
+const std::vector<SolvedContact>& PhysicsWorld::observations()const{return impl_->observer.records();}
+std::vector<Obstacle> PhysicsWorld::obstacleReadback()const{
+    std::vector<Obstacle> out;if(!impl_->obstacles)return out;out=impl_->obstacles->boxes;const auto&bi=impl_->system.GetBodyInterface();
+    for(size_t i=0;i<out.size();++i){auto id=impl_->obstacleIds[i];out[i].center=vec(bi.GetPosition(id));out[i].rotation=quat(bi.GetRotation(id));auto shape=bi.GetShape(id);out[i].dimensions=vec(static_cast<const JPH::BoxShape*>(shape.GetPtr())->GetHalfExtent())*2;
+        out[i].friction=bi.GetFriction(id);out[i].restitution=bi.GetRestitution(id);}
+    return out;
+}
 }

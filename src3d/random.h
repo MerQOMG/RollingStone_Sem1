@@ -5,6 +5,7 @@
 namespace rs3d {
 inline std::uint64_t mix(std::uint64_t x){auto z=x+0x9E3779B97F4A7C15ULL;z=(z^(z>>30))*0xBF58476D1CE4E5B9ULL;z=(z^(z>>27))*0x94D049BB133111EBULL;return z^(z>>31);}
 constexpr std::uint64_t kDomain=0x4B00000000000000ULL,propertyDomain=0x5000000000000000ULL,shapeDomain=0x5300000000000000ULL;
+constexpr std::uint64_t obstacleDomain=0x4F00000000000000ULL;
 inline std::uint64_t trialSeed(std::uint64_t master,std::uint64_t id){if(!id)throw std::runtime_error("trial_id starts at one");return mix(master+id-1);}
 class Random {
     std::mt19937_64 engine_;

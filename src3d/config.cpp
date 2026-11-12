@@ -23,7 +23,7 @@ std::string rangeString(Range r){std::ostringstream out;out.imbue(std::locale::c
 }
 std::string sceneText(const SceneDraft&s,bool output){
     std::ostringstream o;o.imbue(std::locale::classic());o<<std::setprecision(17)<<std::boolalpha;
-    o<<"schema="<<sceneSchema<<"\n[geometry]\nk_min="<<s.geometry.kMin<<"\nk_max="<<s.geometry.kMax<<"\nr="<<s.geometry.radius<<"\nV="<<s.geometry.volume;
+    o<<"schema="<<((s.sourceSchema==1&&!s.obstacles.enabled)?1:sceneSchema)<<"\n[geometry]\nk_min="<<s.geometry.kMin<<"\nk_max="<<s.geometry.kMax<<"\nr="<<s.geometry.radius<<"\nV="<<s.geometry.volume;
     const auto&t=s.terrain;o<<"\n[terrain]\ntype="<<(t.type==TerrainType::flat?"flat":"parameterized")<<"\nheight="<<t.topHeight<<"\nsteep_degrees="<<t.steepDegrees<<"\nbench_start="<<t.benchStart<<"\nbench_length="<<t.benchLength<<"\nbench_degrees="<<t.benchDegrees<<"\ntoe_length="<<t.toeLength<<"\nwidth="<<t.width<<"\ncross_slope_degrees="<<t.crossSlopeDegrees<<"\ngroove_amplitude="<<t.grooveAmplitude<<"\ncell_size="<<t.cellSize<<"\nflat_length="<<t.flatLength<<"\nflat_height="<<t.flatHeight<<"\nflat_slope_x="<<t.flatSlopeX<<"\nflip_diagonals="<<t.flipDiagonals;
     o<<"\n[material]\ndensity="<<s.density<<"\nair_density="<<s.airDensity;
     o<<"\n[initial]\ngap="<<s.releaseGap<<"\norientation="<<(s.stableFaceRelease?"stable_face":"sampled");for(int i=0;i<propertyCount;++i)o<<'\n'<<propertyNames[i]<<'='<<rangeString(s.properties[i]);
@@ -33,13 +33,15 @@ std::string sceneText(const SceneDraft&s,bool output){
     // Preserve legacy schema=1 physical hashes when the rigid extension is default.
     if(output||b.elastic||b.mass!=2000||b.stiffness!=500000||b.damping!=30000||b.initialDisplacement!=0||b.initialVelocity!=0)
         o<<"\nmode="<<(b.elastic?"elastic":"rigid")<<"\nmass="<<b.mass<<"\nstiffness="<<b.stiffness<<"\ndamping="<<b.damping<<"\ninitial_displacement="<<b.initialDisplacement<<"\ninitial_velocity="<<b.initialVelocity;
+    if(output||s.sourceSchema>=2||s.obstacles.enabled){const auto&a=s.obstacles;
+        o<<"\n[obstacles]\nenabled="<<a.enabled<<"\ncount="<<a.count<<"\nseed="<<a.seed<<"\nsize_mode="<<(a.relativeToRadius?"relative_to_r":"absolute_m")<<"\nlength="<<rangeString({a.lengthMin,a.lengthMax})<<"\nwidth="<<rangeString({a.widthMin,a.widthMax})<<"\nexposed_height="<<rangeString({a.heightMin,a.heightMax})<<"\nautomatic_region="<<a.automaticRegion<<"\nx="<<rangeString({a.xMin,a.xMax})<<"\ny="<<rangeString({a.yMin,a.yMax})<<"\nmin_spacing="<<a.minSpacing<<"\nembed_depth="<<a.embedDepth<<"\nmax_total_height="<<a.maxTotalHeight<<"\nmu="<<a.friction<<"\ne="<<a.restitution;}
     o<<"\n[statistics]\nheight_reference="<<(s.heightReference==HeightReference::toeCenter?"toe_center":"toe_min")<<"\nautomatic_box="<<s.automaticGrid;
     for(int i=0;i<3;++i)o<<"\nlower_"<<"xyz"[i]<<'='<<s.grid.lower[i]<<"\nupper_"<<"xyz"[i]<<'='<<s.grid.upper[i]<<"\ncell_"<<"xyz"[i]<<'='<<s.grid.cell[i];
     o<<"\ncollector_x=";if(s.automaticCollector)o<<"auto";else o<<s.collectorX;
     o<<"\n[run]\ncount="<<s.count<<"\nseed="<<s.masterSeed<<"\nmax_time="<<s.maxTime<<"\ndt=0.002\ncollision_steps=4\n";
-    if(output)o<<"[preview]\nseed="<<s.previewSeed<<"\n[output]\nroot="<<s.outputRoot.u8string()<<"\ntrajectory_stride="<<s.trajectoryStride<<'\n';return o.str();
+    if(output)o<<"[preview]\nseed="<<s.previewSeed<<"\n[output]\nroot="<<s.outputRoot.u8string()<<"\ntrajectory_stride="<<s.trajectoryStride<<"\n[history]\nenabled="<<s.history.enabled<<"\ninterval="<<(s.history.interval?rangeString({s.history.interval,s.history.interval}):"auto")<<"\ncache_mib="<<s.history.cacheMiB<<"\ndisplay_vertices="<<s.history.displayVertices<<"\n[analysis]\nroute_cell="<<s.routeCell<<"\ncontact_cell="<<s.contactCell<<'\n';return o.str();
 }
-std::shared_ptr<const RunConfig> freezeConfig(const SceneDraft&s){
+std::shared_ptr<const RunConfig> freezeConfig(const SceneDraft&s,std::shared_ptr<const ObstacleSet> savedObstacles){
     validateGeometrySettings(s.geometry);require(s.geometry.kMin>=10,"production k must be at least 10");require(s.count>=1&&s.count<=1000000,"run count outside [1,1000000]");
     for(double v:{s.density,s.airDensity,s.releaseGap,s.maxTime})require(std::isfinite(v),"non-finite scene parameter");
     require(s.density>0&&s.airDensity>=0&&s.releaseGap>=0&&s.maxTime>0&&s.maxTime<=60,"invalid density/air/gap/time limit");
@@ -56,12 +58,17 @@ std::shared_ptr<const RunConfig> freezeConfig(const SceneDraft&s){
     require(b.width>0&&b.height>0&&b.thickness>0&&b.friction>=0&&b.restitution>=0&&b.restitution<=1,"invalid barrier dimensions/material");
     if(s.barrierAutoX)b.center.x=t.xEnd-10;
     if(s.barrierAutoZ){if(b.enabled)b=groundedBarrier(t,b);else b.center.z=t.height(std::clamp(b.center.x,t.xMin,t.xEnd),std::clamp(b.center.y,t.yMin,t.yMax))+b.height/2;}
+    config->obstacles=freezeObstacles(s.obstacles,t,s.geometry.radius,s.properties[releaseX].lower,s.properties[releaseX].upper,s.properties[releaseY].lower,s.properties[releaseY].upper,b,std::move(savedObstacles));
+    ContentHash environment;environment.text(t.contentHash);environment.text(config->obstacles->hash);environment.word(b.enabled);environment.word(b.elastic);for(double value:{b.center.x,b.center.y,b.center.z,b.width,b.height,b.thickness,b.yawDegrees,b.friction,b.restitution,b.mass,b.stiffness,b.damping,b.initialDisplacement,b.initialVelocity})environment.number(value);config->environmentHash="fnv1a64:"+environment.hex();
     config->zReference=s.heightReference==HeightReference::toeCenter?t.toeCenter():t.toeMin();
     config->grid=s.grid;if(s.automaticGrid){config->grid.lower={std::max(t.xMin,t.xEnd-40),t.yMin,config->zReference};config->grid.upper={t.xEnd,t.yMax,config->zReference+10};}
     config->collectorX=s.automaticCollector?t.xEnd-10:s.collectorX;Statistics validate(config->grid,config->collectorX,s.count);
+    config->history=historyBudget(s.history,s.count,s.maxTime);require(std::isfinite(s.routeCell)&&s.routeCell>0&&std::isfinite(s.contactCell)&&s.contactCell>0,"invalid analysis cell size");
+    Grid3D route({{t.xMin,t.yMin,0},{t.xEnd,t.yMax,1},{s.routeCell,s.routeCell,1}}),contact({{0,0,0},{b.width,b.height,1},{s.contactCell,s.contactCell,1}});
+    ContentHash recording;recording.word(s.history.enabled);recording.word(config->history.stride);recording.word(motionVersion);recording.text(motionRule);config->recordingHash="fnv1a64:"+recording.hex();
     ContentHash hash;hash.text(sceneText(s,false));hash.text(t.contentHash);hash.number(b.center.x);hash.number(b.center.y);hash.number(b.center.z);config->hash="fnv1a64:"+hash.hex();return config;
 }
-SceneDraft parseScene(const std::string&utf8){
+SceneDraft parseScene(const std::string&utf8,bool validate){
     require(utf8.size()<=1024*1024&&utf8.find('\0')==utf8.npos,"scene too large or contains NUL");
     require(!utf8.empty()&&MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,utf8.data(),int(utf8.size()),nullptr,0)>0,"invalid UTF-8 scene");
     std::string text=utf8;if(text.compare(0,3,"\xEF\xBB\xBF")==0)text.erase(0,3);
@@ -72,7 +79,8 @@ SceneDraft parseScene(const std::string&utf8){
         require(fields.emplace(key,value).second,"duplicate INI key: "+key);
     }
     auto take=[&](const std::string&key,auto consume){auto it=fields.find(key);if(it!=fields.end()){try{consume(it->second);}catch(const std::exception&e){throw std::runtime_error(key+": "+e.what());}fields.erase(it);}};
-    require(fields.count("schema")&&integer(fields.at("schema"))==sceneSchema,"missing/unsupported scene schema");fields.erase("schema");SceneDraft s;
+    require(fields.count("schema"),"missing scene schema");auto schema=integer(fields.at("schema"));require(schema==1||schema==sceneSchema,"unsupported scene schema");fields.erase("schema");SceneDraft s;s.sourceSchema=int(schema);
+    if(schema>=2)for(auto name:{"enabled","count","seed","size_mode","length","width","exposed_height","automatic_region","x","y","min_spacing","embed_depth","max_total_height","mu","e"})require(fields.count(std::string("obstacles.")+name)!=0,std::string("missing schema 2 obstacle field: ")+name);
     auto num=[&](const char*key,double&v){take(key,[&](const std::string&x){v=number(x);});};
     auto flag=[&](const char*key,bool&v){take(key,[&](const std::string&x){v=boolean(x);});};
     take("geometry.k_min",[&](auto&x){s.geometry.kMin=smallInteger(x);});take("geometry.k_max",[&](auto&x){s.geometry.kMax=smallInteger(x);});num("geometry.r",s.geometry.radius);num("geometry.V",s.geometry.volume);
@@ -83,15 +91,21 @@ SceneDraft parseScene(const std::string&utf8){
     num("barrier.width",b.width);num("barrier.height",b.height);num("barrier.thickness",b.thickness);num("barrier.yaw_degrees",b.yawDegrees);num("barrier.mu",b.friction);num("barrier.e",b.restitution);
     take("barrier.mode",[&](auto&x){require(x=="rigid"||x=="elastic","barrier.mode must be rigid/elastic");b.elastic=x=="elastic";});
     num("barrier.mass",b.mass);num("barrier.stiffness",b.stiffness);num("barrier.damping",b.damping);num("barrier.initial_displacement",b.initialDisplacement);num("barrier.initial_velocity",b.initialVelocity);
+    auto&a=s.obstacles;flag("obstacles.enabled",a.enabled);flag("obstacles.automatic_region",a.automaticRegion);take("obstacles.count",[&](auto&x){a.count=smallInteger(x);});take("obstacles.seed",[&](auto&x){a.seed=integer(x);});
+    take("obstacles.size_mode",[&](auto&x){require(x=="relative_to_r"||x=="absolute_m","obstacle size_mode must be relative_to_r/absolute_m");a.relativeToRadius=x=="relative_to_r";});
+    auto interval=[&](const char*key,double&low,double&high){take(key,[&](auto&x){auto r=range(x);low=r.lower;high=r.upper;});};
+    interval("obstacles.length",a.lengthMin,a.lengthMax);interval("obstacles.width",a.widthMin,a.widthMax);interval("obstacles.exposed_height",a.heightMin,a.heightMax);interval("obstacles.x",a.xMin,a.xMax);interval("obstacles.y",a.yMin,a.yMax);
+    num("obstacles.min_spacing",a.minSpacing);num("obstacles.embed_depth",a.embedDepth);num("obstacles.max_total_height",a.maxTotalHeight);num("obstacles.mu",a.friction);num("obstacles.e",a.restitution);
     take("statistics.height_reference",[&](auto&x){require(x=="toe_center"||x=="toe_min","unknown height reference");s.heightReference=x=="toe_center"?HeightReference::toeCenter:HeightReference::toeMin;});flag("statistics.automatic_box",s.automaticGrid);
     for(int i=0;i<3;++i){std::string axis(1,"xyz"[i]);take("statistics.lower_"+axis,[&](auto&x){s.grid.lower[i]=number(x);});take("statistics.upper_"+axis,[&](auto&x){s.grid.upper[i]=number(x);});take("statistics.cell_"+axis,[&](auto&x){s.grid.cell[i]=number(x);});}
     take("statistics.collector_x",[&](auto&x){s.automaticCollector=x=="auto";if(!s.automaticCollector)s.collectorX=number(x);});
     take("run.count",[&](auto&x){s.count=integer(x);});take("run.seed",[&](auto&x){s.masterSeed=integer(x);});num("run.max_time",s.maxTime);take("run.dt",[&](auto&x){require(number(x)==.002,"first release fixes dt=0.002");});take("run.collision_steps",[&](auto&x){require(integer(x)==4,"first release fixes 4 collision substeps");});
     take("output.root",[&](auto&x){s.outputRoot=std::filesystem::u8path(x);});take("output.trajectory_stride",[&](auto&x){s.trajectoryStride=smallInteger(x);});
     take("preview.seed",[&](auto&x){s.previewSeed=integer(x);});
-    require(fields.empty(),fields.empty()?"":"unknown INI key: "+fields.begin()->first);freezeConfig(s);return s;
+    flag("history.enabled",s.history.enabled);take("history.interval",[&](auto&x){s.history.interval=x=="auto"?0:number(x);});take("history.cache_mib",[&](auto&x){s.history.cacheMiB=integer(x);});take("history.display_vertices",[&](auto&x){s.history.displayVertices=size_t(integer(x));});num("analysis.route_cell",s.routeCell);num("analysis.contact_cell",s.contactCell);
+    require(fields.empty(),fields.empty()?"":"unknown INI key: "+fields.begin()->first);if(validate)freezeConfig(s);return s;
 }
-SceneDraft loadScene(const std::filesystem::path&path){std::ifstream file(path,std::ios::binary);require(bool(file),"cannot open scene: "+path.u8string());std::string text((std::istreambuf_iterator<char>(file)),{});require(!file.bad(),"scene read failed");return parseScene(text);}
+SceneDraft loadScene(const std::filesystem::path&path,bool validate){std::ifstream file(path,std::ios::binary);require(bool(file),"cannot open scene: "+path.u8string());std::string text((std::istreambuf_iterator<char>(file)),{});require(!file.bad(),"scene read failed");return parseScene(text,validate);}
 void saveScene(const std::filesystem::path&path,const SceneDraft&s){
     freezeConfig(s);static std::atomic<unsigned>sequence{0};auto temporary=path;temporary+=L".tmp_"+std::to_wstring(GetCurrentProcessId())+L"_"+std::to_wstring(++sequence);
     std::ofstream file(temporary,std::ios::binary|std::ios::trunc);require(bool(file),"cannot write scene temporary file");file<<sceneText(s);file.flush();file.close();require(bool(file),"scene write/close failed");
@@ -112,7 +126,7 @@ PhysicsScene makePhysicsScene(const RunConfig&c,const TrialInput&i,const Polyhed
         if(norm(axis)<1e-12)rotation=cosine>0?Quaternion{}:Quaternion::fromAxisAngle({1,0,0},pi);
         else rotation=Quaternion::fromAxisAngle(axis,std::acos(std::clamp(cosine,-1.0,1.0)));
     }
-    PhysicsScene scene;scene.shape=p;scene.radius=c.source.geometry.radius;scene.terrain=c.terrain;scene.barrier=c.barrier;scene.initial=supportedRelease(p,*c.terrain,i.values[releaseX],i.values[releaseY],c.source.releaseGap,rotation);
+    PhysicsScene scene;scene.shape=p;scene.radius=c.source.geometry.radius;scene.terrain=c.terrain;scene.obstacles=c.obstacles;scene.barrier=c.barrier;scene.initial=supportedRelease(p,*c.terrain,i.values[releaseX],i.values[releaseY],c.source.releaseGap,rotation);
     scene.initial.velocity={i.values[velocityX],i.values[velocityY],i.values[velocityZ]};scene.initial.angularVelocity={i.values[omegaX],i.values[omegaY],i.values[omegaZ]};
     scene.dynamics.density=c.source.density;scene.dynamics.airDensity=c.source.airDensity;scene.dynamics.friction=i.values[frictionValue];scene.dynamics.restitution=i.values[restitutionValue];scene.dynamics.dragCoefficient=i.values[dragValue];scene.dynamics.rollingCoefficient=i.values[rollingValue];return scene;
 }

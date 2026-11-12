@@ -1,0 +1,72 @@
+# Copy of event log excluding capture_async heartbeat lines.
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=60 vsync=off
+source=GUI actual physics; helper lines use depth test; latest snapshot bounded to one
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+input_to_draw_ms=16.978900000001573 source=native owner=1 editor=-1 menu=1 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+input_to_draw_ms=17.311999999996885 source=native owner=1 editor=-1 menu=1 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+input_to_draw_ms=16.887799999992126 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+input_to_draw_ms=17.055700000000229 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+apply config_hash=fnv1a64:a9e90c354a0683d4 barrier=1
+action=apply
+input_to_draw_ms=17.65439999999785 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+action=batch
+analysis version=1 trajectories=0 directory=3 C=0 B=0 M=0 unknown=3
+state=Running phase=1 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=0 wall=0.017799200000000001
+state=Running phase=2 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=0.0040000000000000001 wall=0.031032199999999999
+analysis version=2 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=3 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=4 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=5 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=6 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=7 trajectories=1 directory=3 C=0 B=0 M=0 unknown=3
+analysis version=8 trajectories=1 directory=3 C=1 B=1 M=0 unknown=2
+state=Running phase=1 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=1.7280000000000013 wall=1.7545645000000001
+state=Running phase=2 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=0.0060000000000000001 wall=1.7713718000000001
+analysis version=9 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=10 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=11 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=12 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=13 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=14 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=15 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=16 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=17 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=18 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=19 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=20 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=21 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=22 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=23 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=24 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=25 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=26 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+analysis version=27 trajectories=2 directory=3 C=1 B=1 M=0 unknown=2
+timeline action=background_follow_disabled trial=2 cursor=4.8199999999996912 following=0 playing=0 physics_updates=3387
+analysis version=28 trajectories=2 directory=3 C=2 B=2 M=0 unknown=1
+state=Running phase=3 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=4.8199999999996912 wall=6.6012374999999999
+history_pose trial=2 time=4.8199999999996912 interpolated=0 available=1 error= physics_updates=3656
+analysis version=29 trajectories=3 directory=3 C=3 B=3 M=0 unknown=0
+state=Completed phase=4 trial=3 processed=3 C=3 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=4.8199999999996912 wall=6.6267652999999997
+input_to_draw_ms=17.799499999995305 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+input_to_draw_ms=16.225300000002107 source=native owner=0 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+timeline action=trial_list trial=3 cursor=0 following=0 playing=0 physics_updates=3656
+input_to_draw_ms=17.080399999997553 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+history_pose trial=3 time=0 interpolated=0 available=1 error= physics_updates=3656
+timeline action=drag trial=3 cursor=0.3724924277067187 following=0 playing=0 physics_updates=3656
+input_to_draw_ms=18.496599999991759 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+history_pose trial=3 time=0.3724924277067187 interpolated=1 available=1 error= physics_updates=3656
+pick id=0 distance=1.0000000150474662e+30 world=0,0,0
+input_to_draw_ms=17.387899999988576 source=native owner=2 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+input_to_draw_ms=16.763700000012705 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+heatmap_pick tab=1 cell=102 H=1 N=3 known=3 matching_trials=1
+input_to_draw_ms=16.793100000029426 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+input_to_draw_ms=14.551700000026813 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=78.905258178710938
+timeline action=first_contact trial=3 cursor=0.17775000008312067 following=0 playing=0 physics_updates=3656
+event_jump trial=3 interval=0.17750000007124631,0.17800000009499503 points=1 physics_updates=3656
+history_pose trial=3 time=0.17775000008312067 interpolated=0 available=1 error= physics_updates=3656
+input_to_draw_ms=17.258900000001631 source=native owner=0 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=41.192157745361328
+input_to_draw_ms=20.584299999995892 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=41.192157745361328
+action=request_open_results
+exit worker_finished=1 state=Completed hash=fnv1a64:a9e90c354a0683d4
+result_directory=results3d/obstacles_f4/中文 空格/实际结果\run_20261112_172236_18788_1 status=complete

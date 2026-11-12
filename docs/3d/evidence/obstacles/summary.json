@@ -1,0 +1,137 @@
+{
+  "baseline_head": "73550f624f1975808905081150eff0838a8051a4",
+  "sampler": "convex-retreat-com-radius-v3",
+  "requirements": {
+    "O1": "passed",
+    "O2": "passed",
+    "O3": "passed",
+    "O4": "passed",
+    "O5": "passed",
+    "H1": "passed",
+    "H2": "passed",
+    "H3": "passed",
+    "H4": "passed",
+    "C1": "passed",
+    "C2": "passed",
+    "C3": "passed",
+    "C4": "passed",
+    "C5": "passed",
+    "C6": "passed",
+    "C7": "passed",
+    "R1": "passed",
+    "R2": "passed",
+    "R3": "passed",
+    "R4": "passed",
+    "U1": "passed",
+    "U2": "passed",
+    "P1": "passed",
+    "P2": "passed"
+  },
+  "hardware": {
+    "cpu": "Intel Core i7-14650HX",
+    "cores": 16,
+    "logical_processors": 24,
+    "ram_bytes": 16877125632
+  },
+  "evidence": {
+    "baseline.json": {
+      "source": "results3d/obstacles_f0/baseline.json",
+      "sha256": "ce5648479da20bb48c928fef4246c42ec766d0898b37e6517083d7becdf5c7b9"
+    },
+    "observer_audit.json": {
+      "source": "results3d/obstacles_f0/observer_audit.json",
+      "sha256": "acfec1237467bef7dfe50364fb88ad6a14153b374d5a036569eafc2c2714b37f"
+    },
+    "observer_fixtures.txt": {
+      "source": "results3d/obstacles_f0/observer_on.txt",
+      "sha256": "a525b41db9523768f9d4fcfc3ca6b03d6ece60ca5dbb8b4923cb4fd3fa4b2d7b"
+    },
+    "obstacles.txt": {
+      "source": "results3d/obstacles_f1/all_trial_readback.txt",
+      "sha256": "b7fabd5c800a0d7e98e7619a08c0ad8b9442a4f43fc2bda87ec2cf96bbdc6785"
+    },
+    "analysis_archive_playback.txt": {
+      "source": "results3d/obstacles_f3/new_validation_detail.txt",
+      "sha256": "239b2d538d2e77f152d0fa3a51269992e29139503467f9ffb2d9d03cd1243179"
+    },
+    "release_tests.txt": {
+      "source": "results3d/obstacles_f5/release_tests.txt",
+      "sha256": "7c3cf64424d410565b7745d6e922f49e69df8fee75accb97f657382706d71f14"
+    },
+    "debug_tests.txt": {
+      "source": "results3d/obstacles_f5/debug_tests.txt",
+      "sha256": "c6eb4e85396784461696b68c963361c821f98385cb331bdaf146f39207032362"
+    },
+    "input_release.txt": {
+      "source": "results3d/obstacles_f5/input_release_final.txt",
+      "sha256": "eb99b8b1337246fbc13bed8ccc3d6d39d41bd2abd3cc550db02b3aa29b57c527"
+    },
+    "input_debug.txt": {
+      "source": "results3d/obstacles_f5/input_debug_final.txt",
+      "sha256": "eb99b8b1337246fbc13bed8ccc3d6d39d41bd2abd3cc550db02b3aa29b57c527"
+    },
+    "debug_gui.txt": {
+      "source": "results3d/obstacles_f5/debug_gui/events.txt",
+      "sha256": "bb7aebf3811b9dfb5fa70504e400ab728b00ff3c4dc374c3048dc5b54091331b"
+    },
+    "compiler_audit.json": {
+      "source": "build/3d/evidence/compiler-audit.json",
+      "sha256": "8961758aa3213e297d7e8149d06bd14e3c47bfefcb88b96e052c6fc8124224fb"
+    },
+    "p1_final.txt": {
+      "source": "results3d/obstacles_f5/p1_final.txt",
+      "sha256": "6811e0425abac76bc46bde9a55fd33d27cfd4b4304bb5be1ac33d47fc5a597ea"
+    },
+    "p1_measurement.json": {
+      "source": "results3d/obstacles_f5/p1_final/measurement.json",
+      "sha256": "0bb77644cd8c7739c8757e1220860b011a7d323555f928e8e9e251090d824dbc"
+    },
+    "p2_final.json": {
+      "source": "results3d/obstacles_f5/p2_final/results.json",
+      "sha256": "2ccffc52c45e2a18dd1cfa6fcccc0a4d3dcd04f7dbd2116b6ee13b109a29c49c"
+    },
+    "gui_headless_identity.json": {
+      "source": "results3d/obstacles_f5/gui_identity/gui_headless_identity.json",
+      "sha256": "3fbd9e987f934abe276bcba39bea3aab16940c3795a22ebf9194709586db461b"
+    },
+    "frames.csv": {
+      "source": "results3d/obstacles_f3/playback_fix_gui/frames.csv",
+      "sha256": "eec6228c7c4cbdceac443a96f6d6e6589e2a38e9e5aee4c4f36cab916f25054f"
+    },
+    "gui_flow.txt": {
+      "source": "results3d/obstacles_f4/gui_complete/events.txt",
+      "original_sha256": "0de47f1d170be2580453b6e600f24adb35658a8ae789d91ac9abb8f88c5cc63d",
+      "filter": "capture_async heartbeat only"
+    },
+    "gui_reopened.txt": {
+      "source": "results3d/obstacles_f4/gui_reopened/events.txt",
+      "original_sha256": "207bdfa22ee524675fa25b606a5bdfbb045edb0c18dae0b4df2c66172960b4b1",
+      "filter": "capture_async heartbeat only"
+    },
+    "gui_pause_resume.txt": {
+      "source": "results3d/obstacles_f4/gui_pause_cancel/events.txt",
+      "original_sha256": "262797bddbdfa708ce48234e859c0ae892e97bf50a777b64f1d47c0cae1ac380",
+      "filter": "capture_async heartbeat only"
+    },
+    "gui_cancel_open.txt": {
+      "source": "results3d/obstacles_f4/native_cancel/events.txt",
+      "original_sha256": "6e28ebf445e243382dee8fd453377e0f1fb13199f133bd1e59504b1324615da0",
+      "filter": "capture_async heartbeat only"
+    }
+  },
+  "executable_sha256": "26e77fa8d102cddfd549971214d61422efbbaea575af66942c520c2da8e0bcdb",
+  "source_build_header": "#pragma once\n#define RS3D_SOURCE_HEAD \"73550f624f1975808905081150eff0838a8051a4\"\n#define RS3D_SOURCE_HASH \"abf435697a6dbd052342db5b38554cf8a2bbdf3414050b541476ccc8b3d929d8\"\n#define RS3D_OBSERVER_VERSION \"solver-observer-v1\"\n#define RS3D_OBSERVER_HASH \"7eb1c4b938b466b67eefc5c8a38d4639aa69c9c4595858fb651f6b39f23b516d\"\n#define RS3D_OBSERVER_GENERATED_HASH \"8871cad92568d0285a1eea9449932c283b55168e517f45ca9e2f914b87ff464c\"\n#define RS3D_CONTACT_OBSERVER 1\n",
+  "ui_drag_out_evidence": "production capture and input router unit tests; native trial3 slider drag verified separately",
+  "delivery": {
+    "directory": "build\\3d\\package\\RollingStone3D-obstacles-20261112",
+    "portable_selftest_exit": 0,
+    "actual_gui_exit": 0,
+    "example_trials": 3,
+    "example_frames": 805,
+    "example_physics_updates": 0,
+    "package_hashes_verified": true,
+    "document_links_verified": true,
+    "all_dependency_caches_clean": true,
+    "protected_files_unchanged": true
+  }
+}

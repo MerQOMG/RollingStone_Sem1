@@ -26,3 +26,11 @@ raylib使用固定源码附带GLFW、OpenGL 3.3桌面后端及其内嵌第三方
 scripts3d/audit_build.ps1 现在从 Release/Debug 的实际 CL.command.1.tlog 验证该宏唯一且等于9。Debug实际应用自检补充 CRT heap check 并把测试诊断写stderr，避免无人值守测试卡在运行库对话框。需要通过完整创建、绘制和资源释放的实际GUI自检，不能仅凭无窗口单元测试证明图形内存安全。
 
 正式应用另外通过 rlgl 公开接口轮换三组渲染批缓冲。批刷新长帧曾在该改动后再次出现，结束不用的捕获会话后独立复测恢复；没有确定驱动内部的因果链。图形负载、坐标、几何、物理步及锁定版本不变，最终结论仅取完整运行验收，失败与复测数据见 VALIDATION.md。
+
+## 2026-11-12：只读接触观测适配
+
+当前二进制身份是锁定 Jolt 上游加 `solver-observer-v1` 观测补丁。`src3d/cmake/Observer.cmake` 校验两份输入源码 SHA256，在 `build/3d/generated/observer` 生成替代源码，并从 Jolt 编译列表中移除对应原件。缓存源码和依赖 SHA 不变，每个实现只编译一次。
+
+`ContactConstraintManager::StoreAppliedImpulses` 在最终存储处读取各点的最终法向 lambda；`PhysicsSystem::JobResolveCCDContacts` 分别记录真实 CCD 响应和撤销候选。`src3d/observer/jolt_observer.h` 是项目拥有的只读桥接接口。观测只同步复制有限记录，不修改求解状态，不在回调写盘或锁定 BodyInterface。单线程作业系统、每步 4 子步及监听器先后顺序属于当前适配合同；不能直接移到多线程作业系统。
+
+`audit.ini` 保存输入和生成源码 hash、上游 SHA、补丁 hash 与版本；结果 manifest 还保存源码内容身份。`scripts3d/audit_observer.py` 核验实际编译日志、缓存及原有脏文件，并执行无补丁/补丁关闭/开启三组真实物理夹具；最终状态与整数统计逐字节相同。阈值十倍敏感性和正间隙高速碰撞证据见本次 [验收记录](OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)。`RS3D_CONTACT_OBSERVER=OFF` 用于独立上游对照构建，不能冒充完整的首次触板分析能力。

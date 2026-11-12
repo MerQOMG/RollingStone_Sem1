@@ -1,5 +1,7 @@
 #include "output.h"
 #include "hash.h"
+#include "obstacle_io.h"
+#include "result_files.h"
 #include <charconv>
 #include <sstream>
 #include <locale>
@@ -38,7 +40,10 @@ bool matchesReplay(const Snapshot&a,const ReplayInput&r){
     for(size_t i=0;i<std::size(observed);++i)if(!close(observed[i],expected[i]))return false;return true;
 }
 ReplayInput loadReplay(const std::filesystem::path&directory,std::uint64_t id){
-    require(!std::filesystem::exists(directory/L"INCOMPLETE.txt")&&std::filesystem::exists(directory/L"FILES_COMPLETE.txt"),"uncommitted output transaction");auto m=manifest(directory/L"manifest.ini");require(m.at("status")!="io_error","I/O-failed transaction");auto config=freezeConfig(loadScene(directory/L"scene.ini"));require(config->hash==m.at("run_config_hash"),"configuration hash mismatch");
+    require(!std::filesystem::exists(directory/L"INCOMPLETE.txt")&&std::filesystem::exists(directory/L"FILES_COMPLETE.txt"),"uncommitted output transaction");auto m=manifest(directory/L"manifest.ini");require(m.at("status")!="io_error","I/O-failed transaction");require(m.at("schema")=="1"||m.at("schema")=="2"||m.at("schema")=="3","unsupported result schema");std::shared_ptr<const ObstacleSet> saved;
+    if(m.at("schema")!="1")saved=readObstacleFiles(directory,m.at("obstacle_input_hash"),m.at("obstacle_hash"));
+    validateResultFiles(directory,int(integer(m.at("schema"))));
+    auto config=freezeConfig(loadScene(directory/L"scene.ini",false),saved);require(config->hash==m.at("run_config_hash"),"configuration hash mismatch");
     Row selected;rows(directory/L"trials.csv",[&](const Row&r){if(integer(r.at("trial_id"))==id){require(selected.empty(),"duplicate trial");selected=r;}});require(!selected.empty()&&selected.at("has_initial")=="1"&&selected.at("has_shape")=="1","trial has no replayable initial state");
     auto terrain=std::make_shared<TerrainMesh>(*config->terrain);terrain->vertices.clear();terrain->faces.clear();
     rows(directory/L"terrain_vertices.csv",[&](const Row&r){require(integer(r.at("vertex_id"))==terrain->vertices.size(),"terrain vertex order");require(terrain->vertices.size()<100000,"terrain vertex limit");terrain->vertices.push_back(vector(r,""));});
@@ -50,7 +55,7 @@ ReplayInput loadReplay(const std::filesystem::path&directory,std::uint64_t id){
     ReplayInput out;auto&scene=out.scene;scene.shape=polyhedronFromMesh(vertices,faces);require(vertices.size()==integer(selected.at("k")),"shape k mismatch");
     require(std::abs(scene.shape.volume-get(selected,"measured_V"))<=1e-12*scene.shape.volume,"shape volume mismatch");require(norm(scene.shape.center-vector(selected,"canonical_com_"))<=1e-12*get(selected,"r"),"shape COM mismatch");
     const std::array<const char*,9>inertiaNames{"xx","xy","xz","yx","yy","yz","zx","zy","zz"};Mat3 expectedInertia;for(int i=0;i<9;++i)expectedInertia.a[i]=get(selected,std::string("inertia_")+inertiaNames[i]);require(frobenius(scene.shape.inertia-expectedInertia)<=1e-12*frobenius(expectedInertia),"shape inertia mismatch");
-    scene.shape.tau=get(selected,"tau");scene.radius=get(selected,"r");scene.terrain=terrain;scene.barrier=config->barrier;scene.barrier.center=vector(m,"barrier_center_");scene.initial.shapeOrigin=vector(selected,"initial_origin_");scene.initial.rotation=rotation(selected,"initial_");
+    scene.shape.tau=get(selected,"tau");scene.radius=get(selected,"r");scene.terrain=terrain;scene.obstacles=config->obstacles;scene.barrier=config->barrier;scene.barrier.center=vector(m,"barrier_center_");scene.initial.shapeOrigin=vector(selected,"initial_origin_");scene.initial.rotation=rotation(selected,"initial_");
     scene.initial.velocity={get(selected,"vx"),get(selected,"vy"),get(selected,"vz")};scene.initial.angularVelocity=vector(selected,"omega_");
     scene.dynamics.density=config->source.density;scene.dynamics.airDensity=config->source.airDensity;scene.dynamics.friction=get(selected,"mu");scene.dynamics.restitution=get(selected,"e");scene.dynamics.dragCoefficient=get(selected,"Cd");scene.dynamics.rollingCoefficient=get(selected,"c_rr");
     auto reduction=m.find("manifold_reduction");require(reduction==m.end()||reduction->second=="0"||reduction->second=="1","invalid manifold reduction setting");

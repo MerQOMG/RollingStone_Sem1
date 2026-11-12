@@ -1,0 +1,14 @@
+{
+  "upstream": "0373ec0dd762e4bc2f6acdb08371ee84fa23c6db",
+  "observer_version": "solver-observer-v1",
+  "patch_sha256": "7eb1c4b938b466b67eefc5c8a38d4639aa69c9c4595858fb651f6b39f23b516d",
+  "trace_sha256": {
+    "on": "fe32c18f505e017de0ecc1dce226daa29cb7ceb23eecc57f1248618fb2854d13",
+    "off": "fe32c18f505e017de0ecc1dce226daa29cb7ceb23eecc57f1248618fb2854d13",
+    "upstream": "fe32c18f505e017de0ecc1dce226daa29cb7ceb23eecc57f1248618fb2854d13"
+  },
+  "states_and_integer_statistics_identical": true,
+  "generated_sources_exactly_once": true,
+  "dependency_clean": true,
+  "preexisting_dirty_files_preserved": true
+}

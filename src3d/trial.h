@@ -26,5 +26,7 @@ public:
     const Snapshot&snapshot()const{return current_;}
     void cancel();
     PhysicsDiagnostics diagnostics()const{return world_.diagnostics();}
+    const std::vector<SolvedContact>& observations()const{return world_.observations();}
+    std::vector<Obstacle> obstacleReadback()const{return world_.obstacleReadback();}
 };
 }

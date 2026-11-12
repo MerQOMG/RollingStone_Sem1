@@ -1,0 +1,12 @@
+{
+  "command": [
+    "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\build\\3d\\bin\\rs3d_playback_tests.exe",
+    "--performance",
+    "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\results3d\\obstacles_f5\\p1_final\\archives"
+  ],
+  "exit": 0,
+  "wall_seconds": 20.069103899999845,
+  "peak_working_set_bytes": 134180864,
+  "sampled_peak_private_bytes": 121475072,
+  "executable_sha256": "4b8c5597833c7ccbe84c096ecbd6777428f1181f08f1aa0734183c8409fb39da"
+}

@@ -27,4 +27,8 @@ double profileHeight(const std::vector<Vec3>& profile,double x);
 // Exact vertical separation of a convex mesh from the terrain at fixed x/y/rotation.
 // All overlapping triangle projections are clipped; vertex-only clearance is insufficient.
 double supportHeight(const Polyhedron& shape,const TerrainMesh& terrain,double x,double y,const Mat3& rotation=Mat3::identity());
+// Exact extrema of actual mesh triangles clipped to a convex horizontal footprint.
+std::pair<double,double> terrainHeightRange(const TerrainMesh&,const std::vector<Vec3>& footprint);
+// Display-only triangulation of the actual terrain intersected with an XY cell.
+std::vector<Vec3> terrainCellTriangles(const TerrainMesh&,double x0,double x1,double y0,double y1);
 }

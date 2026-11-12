@@ -63,6 +63,27 @@ double TerrainMesh::height(double x,double y)const{
     return vertices[i*ny+j].z+(vertices[(i+1)*ny+j].z-vertices[i*ny+j].z)*u+(vertices[i*ny+j+1].z-vertices[i*ny+j].z)*v;
 }
 double TerrainMesh::toeMin()const{double low=std::numeric_limits<double>::infinity();for(double y:yLines)low=std::min(low,height(xEnd,y));return low;}
+std::vector<Vec3> terrainCellTriangles(const TerrainMesh&t,double x0,double x1,double y0,double y1){
+    std::vector<Vec3> result;double xmin=std::max(x0,t.xMin),xmax=std::min(x1,t.xEnd),ymin=std::max(y0,t.yMin),ymax=std::min(y1,t.yMax);if(xmin>=xmax||ymin>=ymax)return result;
+    const std::vector<Vec3> cellPolygon{{xmin,ymin,0},{xmax,ymin,0},{xmax,ymax,0},{xmin,ymax,0}};
+    auto visit=[&](size_t id){auto f=t.faces[id];auto a=t.vertices[f.a],b=t.vertices[f.b],c=t.vertices[f.c];if(std::max({a.x,b.x,c.x})<xmin||std::min({a.x,b.x,c.x})>xmax||std::max({a.y,b.y,c.y})<ymin||std::min({a.y,b.y,c.y})>ymax)return;auto normal=cross(b-a,c-a);if(std::abs(normal.z)<1e-20)return;auto polygon=clipTriangle(cellPolygon,a,b,c);for(auto&p:polygon)p.z=planeZ(a,normal,p.x,p.y);for(size_t i=2;i<polygon.size();++i)if(norm2(cross(polygon[i-1]-polygon[0],polygon[i]-polygon[0]))>1e-20){result.push_back(polygon[0]);result.push_back(polygon[i-1]);result.push_back(polygon[i]);}};
+    if(t.xLines.size()>=2&&t.yLines.size()>=2&&t.faces.size()==2*(t.xLines.size()-1)*(t.yLines.size()-1)){for(size_t i=cell(t.xLines,xmin);i<=cell(t.xLines,xmax);++i)for(size_t j=cell(t.yLines,ymin);j<=cell(t.yLines,ymax);++j){auto id=2*(i*(t.yLines.size()-1)+j);visit(id);visit(id+1);}}else for(size_t i=0;i<t.faces.size();++i)visit(i);return result;
+}
+std::pair<double,double> terrainHeightRange(const TerrainMesh&t,const std::vector<Vec3>& polygon){
+    require(polygon.size()>=3,"terrain footprint needs at least three vertices");
+    double xmin=1e300,xmax=-1e300,ymin=1e300,ymax=-1e300,area=0;
+    for(size_t i=0;i<polygon.size();++i){auto p=polygon[i];require(finite(p)&&p.x>=t.xMin&&p.x<=t.xEnd&&p.y>=t.yMin&&p.y<=t.yMax,"terrain footprint outside mesh");xmin=std::min(xmin,p.x);xmax=std::max(xmax,p.x);ymin=std::min(ymin,p.y);ymax=std::max(ymax,p.y);area+=xyCross(p,polygon[(i+1)%polygon.size()]);}
+    require(std::abs(area)>1e-16,"zero-area footprint");
+    double low=1e300,high=-1e300;
+    auto visit=[&](size_t index){auto f=t.faces[index];auto a=t.vertices[f.a],b=t.vertices[f.b],c=t.vertices[f.c];
+        if(std::max({a.x,b.x,c.x})<xmin||std::min({a.x,b.x,c.x})>xmax||std::max({a.y,b.y,c.y})<ymin||std::min({a.y,b.y,c.y})>ymax)return;
+        auto n=cross(b-a,c-a);if(std::abs(n.z)<1e-20)return;
+        for(auto p:clipTriangle(polygon,a,b,c)){auto z=planeZ(a,n,p.x,p.y);low=std::min(low,z);high=std::max(high,z);}};
+    if(t.xLines.size()>=2&&t.yLines.size()>=2&&t.faces.size()==2*(t.xLines.size()-1)*(t.yLines.size()-1)){
+        for(size_t i=cell(t.xLines,xmin);i<=cell(t.xLines,xmax);++i)for(size_t j=cell(t.yLines,ymin);j<=cell(t.yLines,ymax);++j){auto f=2*(i*(t.yLines.size()-1)+j);visit(f);visit(f+1);}
+    }else for(size_t i=0;i<t.faces.size();++i)visit(i);
+    require(low<=high&&std::isfinite(low)&&std::isfinite(high),"no terrain under footprint");return {low,high};
+}
 double supportHeight(const Polyhedron&p,const TerrainMesh&t,double x,double y,const Mat3&rotation){
     std::vector<Vec3> v;for(auto point:p.vertices){auto q=rotation*(point-p.center)+Vec3{x,y,0};require(q.x>=t.xMin&&q.x<=t.xEnd&&q.y>=t.yMin&&q.y<=t.yMax,"release shape footprint crosses terrain boundary");v.push_back(q);}
     double result=-std::numeric_limits<double>::infinity();size_t ny=t.yLines.size();

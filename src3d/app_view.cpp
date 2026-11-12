@@ -19,22 +19,30 @@ void unload(Model&model){if(model.meshCount)UnloadModel(model);model={};}
 Vector3 vector(Vec3 v){return {float(v.x),float(v.y),float(v.z)};}
 Matrix pose(Quaternion q,Vec3 p){::Quaternion rotation{float(q.x),float(q.y),float(q.z),float(q.w)};return MatrixMultiply(QuaternionToMatrix(QuaternionNormalize(rotation)),MatrixTranslate(float(p.x),float(p.y),float(p.z)));}
 Ray viewportRay(Vector2 pixel,Camera3D c,int width,int height){auto forward=Vector3Normalize(Vector3Subtract(c.target,c.position)),right=Vector3Normalize(Vector3CrossProduct(forward,c.up)),up=Vector3CrossProduct(right,forward);float half=std::tan(c.fovy*DEG2RAD*.5f);float x=(2*pixel.x/width-1)*half*float(width)/height,y=(1-2*pixel.y/height)*half;return {c.position,Vector3Normalize(Vector3Add(forward,Vector3Add(Vector3Scale(right,x),Vector3Scale(up,y))))};}
-SceneModels::~SceneModels(){unload(terrain);unload(rock);unload(barrier);}
+SceneModels::~SceneModels(){unload(terrain);unload(rock);unload(barrier);for(auto&o:obstacles_)unload(o.second);}
 void SceneModels::update(const std::shared_ptr<const PhysicsScene>&scene,const Snapshot&snapshot){
     if(scene!=source_){
+        std::string hash=scene->obstacles?scene->obstacles->hash:"none";
+        if(hash!=obstacleHash_){for(auto&o:obstacles_)unload(o.second);obstacles_.clear();if(scene->obstacles)for(const auto&o:scene->obstacles->boxes){auto model=mesh(o.geometry.vertices,o.geometry.faces,{},false);model.transform=pose(o.rotation,o.center);obstacles_.push_back({o.id,model});}obstacleHash_=hash;}
         if(scene->terrain->contentHash!=terrainHash_){auto next=mesh(scene->terrain->vertices,scene->terrain->faces,{},true);unload(terrain);terrain=next;terrainHash_=scene->terrain->contentHash;}
-        auto next=mesh(scene->shape.vertices,scene->shape.faces,scene->shape.center,false);unload(rock);rock=next;unload(barrier);barrierEnabled=scene->barrier.enabled;
+        Model next{};if(!scene->shape.faces.empty())next=mesh(scene->shape.vertices,scene->shape.faces,scene->shape.center,false);unload(rock);rock=next;unload(barrier);barrierEnabled=scene->barrier.enabled;
         if(barrierEnabled){const auto&b=scene->barrier;barrier=LoadModelFromMesh(GenMeshCube(float(b.thickness),float(b.width),float(b.height)));barrier.transform=pose(Quaternion::fromAxisAngle({0,0,1},b.yawDegrees*pi/180),b.center);}source_=scene;
     }rock.transform=pose(snapshot.rotation,snapshot.shapeOrigin);
     if(barrierEnabled)barrier.transform=pose(snapshot.barrier.rotation,snapshot.barrier.center);
 }
-Pick SceneModels::pick(Ray ray)const{Pick best;const Model*all[]{&terrain,&rock,&barrier};for(int id=0;id<3;++id){if(id==2&&!barrierEnabled)continue;for(int j=0;j<all[id]->meshCount;++j){auto hit=GetRayCollisionMesh(ray,all[id]->meshes[j],all[id]->transform);if(hit.hit&&hit.distance<best.distance)best={id+1,hit.distance,hit.point};}}return best;}
-void SceneModels::draw(bool wire,int selected)const{
-    rlDisableBackfaceCulling();auto draw=[&](const Model&model,int id,Color color){if(selected==id)color=YELLOW;if(wire)DrawModelWires(model,{0,0,0},1,color);else DrawModel(model,{0,0,0},1,color);};draw(terrain,terrainObjectId,WHITE);draw(rock,rockObjectId,WHITE);if(barrierEnabled)draw(barrier,barrierObjectId,{146,181,232,255});rlEnableBackfaceCulling();
+Pick SceneModels::pick(Ray ray)const{Pick best;auto test=[&](int id,const Model&m){for(int j=0;j<m.meshCount;++j){auto hit=GetRayCollisionMesh(ray,m.meshes[j],m.transform);if(hit.hit&&hit.distance<best.distance)best={id,hit.distance,hit.point};}};test(terrainObjectId,terrain);test(rockObjectId,rock);if(barrierEnabled)test(barrierObjectId,barrier);for(auto&o:obstacles_)test(o.first,o.second);return best;}
+void SceneModels::draw(bool wire,int selected,bool showRock,bool showBarrier)const{
+    rlDisableBackfaceCulling();auto draw=[&](const Model&model,int id,Color color){if(!model.meshCount)return;if(selected==id)color=YELLOW;if(wire)DrawModelWires(model,{0,0,0},1,color);else DrawModel(model,{0,0,0},1,color);};draw(terrain,terrainObjectId,WHITE);if(showRock)draw(rock,rockObjectId,WHITE);if(barrierEnabled&&showBarrier)draw(barrier,barrierObjectId,{146,181,232,255});for(auto&o:obstacles_)draw(o.second,o.first,{164,196,214,255});rlEnableBackfaceCulling();
 }
 Font loadFont(const std::filesystem::path&path,const std::string&glyphs){std::ifstream in(path,std::ios::binary);if(!in)throw std::runtime_error("Cannot read CJK font; use --font path");std::vector<unsigned char>bytes((std::istreambuf_iterator<char>(in)),{});int count=0;int*cps=LoadCodepoints(glyphs.c_str(),&count);std::vector<int>codes(cps,cps+count);UnloadCodepoints(cps);for(int c=32;c<127;++c)codes.push_back(c);std::sort(codes.begin(),codes.end());codes.erase(std::unique(codes.begin(),codes.end()),codes.end());auto font=LoadFontFromMemory(".ttf",bytes.data(),int(bytes.size()),24,codes.data(),int(codes.size()));if(!font.texture.id||font.texture.id==GetFontDefault().texture.id)throw std::runtime_error("CJK font decoding failed");for(int c:codes)if(font.glyphs[GetGlyphIndex(font,c)].value!=c){UnloadFont(font);throw std::runtime_error("CJK font lacks required glyph");}SetTextureFilter(font.texture,TEXTURE_FILTER_BILINEAR);return font;}
 void text(Font font,const std::string&content,float x,float y,int size,Color color){DrawTextEx(font,content.c_str(),{x,y},float(size),1,color);}
-void capture(const std::filesystem::path&file){rlDrawRenderBatchActive();Image image{};image.width=GetRenderWidth();image.height=GetRenderHeight();image.mipmaps=1;image.format=PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;image.data=rlReadScreenPixels(image.width,image.height);int count=0;auto bytes=ExportImageToMemory(image,".png",&count);std::ofstream out(file,std::ios::binary);out.write(reinterpret_cast<char*>(bytes),count);out.close();MemFree(bytes);UnloadImage(image);if(!out)throw std::runtime_error("framebuffer capture failed");}
+namespace {
+Image capturePixels(){rlDrawRenderBatchActive();Image image{};image.width=GetRenderWidth();image.height=GetRenderHeight();image.mipmaps=1;image.format=PIXELFORMAT_UNCOMPRESSED_R8G8B8A8;image.data=rlReadScreenPixels(image.width,image.height);if(!image.data)throw std::runtime_error("framebuffer readback failed");return image;}
+void encodeCapture(Image image,const std::filesystem::path&file){int count=0;auto bytes=ExportImageToMemory(image,".png",&count);UnloadImage(image);if(!bytes||count<=0){MemFree(bytes);throw std::runtime_error("framebuffer PNG encode failed");}std::ofstream out(file,std::ios::binary);out.write(reinterpret_cast<char*>(bytes),count);out.close();MemFree(bytes);if(!out)throw std::runtime_error("framebuffer capture failed");}
+}
+void capture(const std::filesystem::path&file){encodeCapture(capturePixels(),file);}
+bool FrameCapture::submit(const std::filesystem::path&file){if(pending_.valid()){if(pending_.wait_for(std::chrono::seconds(0))!=std::future_status::ready)return false;pending_.get();}auto pixels=capturePixels();try{pending_=std::async(std::launch::async,[pixels,file]{encodeCapture(pixels,file);});}catch(...){UnloadImage(pixels);throw;}return true;}
+
 std::filesystem::path chooseSceneFile(bool save,const std::filesystem::path&current){
     return nativeSceneDialog(save,current,GetWindowHandle());
 }

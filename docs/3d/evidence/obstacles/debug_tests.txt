@@ -1,0 +1,42 @@
+Internal ctest changing into directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+Test project C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+      Start  1: abi_zero_radius
+ 1/18 Test  #1: abi_zero_radius ..................   Passed    0.23 sec
+      Start  2: input_ownership
+ 2/18 Test  #2: input_ownership ..................   Passed    0.17 sec
+      Start  3: geometry_analytic
+ 3/18 Test  #3: geometry_analytic ................   Passed    0.31 sec
+      Start  4: geometry_morphology
+ 4/18 Test  #4: geometry_morphology ..............   Passed    5.18 sec
+      Start  5: terrain_mesh_support
+ 5/18 Test  #5: terrain_mesh_support .............   Passed    0.30 sec
+      Start  6: physics_dynamics
+ 6/18 Test  #6: physics_dynamics .................   Passed   16.06 sec
+      Start  7: statistics_dda
+ 7/18 Test  #7: statistics_dda ...................   Passed    1.37 sec
+      Start  8: config_snapshot
+ 8/18 Test  #8: config_snapshot ..................   Passed    0.31 sec
+      Start  9: settling_regression
+ 9/18 Test  #9: settling_regression ..............   Passed   11.49 sec
+      Start 10: batch_output_replay
+10/18 Test #10: batch_output_replay ..............   Passed  186.75 sec
+      Start 11: session_playback_control
+11/18 Test #11: session_playback_control .........   Passed   13.78 sec
+      Start 12: elastic_barrier
+12/18 Test #12: elastic_barrier ..................   Passed    4.78 sec
+      Start 13: contact_observer
+13/18 Test #13: contact_observer .................   Passed    0.87 sec
+      Start 14: fixed_obstacles
+14/18 Test #14: fixed_obstacles ..................   Passed  151.62 sec
+      Start 15: full_path_first_contact
+15/18 Test #15: full_path_first_contact ..........   Passed    0.94 sec
+      Start 16: motion_chunks
+16/18 Test #16: motion_chunks ....................   Passed    0.15 sec
+      Start 17: archive_analysis_transactions
+17/18 Test #17: archive_analysis_transactions ....   Passed   11.51 sec
+      Start 18: readonly_playback
+18/18 Test #18: readonly_playback ................   Passed    0.73 sec
+
+100% tests passed, 0 tests failed out of 18
+
+Total Test time (real) = 406.62 sec

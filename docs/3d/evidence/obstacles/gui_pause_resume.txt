@@ -1,0 +1,501 @@
+# Copy of event log excluding capture_async heartbeat lines.
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=60 vsync=off
+source=GUI actual physics; helper lines use depth test; latest snapshot bounded to one
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+action=auto_start
+state=Running phase=1 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:0edca48da7fda87b sim=0 wall=9.31e-05
+analysis version=1 trajectories=0 directory=100 C=0 B=0 M=0 unknown=100
+state=Running phase=1 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:0edca48da7fda87b sim=0 wall=0.046292699999999999
+state=Running phase=2 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:0edca48da7fda87b sim=0.020000000000000004 wall=0.074885199999999999
+analysis version=2 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=3 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=4 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=5 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=6 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=7 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=8 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=9 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=10 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=11 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=12 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=13 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=14 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=15 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=16 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=17 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=18 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=19 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=20 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=21 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=22 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=23 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=24 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=25 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=26 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=27 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=28 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=29 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=30 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=31 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=32 trajectories=1 directory=100 C=0 B=0 M=0 unknown=100
+analysis version=33 trajectories=1 directory=100 C=1 B=0 M=1 unknown=99
+state=Running phase=2 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:0edca48da7fda87b sim=0.020000000000000004 wall=8.0011641000000004
+analysis version=34 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=35 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=36 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=37 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=38 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=39 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=40 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=41 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=42 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=43 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=44 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=45 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=46 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=47 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=48 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=49 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=50 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=51 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=52 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=53 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=54 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=55 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=56 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=57 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=58 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=59 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=60 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+analysis version=61 trajectories=2 directory=100 C=1 B=0 M=1 unknown=99
+timeline action=background_follow_disabled trial=2 cursor=7.145999999999435 following=0 playing=0 physics_updates=7530
+analysis version=62 trajectories=2 directory=100 C=2 B=0 M=2 unknown=98
+state=Running phase=1 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.1315019
+history_pose trial=2 time=7.145999999999435 interpolated=0 available=1 error= physics_updates=7531
+state=Running phase=3 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.1478479
+state=Running phase=3 trial=4 processed=3 C=3 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.364518
+analysis version=63 trajectories=3 directory=100 C=3 B=0 M=3 unknown=97
+analysis version=64 trajectories=3 directory=100 C=3 B=0 M=3 unknown=97
+state=Running phase=1 trial=5 processed=4 C=4 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.7312143
+state=Running phase=3 trial=5 processed=4 C=4 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.7481671
+analysis version=65 trajectories=4 directory=100 C=4 B=0 M=4 unknown=96
+state=Running phase=1 trial=6 processed=5 C=5 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.9145276
+state=Running phase=3 trial=6 processed=5 C=5 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=15.9313141
+analysis version=66 trajectories=5 directory=100 C=5 B=0 M=5 unknown=95
+state=Running phase=1 trial=7 processed=6 C=6 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=16.231273399999999
+state=Running phase=3 trial=7 processed=6 C=6 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=16.247879900000001
+analysis version=67 trajectories=6 directory=100 C=6 B=0 M=6 unknown=94
+analysis version=68 trajectories=6 directory=100 C=6 B=0 M=6 unknown=94
+state=Running phase=1 trial=8 processed=7 C=7 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=16.8480974
+state=Running phase=3 trial=8 processed=7 C=7 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=16.864844999999999
+analysis version=69 trajectories=7 directory=100 C=7 B=1 M=6 unknown=93
+analysis version=70 trajectories=7 directory=100 C=7 B=1 M=6 unknown=93
+state=Running phase=3 trial=9 processed=8 C=8 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.2648671
+analysis version=71 trajectories=8 directory=100 C=8 B=1 M=7 unknown=92
+state=Running phase=1 trial=10 processed=9 C=9 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.398162200000002
+state=Running phase=3 trial=10 processed=9 C=9 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.4148502
+state=Running phase=1 trial=11 processed=10 C=10 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.5149191
+state=Running phase=3 trial=11 processed=10 C=10 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.5314911
+analysis version=72 trajectories=10 directory=100 C=10 B=1 M=9 unknown=90
+state=Running phase=3 trial=12 processed=11 C=11 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.798566399999999
+analysis version=73 trajectories=11 directory=100 C=11 B=1 M=10 unknown=89
+state=Running phase=1 trial=13 processed=12 C=12 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.965224899999999
+state=Running phase=3 trial=13 processed=12 C=12 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=17.981766700000001
+analysis version=74 trajectories=12 directory=100 C=12 B=1 M=11 unknown=88
+state=Running phase=3 trial=14 processed=13 C=13 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=18.2484723
+analysis version=75 trajectories=13 directory=100 C=13 B=1 M=12 unknown=87
+state=Running phase=1 trial=15 processed=14 C=14 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=18.548490600000001
+state=Running phase=3 trial=15 processed=14 C=14 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=18.565220199999999
+analysis version=76 trajectories=14 directory=100 C=14 B=1 M=13 unknown=86
+state=Running phase=1 trial=16 processed=15 C=15 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=18.732605199999998
+state=Running phase=3 trial=16 processed=15 C=15 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=18.749087500000002
+analysis version=77 trajectories=15 directory=100 C=15 B=1 M=14 unknown=85
+state=Running phase=1 trial=17 processed=16 C=16 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.0664628
+state=Running phase=3 trial=17 processed=16 C=16 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.083456900000002
+analysis version=78 trajectories=16 directory=100 C=16 B=2 M=14 unknown=84
+state=Running phase=3 trial=18 processed=17 C=17 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.183157099999999
+state=Running phase=1 trial=19 processed=18 C=18 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.2999802
+state=Running phase=3 trial=19 processed=18 C=18 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.3172256
+analysis version=79 trajectories=18 directory=100 C=18 B=2 M=16 unknown=82
+state=Running phase=1 trial=20 processed=19 C=19 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.500120500000001
+state=Running phase=3 trial=20 processed=19 C=19 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.516852199999999
+analysis version=80 trajectories=19 directory=100 C=19 B=2 M=17 unknown=81
+state=Running phase=1 trial=21 processed=20 C=20 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.650185199999999
+state=Running phase=3 trial=21 processed=20 C=20 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.666791100000001
+state=Running phase=3 trial=22 processed=21 C=21 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=19.8668589
+analysis version=81 trajectories=21 directory=100 C=21 B=2 M=19 unknown=79
+state=Running phase=3 trial=23 processed=22 C=22 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.051368
+analysis version=82 trajectories=22 directory=100 C=22 B=2 M=20 unknown=78
+state=Running phase=1 trial=24 processed=23 C=23 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.301389400000001
+state=Running phase=3 trial=24 processed=23 C=23 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.317993300000001
+analysis version=83 trajectories=23 directory=100 C=23 B=2 M=21 unknown=77
+state=Running phase=1 trial=25 processed=24 C=24 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.4346049
+state=Running phase=3 trial=25 processed=24 C=24 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.4514481
+state=Running phase=1 trial=26 processed=25 C=25 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.618688299999999
+state=Running phase=3 trial=26 processed=25 C=25 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.6352996
+analysis version=84 trajectories=25 directory=100 C=25 B=2 M=23 unknown=75
+state=Running phase=3 trial=27 processed=26 C=26 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.785459100000001
+analysis version=85 trajectories=26 directory=100 C=26 B=2 M=24 unknown=74
+state=Running phase=1 trial=28 processed=27 C=27 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.951989099999999
+state=Running phase=3 trial=28 processed=27 C=27 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=20.968637999999999
+state=Running phase=1 trial=29 processed=28 C=28 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.0688362
+state=Running phase=3 trial=29 processed=28 C=28 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.086269099999999
+analysis version=86 trajectories=28 directory=100 C=28 B=3 M=25 unknown=72
+state=Running phase=1 trial=30 processed=29 C=29 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.3691195
+state=Running phase=3 trial=30 processed=29 C=29 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.385480000000001
+analysis version=87 trajectories=29 directory=100 C=29 B=4 M=25 unknown=71
+state=Running phase=1 trial=31 processed=30 C=30 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.5019949
+state=Running phase=3 trial=31 processed=30 C=30 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.518784700000001
+analysis version=88 trajectories=30 directory=100 C=30 B=4 M=26 unknown=70
+state=Running phase=1 trial=32 processed=31 C=31 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.802418400000001
+state=Running phase=3 trial=32 processed=31 C=31 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.818951999999999
+analysis version=89 trajectories=31 directory=100 C=31 B=4 M=27 unknown=69
+state=Running phase=1 trial=33 processed=32 C=32 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.9522318
+state=Running phase=3 trial=33 processed=32 C=32 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=21.968874199999998
+analysis version=90 trajectories=32 directory=100 C=32 B=4 M=28 unknown=68
+state=Running phase=1 trial=34 processed=33 C=33 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=22.154174699999999
+state=Running phase=3 trial=34 processed=33 C=33 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=22.170801999999998
+analysis version=91 trajectories=33 directory=100 C=33 B=4 M=29 unknown=67
+state=Running phase=1 trial=35 processed=34 C=34 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=22.554269999999999
+state=Running phase=3 trial=35 processed=34 C=34 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=22.570985799999999
+analysis version=92 trajectories=34 directory=100 C=34 B=4 M=30 unknown=66
+state=Running phase=3 trial=36 processed=35 C=35 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=22.787591800000001
+analysis version=93 trajectories=35 directory=100 C=35 B=4 M=31 unknown=65
+state=Running phase=3 trial=37 processed=36 C=36 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=22.9543523
+state=Running phase=1 trial=38 processed=37 C=37 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.054358199999999
+state=Running phase=3 trial=38 processed=37 C=37 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.071074200000002
+analysis version=94 trajectories=37 directory=100 C=37 B=4 M=33 unknown=63
+state=Running phase=1 trial=39 processed=38 C=38 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.337633499999999
+state=Running phase=3 trial=39 processed=38 C=38 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.354400900000002
+analysis version=95 trajectories=38 directory=100 C=38 B=4 M=34 unknown=62
+state=Running phase=3 trial=40 processed=39 C=39 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.5047146
+analysis version=96 trajectories=39 directory=100 C=39 B=4 M=35 unknown=61
+state=Running phase=1 trial=41 processed=40 C=40 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.6549537
+state=Running phase=3 trial=41 processed=40 C=40 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.671308799999998
+state=Running phase=1 trial=42 processed=41 C=41 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.871588200000001
+state=Running phase=3 trial=42 processed=41 C=41 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=23.8882698
+analysis version=97 trajectories=41 directory=100 C=41 B=4 M=37 unknown=59
+state=Running phase=1 trial=43 processed=42 C=42 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.121539899999998
+state=Running phase=3 trial=43 processed=42 C=42 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.138338699999998
+analysis version=98 trajectories=42 directory=100 C=42 B=4 M=38 unknown=58
+state=Running phase=1 trial=44 processed=43 C=43 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.2882286
+state=Running phase=3 trial=44 processed=43 C=43 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.3048796
+analysis version=99 trajectories=43 directory=100 C=43 B=4 M=39 unknown=57
+state=Running phase=3 trial=45 processed=44 C=44 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.438226
+state=Running phase=1 trial=46 processed=45 C=45 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.588488999999999
+state=Running phase=3 trial=46 processed=45 C=45 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.604879499999999
+analysis version=100 trajectories=45 directory=100 C=45 B=4 M=41 unknown=55
+state=Running phase=1 trial=47 processed=46 C=46 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.821528300000001
+state=Running phase=3 trial=47 processed=46 C=46 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=24.8382927
+analysis version=101 trajectories=46 directory=100 C=46 B=4 M=42 unknown=54
+analysis version=102 trajectories=47 directory=100 C=47 B=4 M=43 unknown=53
+state=Running phase=3 trial=48 processed=47 C=47 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.1549221
+analysis version=103 trajectories=47 directory=100 C=47 B=4 M=43 unknown=53
+state=Running phase=1 trial=49 processed=48 C=48 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.454893800000001
+state=Running phase=3 trial=49 processed=48 C=48 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.471641000000002
+state=Running phase=1 trial=50 processed=49 C=49 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.621549699999999
+state=Running phase=3 trial=50 processed=49 C=49 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.638233199999998
+analysis version=104 trajectories=49 directory=100 C=49 B=4 M=45 unknown=51
+state=Running phase=1 trial=51 processed=50 C=50 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.8718124
+state=Running phase=3 trial=51 processed=50 C=50 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=25.888368400000001
+analysis version=105 trajectories=50 directory=100 C=50 B=4 M=46 unknown=50
+analysis version=106 trajectories=50 directory=100 C=50 B=4 M=46 unknown=50
+input_to_draw_ms=18.9585000000001 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+request=pause
+state=Paused phase=3 trial=51 processed=50 C=50 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=26.205233400000001
+request=pause confirmation_ms=13.199100000001351
+input_to_draw_ms=17.051600000002054 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=start trial=2 cursor=0 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=0 interpolated=0 available=1 error= physics_updates=298671
+input_to_draw_ms=17.009700000002681 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=play_pause trial=2 cursor=0 following=0 playing=1 physics_updates=298671
+history_pose trial=2 time=0.26559240000000273 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=0.51584669999999733 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=0.76616649999999709 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.0328937000000025 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.2892571000000004 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.5395769000000001 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.8061122000000012 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.0727210000000014 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.3228354999999965 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.5895128000000085 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.8396259999999955 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.1064305000000019 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.3696019000000064 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.6199306999999976 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.886860299999995 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.1537347999999952 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.4198458000000045 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.6700234000000052 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.9367062999999973 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.1877154000000019 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.4378520000000066 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.7045636000000002 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.954617600000006 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.2049853999999982 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.4553025000000019 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.7053942000000006 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.9720084000000071 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=7.145999999999435 interpolated=0 available=1 error= physics_updates=298671
+input_to_draw_ms=17.610900000022411 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+input_to_draw_ms=17.111300000010488 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+input_to_draw_ms=14.148700000021108 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=start trial=2 cursor=0 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=0 interpolated=0 available=1 error= physics_updates=298671
+input_to_draw_ms=15.227899999985084 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=play_pause trial=2 cursor=0 following=0 playing=1 physics_updates=298671
+history_pose trial=2 time=0.25075685000000192 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=0.50098845000000125 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=0.75274964999999838 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.0029837750000041 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.2529957500000037 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.5033341500000006 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.7558609499999989 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.0059148500000035 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.2560700750000038 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.5061172750000011 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=2.7583052499999994 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.0083468500000023 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.2609305750000033 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.5149709499999986 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=3.7673131499999997 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.0176500749999988 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.2676969500000013 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.517764525000004 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=4.7679012250000028 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.0182066500000033 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.268438175 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.5184819000000047 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=5.7686388250000036 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.0188284999999979 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.2689972750000038 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.5230582499999983 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=6.7731288499999991 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=7.0231600250000028 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=7.145999999999435 interpolated=0 available=1 error= physics_updates=298671
+input_to_draw_ms=13.692499999990559 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+input_to_draw_ms=15.794100000022127 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+timeline action=drag trial=2 cursor=1.4577842921911517 following=0 playing=0 physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+history_pose trial=2 time=1.4577842921911517 interpolated=1 available=1 error= physics_updates=298671
+input_to_draw_ms=16.010700000009592 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+request=resume
+analysis version=107 trajectories=50 directory=100 C=50 B=4 M=46 unknown=50
+state=Running phase=3 trial=51 processed=50 C=50 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=233.915662
+request=resume confirmation_ms=15.799900000018852
+state=Running phase=1 trial=52 processed=51 C=51 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=233.9322593
+state=Running phase=3 trial=52 processed=51 C=51 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=233.94987259999999
+state=Running phase=1 trial=53 processed=52 C=52 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.149168
+analysis version=108 trajectories=52 directory=100 C=52 B=4 M=48 unknown=48
+state=Running phase=3 trial=53 processed=52 C=52 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.1664079
+state=Running phase=3 trial=54 processed=53 C=53 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.34996480000001
+analysis version=109 trajectories=53 directory=100 C=53 B=4 M=49 unknown=47
+state=Running phase=1 trial=55 processed=54 C=54 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.5158385
+state=Running phase=3 trial=55 processed=54 C=54 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.5325067
+analysis version=110 trajectories=55 directory=100 C=55 B=4 M=51 unknown=45
+state=Running phase=3 trial=56 processed=55 C=55 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.66586409999999
+state=Running phase=1 trial=57 processed=56 C=56 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.89918259999999
+analysis version=111 trajectories=56 directory=100 C=56 B=4 M=52 unknown=44
+state=Running phase=3 trial=57 processed=56 C=56 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=234.91601460000001
+analysis version=112 trajectories=56 directory=100 C=56 B=4 M=52 unknown=44
+state=Running phase=1 trial=58 processed=57 C=57 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.2166622
+state=Running phase=3 trial=58 processed=57 C=57 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.249979
+state=Running phase=1 trial=59 processed=58 C=58 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.35024179999999
+state=Running phase=3 trial=59 processed=58 C=58 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.36704470000001
+analysis version=113 trajectories=58 directory=100 C=58 B=5 M=53 unknown=42
+state=Running phase=3 trial=60 processed=59 C=59 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.51710850000001
+analysis version=114 trajectories=59 directory=100 C=59 B=5 M=54 unknown=41
+state=Running phase=3 trial=61 processed=60 C=60 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.7671761
+state=Running phase=1 trial=62 processed=61 C=61 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.91726299999999
+analysis version=115 trajectories=61 directory=100 C=61 B=5 M=56 unknown=39
+state=Running phase=3 trial=62 processed=61 C=61 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=235.93392700000001
+state=Running phase=1 trial=63 processed=62 C=62 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.0509131
+state=Running phase=3 trial=63 processed=62 C=62 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.0671749
+analysis version=116 trajectories=62 directory=100 C=62 B=5 M=57 unknown=38
+state=Running phase=3 trial=64 processed=63 C=63 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.26719180000001
+analysis version=117 trajectories=63 directory=100 C=63 B=5 M=58 unknown=37
+state=Running phase=1 trial=65 processed=64 C=64 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.48385590000001
+state=Running phase=3 trial=65 processed=64 C=64 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.50053439999999
+state=Running phase=1 trial=66 processed=65 C=65 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.6341644
+state=Running phase=3 trial=66 processed=65 C=65 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.65065000000001
+analysis version=118 trajectories=65 directory=100 C=65 B=5 M=60 unknown=35
+state=Running phase=3 trial=67 processed=66 C=66 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=236.90079660000001
+analysis version=119 trajectories=66 directory=100 C=66 B=5 M=61 unknown=34
+state=Running phase=1 trial=68 processed=67 C=67 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.11765740000001
+state=Running phase=3 trial=68 processed=67 C=67 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.13430439999999
+analysis version=120 trajectories=67 directory=100 C=67 B=5 M=62 unknown=33
+state=Running phase=3 trial=69 processed=68 C=68 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.30113710000001
+state=Running phase=3 trial=70 processed=69 C=69 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.41838300000001
+analysis version=121 trajectories=69 directory=100 C=69 B=5 M=64 unknown=31
+state=Running phase=1 trial=71 processed=70 C=70 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.56852069999999
+state=Running phase=3 trial=71 processed=70 C=70 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.5851389
+analysis version=122 trajectories=70 directory=100 C=70 B=5 M=65 unknown=30
+state=Running phase=3 trial=72 processed=71 C=71 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=237.83542320000001
+analysis version=123 trajectories=71 directory=100 C=71 B=5 M=66 unknown=29
+analysis version=124 trajectories=71 directory=100 C=71 B=5 M=66 unknown=29
+analysis version=125 trajectories=71 directory=100 C=71 B=5 M=66 unknown=29
+state=Running phase=1 trial=73 processed=72 C=72 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=238.53395230000001
+state=Running phase=3 trial=73 processed=72 C=72 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=238.5506207
+analysis version=126 trajectories=72 directory=100 C=72 B=6 M=66 unknown=28
+analysis version=127 trajectories=72 directory=100 C=72 B=6 M=66 unknown=28
+state=Running phase=1 trial=74 processed=73 C=73 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=238.97966030000001
+state=Running phase=3 trial=74 processed=73 C=73 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=238.99638490000001
+state=Running phase=1 trial=75 processed=74 C=74 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.1464704
+state=Running phase=3 trial=75 processed=74 C=74 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.16324729999999
+analysis version=128 trajectories=74 directory=100 C=74 B=6 M=68 unknown=26
+analysis version=129 trajectories=74 directory=100 C=74 B=6 M=68 unknown=26
+state=Running phase=1 trial=76 processed=75 C=75 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.4798466
+state=Running phase=3 trial=76 processed=75 C=75 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.49678220000001
+analysis version=130 trajectories=75 directory=100 C=75 B=6 M=69 unknown=25
+state=Running phase=1 trial=77 processed=76 C=76 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.7465297
+state=Running phase=3 trial=77 processed=76 C=76 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.7632223
+analysis version=131 trajectories=76 directory=100 C=76 B=6 M=70 unknown=24
+state=Running phase=1 trial=78 processed=77 C=77 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=239.99649669999999
+state=Running phase=3 trial=78 processed=77 C=77 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.0131556
+state=Running phase=1 trial=79 processed=78 C=78 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.17982599999999
+analysis version=132 trajectories=78 directory=100 C=78 B=6 M=72 unknown=22
+state=Running phase=3 trial=79 processed=78 C=78 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.19652679999999
+state=Running phase=1 trial=80 processed=79 C=79 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.36332920000001
+state=Running phase=3 trial=80 processed=79 C=79 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.37999070000001
+analysis version=133 trajectories=79 directory=100 C=79 B=6 M=73 unknown=21
+state=Running phase=1 trial=81 processed=80 C=80 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.64658349999999
+state=Running phase=3 trial=81 processed=80 C=80 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.66324030000001
+analysis version=134 trajectories=80 directory=100 C=80 B=6 M=74 unknown=20
+state=Running phase=3 trial=82 processed=81 C=81 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=240.8633179
+analysis version=135 trajectories=81 directory=100 C=81 B=6 M=75 unknown=19
+state=Running phase=3 trial=83 processed=82 C=82 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.04664360000001
+state=Running phase=1 trial=84 processed=83 C=83 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.18037799999999
+analysis version=136 trajectories=83 directory=100 C=83 B=6 M=77 unknown=17
+state=Running phase=3 trial=84 processed=83 C=83 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.19704440000001
+state=Running phase=1 trial=85 processed=84 C=84 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.3137366
+state=Running phase=3 trial=85 processed=84 C=84 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.33038450000001
+analysis version=137 trajectories=84 directory=100 C=84 B=6 M=78 unknown=16
+state=Running phase=1 trial=86 processed=85 C=85 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.54711900000001
+state=Running phase=3 trial=86 processed=85 C=85 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.56372200000001
+analysis version=138 trajectories=85 directory=100 C=85 B=6 M=79 unknown=15
+state=Running phase=1 trial=87 processed=86 C=86 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.81386699999999
+state=Running phase=3 trial=87 processed=86 C=86 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.83041800000001
+state=Running phase=1 trial=88 processed=87 C=87 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.91371029999999
+state=Running phase=3 trial=88 processed=87 C=87 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=241.93038290000001
+analysis version=139 trajectories=87 directory=100 C=87 B=6 M=81 unknown=13
+analysis version=140 trajectories=87 directory=100 C=87 B=6 M=81 unknown=13
+state=Running phase=3 trial=89 processed=88 C=88 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=242.2642659
+analysis version=141 trajectories=88 directory=100 C=88 B=6 M=82 unknown=12
+state=Running phase=1 trial=90 processed=89 C=89 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=242.59800859999999
+state=Running phase=3 trial=90 processed=89 C=89 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=242.61480779999999
+analysis version=142 trajectories=89 directory=100 C=89 B=6 M=83 unknown=11
+state=Running phase=3 trial=91 processed=90 C=90 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=242.93157679999999
+analysis version=143 trajectories=90 directory=100 C=90 B=6 M=84 unknown=10
+state=Running phase=1 trial=92 processed=91 C=91 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.06500869999999
+state=Running phase=3 trial=92 processed=91 C=91 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.0816767
+analysis version=144 trajectories=91 directory=100 C=91 B=6 M=85 unknown=9
+state=Running phase=1 trial=93 processed=92 C=92 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.29833310000001
+state=Running phase=3 trial=93 processed=92 C=92 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.31503219999999
+analysis version=145 trajectories=93 directory=100 C=93 B=7 M=86 unknown=7
+state=Running phase=1 trial=94 processed=93 C=93 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.44840980000001
+state=Running phase=3 trial=94 processed=93 C=93 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.46506070000001
+analysis version=146 trajectories=93 directory=100 C=93 B=7 M=86 unknown=7
+state=Running phase=3 trial=95 processed=94 C=94 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.7159417
+analysis version=147 trajectories=95 directory=100 C=95 B=7 M=88 unknown=5
+state=Running phase=3 trial=96 processed=95 C=95 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=243.94908090000001
+state=Running phase=3 trial=97 processed=96 C=96 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.049903
+state=Running phase=1 trial=98 processed=97 C=97 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.16602499999999
+state=Running phase=3 trial=98 processed=97 C=97 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.18275410000001
+analysis version=148 trajectories=97 directory=100 C=97 B=7 M=90 unknown=3
+state=Running phase=1 trial=99 processed=98 C=98 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.33300929999999
+state=Running phase=3 trial=99 processed=98 C=98 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.3494571
+analysis version=149 trajectories=98 directory=100 C=98 B=7 M=91 unknown=2
+state=Running phase=3 trial=100 processed=99 C=99 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.51568370000001
+input_to_draw_ms=15.977399999997033 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+request=pause
+state=Paused phase=3 trial=100 processed=99 C=99 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=244.6322337
+request=pause confirmation_ms=15.407299999992574
+input_to_draw_ms=15.712500000006457 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=play_pause trial=2 cursor=1.4577842921911517 following=0 playing=1 physics_updates=549560
+history_pose trial=2 time=1.7078478171911533 interpolated=1 available=1 error= physics_updates=549560
+history_pose trial=2 time=1.9580420421911546 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=4.0239921094175974 following=0 playing=0 physics_updates=549560
+input_to_draw_ms=16.324999999994816 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+history_pose trial=2 time=2.1667195421911547 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=4.0239921094175974 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=4.0239921094175974 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=4.0239921094175974 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=4.0239921094175974 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=4.0239921094175974 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=4.0239921094175974 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=4.0239921094175974 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=4.0239921094175974 interpolated=1 available=1 error= physics_updates=549560
+history_pose trial=2 time=4.0239921094175974 interpolated=1 available=1 error= physics_updates=549560
+input_to_draw_ms=16.087299999981042 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=drag trial=2 cursor=5.9105360991950127 following=0 playing=0 physics_updates=549560
+input_to_draw_ms=15.94310000001542 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=drag trial=2 cursor=5.9105360991950127 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=5.9105360991950127 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=5.9105360991950127 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=5.9105360991950127 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=5.9105360991950127 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=5.9105360991950127 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=5.9105360991950127 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=5.9105360991950127 interpolated=1 available=1 error= physics_updates=549560
+timeline action=drag trial=2 cursor=5.9105360991950127 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=5.9105360991950127 interpolated=1 available=1 error= physics_updates=549560
+history_pose trial=2 time=5.9105360991950127 interpolated=1 available=1 error= physics_updates=549560
+input_to_draw_ms=15.70809999998346 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+input_to_draw_ms=16.040400000008503 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+timeline action=end trial=2 cursor=7.145999999999435 following=0 playing=0 physics_updates=549560
+history_pose trial=2 time=7.145999999999435 interpolated=0 available=1 error= physics_updates=549560
+input_to_draw_ms=16.036899999960497 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+request=resume
+analysis version=150 trajectories=99 directory=100 C=99 B=7 M=92 unknown=1
+state=Running phase=3 trial=100 processed=99 C=99 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=260.28991600000001
+request=resume confirmation_ms=15.900799999997162
+analysis version=151 trajectories=100 directory=100 C=100 B=8 M=92 unknown=0
+state=Completed phase=4 trial=100 processed=100 C=100 failures=0 hash=fnv1a64:0edca48da7fda87b sim=7.145999999999435 wall=260.44531999999998
+input_to_draw_ms=16.086199999961082 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+action=request_open_results
+exit worker_finished=1 state=Completed hash=fnv1a64:0edca48da7fda87b
+result_directory=results3d/obstacles_f4/中文 空格/后台取消\run_20261112_173041_16316_1 status=complete

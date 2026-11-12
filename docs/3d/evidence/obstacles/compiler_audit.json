@@ -1,0 +1,324 @@
+[
+  {
+    "target": "Jolt",
+    "configuration": "Release",
+    "command_count": 134,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\BUILD\\.. /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D\\OBSERVER /Z7 /nologo /W1 /WX- /diagnostics:classic /O2 /Oi /Ot /D _MBCS /D WIN32 /D _WINDOWS /D NDEBUG /D JPH_DOUBLE_PRECISION /D JPH_CROSS_PLATFORM_DETERMINISTIC /D JPH_OBJECT_STREAM /D JPH_USE_AVX2 /D JPH_USE_AVX /D JPH_USE_SSE4_1 /D JPH_USE_SSE4_2 /D JPH_USE_LZCNT /D JPH_USE_TZCNT /D JPH_USE_F16C /D \"CMAKE_INTDIR=\\\"Release\\\"\" /Gm- /EHsc /MT /GS- /Gy /arch:AVX2 /fp:precise /fp:except- /Zc:wchar_t /Zc:forScope /Zc:inline /GR- /std:c++17 /Yc\"C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d/jolt/CMakeFiles/Jolt.dir/Release/cmake_pch.hxx\" /Fp\"C:/USERS/SHELL/DOCUMENTS/PROGRAMMING/SEMESTER_1/WEEK_9/BUILD/3D/JOLT/JOLT.DIR/RELEASE/CMAKE_PCH.PCH\" /Fo\"JOLT.DIR\\RELEASE\\\\\" /Fd\"C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\JOLT\\RELEASE\\JOLT.PDB\" /external:W1 /Gd /TP /FIC:/USERS/SHELL/DOCUMENTS/PROGRAMMING/SEMESTER_1/WEEK_9/BUILD/3D/JOLT/CMAKEFILES/JOLT.DIR/RELEASE/CMAKE_PCH.HXX /FC  /Zc:__cplusplus C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\JOLT\\CMAKEFILES\\JOLT.DIR\\CMAKE_PCH.CXX"
+  },
+  {
+    "target": "raylib",
+    "configuration": "Release",
+    "command_count": 7,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC /Z7 /nologo /W1 /WX- /diagnostics:column /O2 /Ob2 /D _MBCS /D WIN32 /D _WINDOWS /D NDEBUG /D PLATFORM_DESKTOP /D GRAPHICS_API_OPENGL_33 /D EXTERNAL_CONFIG_FLAGS /D SUPPORT_MODULE_RSHAPES /D SUPPORT_MODULE_RTEXTURES /D SUPPORT_MODULE_RTEXT /D SUPPORT_MODULE_RMODELS /D SUPPORT_CAMERA_SYSTEM /D SUPPORT_GESTURES_SYSTEM /D SUPPORT_RPRAND_GENERATOR /D SUPPORT_MOUSE_GESTURES /D SUPPORT_SSH_KEYBOARD_RPI /D SUPPORT_WINMM_HIGHRES_TIMER /D SUPPORT_PARTIALBUSY_WAIT_LOOP /D SUPPORT_SCREEN_CAPTURE /D SUPPORT_GIF_RECORDING /D SUPPORT_COMPRESSION_API /D SUPPORT_AUTOMATION_EVENTS /D RL_SUPPORT_MESH_GPU_SKINNING /D SUPPORT_QUADS_DRAW_MODE /D SUPPORT_FILEFORMAT_PNG /D SUPPORT_FILEFORMAT_GIF /D SUPPORT_FILEFORMAT_QOI /D SUPPORT_FILEFORMAT_DDS /D SUPPORT_IMAGE_EXPORT /D SUPPORT_IMAGE_GENERATION /D SUPPORT_IMAGE_MANIPULATION /D SUPPORT_DEFAULT_FONT /D SUPPORT_FILEFORMAT_TTF /D SUPPORT_FILEFORMAT_FNT /D SUPPORT_TEXT_MANIPULATION /D SUPPORT_FONT_ATLAS_WHITE_REC /D SUPPORT_FILEFORMAT_OBJ /D SUPPORT_FILEFORMAT_MTL /D SUPPORT_FILEFORMAT_IQM /D SUPPORT_FILEFORMAT_GLTF /D SUPPORT_FILEFORMAT_VOX /D SUPPORT_FILEFORMAT_M3D /D SUPPORT_MESH_GENERATION /D SUPPORT_FILEFORMAT_WAV /D SUPPORT_FILEFORMAT_OGG /D SUPPORT_FILEFORMAT_MP3 /D SUPPORT_FILEFORMAT_QOA /D SUPPORT_FILEFORMAT_XM /D SUPPORT_FILEFORMAT_MOD /D SUPPORT_STANDARD_FILEIO /D SUPPORT_TRACELOG /D SUPPORT_CLIPBOARD_IMAGE /D MAX_FILEPATH_CAPACITY=8192 /D MAX_FILEPATH_LENGTH=4096 /D MAX_KEYBOARD_KEYS=512 /D MAX_MOUSE_BUTTONS=8 /D MAX_GAMEPADS=4 /D MAX_GAMEPAD_AXIS=8 /D MAX_GAMEPAD_BUTTONS=32 /D MAX_GAMEPAD_VIBRATION_TIME=2.0f /D MAX_TOUCH_POINTS=8 /D MAX_KEY_PRESSED_QUEUE=16 /D MAX_CHAR_PRESSED_QUEUE=16 /D MAX_DECOMPRESSION_SIZE=64 /D MAX_AUTOMATION_EVENTS=16384 /D RL_DEFAULT_BATCH_BUFFERS=1 /D RL_DEFAULT_BATCH_DRAWCALLS=256 /D RL_DEFAULT_BATCH_MAX_TEXTURE_UNITS=4 /D RL_MAX_MATRIX_STACK_SIZE=32 /D RL_MAX_SHADER_LOCATIONS=32 /D RL_CULL_DISTANCE_NEAR=0.01 /D RL_CULL_DISTANCE_FAR=1000.0 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_POSITION=0 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_TEXCOORD=1 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_NORMAL=2 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_COLOR=3 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_TANGENT=4 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_TEXCOORD2=5 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_INDICES=6 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEIDS=7 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS=8 /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_POSITION=\\\"vertexPosition\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD=\\\"vertexTexCoord\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_NORMAL=\\\"vertexNormal\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_COLOR=\\\"vertexColor\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_TANGENT=\\\"vertexTangent\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD2=\\\"vertexTexCoord2\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_MVP=\\\"mvp\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_VIEW=\\\"matView\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_PROJECTION=\\\"matProjection\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_MODEL=\\\"matModel\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_NORMAL=\\\"matNormal\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_COLOR=\\\"colDiffuse\\\"\" /D \"RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE0=\\\"texture0\\\"\" /D \"RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE1=\\\"texture1\\\"\" /D \"RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE2=\\\"texture2\\\"\" /D SPLINE_SEGMENT_DIVISIONS=24 /D MAX_TEXT_BUFFER_LENGTH=1024 /D MAX_TEXTSPLIT_COUNT=128 /D MAX_MATERIAL_MAPS=12 /D AUDIO_DEVICE_FORMAT=ma_format_f32 /D AUDIO_DEVICE_CHANNELS=2 /D AUDIO_DEVICE_SAMPLE_RATE=0 /D MAX_AUDIO_BUFFER_POOL_CHANNELS=16 /D MAX_TRACELOG_MSG_LENGTH=256 /D MAX_MESH_VERTEX_BUFFERS=9 /D _CRT_SECURE_NO_WARNINGS /D \"CMAKE_INTDIR=\\\"Release\\\"\" /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo\"RAYLIB.DIR\\RELEASE\\\\\" /Fd\"C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\RAYLIB\\RAYLIB\\RELEASE\\RAYLIB.PDB\" /external:W0 /Gd /TC  /external:I \"C:/Users/shell/Documents/Programming/Semester_1/Week_9/.deps3d/raylib/src/external/glfw/include\" C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\RAUDIO.C"
+  },
+  {
+    "target": "glfw",
+    "configuration": "Release",
+    "command_count": 21,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\INCLUDE /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\SRC /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\RAYLIB\\RAYLIB\\EXTERNAL\\GLFW\\SRC /Z7 /nologo /W3 /WX- /diagnostics:column /O2 /Ob2 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D NDEBUG /D _GLFW_WIN32 /D UNICODE /D _UNICODE /D _CRT_SECURE_NO_WARNINGS /D \"CMAKE_INTDIR=\\\"Release\\\"\" /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo\"GLFW.DIR\\RELEASE\\\\\" /Fd\"GLFW.DIR\\RELEASE\\GLFW.PDB\" /external:W3 /Gd /TC C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\SRC\\CONTEXT.C"
+  },
+  {
+    "target": "RollingStone3D",
+    "configuration": "Release",
+    "command_count": 10,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\BUILD\\.. /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\INCLUDE /Z7 /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /D _MBCS /D WIN32 /D _WINDOWS /D NDEBUG /D NOMINMAX /D WIN32_LEAN_AND_MEAN /D RS3D_GUI=1 /D JPH_DOUBLE_PRECISION /D JPH_CROSS_PLATFORM_DETERMINISTIC /D JPH_OBJECT_STREAM /D JPH_USE_AVX2 /D JPH_USE_AVX /D JPH_USE_SSE4_1 /D JPH_USE_SSE4_2 /D JPH_USE_LZCNT /D JPH_USE_TZCNT /D JPH_USE_F16C /D PLATFORM_DESKTOP /D GRAPHICS_API_OPENGL_33 /D \"CMAKE_INTDIR=\\\"Release\\\"\" /EHsc /MT /GS /arch:AVX2 /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo\"ROLLINGSTONE3D.DIR\\RELEASE\\\\\" /Fd\"ROLLINGSTONE3D.DIR\\RELEASE\\VC143.PDB\" /external:W0 /Gd /TP  /external:I \"C:/Users/shell/Documents/Programming/Semester_1/Week_9/src3d/../.deps3d/raygui/src\" /utf-8 C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D\\PLATFORM.CPP"
+  },
+  {
+    "target": "rs3d_abi",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_core",
+    "configuration": "Release",
+    "command_count": 26,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\GENERATED /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\BUILD\\.. /Z7 /nologo /W4 /WX- /diagnostics:column /O2 /Ob2 /D _MBCS /D WIN32 /D _WINDOWS /D NDEBUG /D \"RS3D_BUILD_MODE=\\\"Release\\\"\" /D NOMINMAX /D WIN32_LEAN_AND_MEAN /D JPH_DOUBLE_PRECISION /D JPH_CROSS_PLATFORM_DETERMINISTIC /D JPH_OBJECT_STREAM /D JPH_USE_AVX2 /D JPH_USE_AVX /D JPH_USE_SSE4_1 /D JPH_USE_SSE4_2 /D JPH_USE_LZCNT /D JPH_USE_TZCNT /D JPH_USE_F16C /D \"CMAKE_INTDIR=\\\"Release\\\"\" /EHsc /MT /GS /arch:AVX2 /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo\"RS3D_CORE.DIR\\RELEASE\\\\\" /Fd\"C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\RELEASE\\RS3D_CORE.PDB\" /external:W4 /Gd /TP  /utf-8 C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D\\STATISTICS.CPP"
+  },
+  {
+    "target": "rs3d_geometry_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_morphology_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_terrain_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_input_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_physics_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_elastic_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_statistics_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_config_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_batch_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_settling_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_session_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_contact_observer_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_obstacle_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_analysis_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_motion_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_archive_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_playback_tests",
+    "configuration": "Release",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "Jolt",
+    "configuration": "Debug",
+    "command_count": 136,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\BUILD\\.. /Z7 /nologo /W1 /WX- /diagnostics:classic /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _DEBUG /D JPH_DOUBLE_PRECISION /D JPH_CROSS_PLATFORM_DETERMINISTIC /D JPH_OBJECT_STREAM /D JPH_USE_AVX2 /D JPH_USE_AVX /D JPH_USE_SSE4_1 /D JPH_USE_SSE4_2 /D JPH_USE_LZCNT /D JPH_USE_TZCNT /D JPH_USE_F16C /D \"CMAKE_INTDIR=\\\"Debug\\\"\" /Gm- /EHsc /RTC1 /MTd /GS /arch:AVX2 /fp:precise /fp:except- /Zc:wchar_t /Zc:forScope /Zc:inline /GR- /std:c++17 /Yu\"C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d/jolt/CMakeFiles/Jolt.dir/Debug/cmake_pch.hxx\" /Fp\"C:/USERS/SHELL/DOCUMENTS/PROGRAMMING/SEMESTER_1/WEEK_9/BUILD/3D/JOLT/JOLT.DIR/DEBUG/CMAKE_PCH.PCH\" /Fo\"JOLT.DIR\\DEBUG\\\\\" /Fd\"C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\JOLT\\DEBUG\\JOLT.PDB\" /external:W1 /Gd /TP /FIC:/USERS/SHELL/DOCUMENTS/PROGRAMMING/SEMESTER_1/WEEK_9/BUILD/3D/JOLT/CMAKEFILES/JOLT.DIR/DEBUG/CMAKE_PCH.HXX /FC  /Zc:__cplusplus C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\JOLT\\PHYSICS\\CONSTRAINTS\\CONTACTCONSTRAINTMANAGER.CPP"
+  },
+  {
+    "target": "raylib",
+    "configuration": "Debug",
+    "command_count": 7,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC /Z7 /nologo /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D PLATFORM_DESKTOP /D GRAPHICS_API_OPENGL_33 /D EXTERNAL_CONFIG_FLAGS /D SUPPORT_MODULE_RSHAPES /D SUPPORT_MODULE_RTEXTURES /D SUPPORT_MODULE_RTEXT /D SUPPORT_MODULE_RMODELS /D SUPPORT_CAMERA_SYSTEM /D SUPPORT_GESTURES_SYSTEM /D SUPPORT_RPRAND_GENERATOR /D SUPPORT_MOUSE_GESTURES /D SUPPORT_SSH_KEYBOARD_RPI /D SUPPORT_WINMM_HIGHRES_TIMER /D SUPPORT_PARTIALBUSY_WAIT_LOOP /D SUPPORT_SCREEN_CAPTURE /D SUPPORT_GIF_RECORDING /D SUPPORT_COMPRESSION_API /D SUPPORT_AUTOMATION_EVENTS /D RL_SUPPORT_MESH_GPU_SKINNING /D SUPPORT_QUADS_DRAW_MODE /D SUPPORT_FILEFORMAT_PNG /D SUPPORT_FILEFORMAT_GIF /D SUPPORT_FILEFORMAT_QOI /D SUPPORT_FILEFORMAT_DDS /D SUPPORT_IMAGE_EXPORT /D SUPPORT_IMAGE_GENERATION /D SUPPORT_IMAGE_MANIPULATION /D SUPPORT_DEFAULT_FONT /D SUPPORT_FILEFORMAT_TTF /D SUPPORT_FILEFORMAT_FNT /D SUPPORT_TEXT_MANIPULATION /D SUPPORT_FONT_ATLAS_WHITE_REC /D SUPPORT_FILEFORMAT_OBJ /D SUPPORT_FILEFORMAT_MTL /D SUPPORT_FILEFORMAT_IQM /D SUPPORT_FILEFORMAT_GLTF /D SUPPORT_FILEFORMAT_VOX /D SUPPORT_FILEFORMAT_M3D /D SUPPORT_MESH_GENERATION /D SUPPORT_FILEFORMAT_WAV /D SUPPORT_FILEFORMAT_OGG /D SUPPORT_FILEFORMAT_MP3 /D SUPPORT_FILEFORMAT_QOA /D SUPPORT_FILEFORMAT_XM /D SUPPORT_FILEFORMAT_MOD /D SUPPORT_STANDARD_FILEIO /D SUPPORT_TRACELOG /D SUPPORT_CLIPBOARD_IMAGE /D MAX_FILEPATH_CAPACITY=8192 /D MAX_FILEPATH_LENGTH=4096 /D MAX_KEYBOARD_KEYS=512 /D MAX_MOUSE_BUTTONS=8 /D MAX_GAMEPADS=4 /D MAX_GAMEPAD_AXIS=8 /D MAX_GAMEPAD_BUTTONS=32 /D MAX_GAMEPAD_VIBRATION_TIME=2.0f /D MAX_TOUCH_POINTS=8 /D MAX_KEY_PRESSED_QUEUE=16 /D MAX_CHAR_PRESSED_QUEUE=16 /D MAX_DECOMPRESSION_SIZE=64 /D MAX_AUTOMATION_EVENTS=16384 /D RL_DEFAULT_BATCH_BUFFERS=1 /D RL_DEFAULT_BATCH_DRAWCALLS=256 /D RL_DEFAULT_BATCH_MAX_TEXTURE_UNITS=4 /D RL_MAX_MATRIX_STACK_SIZE=32 /D RL_MAX_SHADER_LOCATIONS=32 /D RL_CULL_DISTANCE_NEAR=0.01 /D RL_CULL_DISTANCE_FAR=1000.0 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_POSITION=0 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_TEXCOORD=1 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_NORMAL=2 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_COLOR=3 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_TANGENT=4 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_TEXCOORD2=5 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_INDICES=6 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEIDS=7 /D RL_DEFAULT_SHADER_ATTRIB_LOCATION_BONEWEIGHTS=8 /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_POSITION=\\\"vertexPosition\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD=\\\"vertexTexCoord\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_NORMAL=\\\"vertexNormal\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_COLOR=\\\"vertexColor\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_TANGENT=\\\"vertexTangent\\\"\" /D \"RL_DEFAULT_SHADER_ATTRIB_NAME_TEXCOORD2=\\\"vertexTexCoord2\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_MVP=\\\"mvp\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_VIEW=\\\"matView\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_PROJECTION=\\\"matProjection\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_MODEL=\\\"matModel\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_NORMAL=\\\"matNormal\\\"\" /D \"RL_DEFAULT_SHADER_UNIFORM_NAME_COLOR=\\\"colDiffuse\\\"\" /D \"RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE0=\\\"texture0\\\"\" /D \"RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE1=\\\"texture1\\\"\" /D \"RL_DEFAULT_SHADER_SAMPLER2D_NAME_TEXTURE2=\\\"texture2\\\"\" /D SPLINE_SEGMENT_DIVISIONS=24 /D MAX_TEXT_BUFFER_LENGTH=1024 /D MAX_TEXTSPLIT_COUNT=128 /D MAX_MATERIAL_MAPS=12 /D AUDIO_DEVICE_FORMAT=ma_format_f32 /D AUDIO_DEVICE_CHANNELS=2 /D AUDIO_DEVICE_SAMPLE_RATE=0 /D MAX_AUDIO_BUFFER_POOL_CHANNELS=16 /D MAX_TRACELOG_MSG_LENGTH=256 /D MAX_MESH_VERTEX_BUFFERS=9 /D _CRT_SECURE_NO_WARNINGS /D \"CMAKE_INTDIR=\\\"Debug\\\"\" /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo\"RAYLIB.DIR\\DEBUG\\\\\" /Fd\"C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\RAYLIB\\RAYLIB\\DEBUG\\RAYLIB.PDB\" /external:W0 /Gd /TC  /external:I \"C:/Users/shell/Documents/Programming/Semester_1/Week_9/.deps3d/raylib/src/external/glfw/include\" C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\RAUDIO.C"
+  },
+  {
+    "target": "glfw",
+    "configuration": "Debug",
+    "command_count": 21,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\INCLUDE /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\SRC /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\RAYLIB\\RAYLIB\\EXTERNAL\\GLFW\\SRC /Z7 /nologo /W3 /WX- /diagnostics:column /Od /Ob0 /D _UNICODE /D UNICODE /D WIN32 /D _WINDOWS /D _GLFW_WIN32 /D UNICODE /D _UNICODE /D _CRT_SECURE_NO_WARNINGS /D \"CMAKE_INTDIR=\\\"Debug\\\"\" /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo\"GLFW.DIR\\DEBUG\\\\\" /Fd\"GLFW.DIR\\DEBUG\\GLFW.PDB\" /external:W3 /Gd /TC C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\SRC\\CONTEXT.C"
+  },
+  {
+    "target": "RollingStone3D",
+    "configuration": "Debug",
+    "command_count": 10,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\BUILD\\.. /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\RAYLIB\\SRC\\EXTERNAL\\GLFW\\INCLUDE /Z7 /nologo /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D NOMINMAX /D WIN32_LEAN_AND_MEAN /D RS3D_GUI=1 /D _DEBUG /D JPH_DOUBLE_PRECISION /D JPH_CROSS_PLATFORM_DETERMINISTIC /D JPH_OBJECT_STREAM /D JPH_USE_AVX2 /D JPH_USE_AVX /D JPH_USE_SSE4_1 /D JPH_USE_SSE4_2 /D JPH_USE_LZCNT /D JPH_USE_TZCNT /D JPH_USE_F16C /D PLATFORM_DESKTOP /D GRAPHICS_API_OPENGL_33 /D \"CMAKE_INTDIR=\\\"Debug\\\"\" /EHsc /RTC1 /MTd /GS /arch:AVX2 /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo\"ROLLINGSTONE3D.DIR\\DEBUG\\\\\" /Fd\"ROLLINGSTONE3D.DIR\\DEBUG\\VC143.PDB\" /external:W0 /Gd /TP  /external:I \"C:/Users/shell/Documents/Programming/Semester_1/Week_9/src3d/../.deps3d/raygui/src\" /utf-8 C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D\\PLATFORM.CPP"
+  },
+  {
+    "target": "rs3d_abi",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_core",
+    "configuration": "Debug",
+    "command_count": 26,
+    "verified": true,
+    "sample_command": "/c /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\GENERATED /IC:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\.DEPS3D\\JOLTPHYSICS\\BUILD\\.. /Z7 /nologo /W4 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D \"RS3D_BUILD_MODE=\\\"Debug\\\"\" /D NOMINMAX /D WIN32_LEAN_AND_MEAN /D _DEBUG /D JPH_DOUBLE_PRECISION /D JPH_CROSS_PLATFORM_DETERMINISTIC /D JPH_OBJECT_STREAM /D JPH_USE_AVX2 /D JPH_USE_AVX /D JPH_USE_SSE4_1 /D JPH_USE_SSE4_2 /D JPH_USE_LZCNT /D JPH_USE_TZCNT /D JPH_USE_F16C /D \"CMAKE_INTDIR=\\\"Debug\\\"\" /EHsc /RTC1 /MTd /GS /arch:AVX2 /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo\"RS3D_CORE.DIR\\DEBUG\\\\\" /Fd\"C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\BUILD\\3D\\DEBUG\\RS3D_CORE.PDB\" /external:W4 /Gd /TP  /utf-8 C:\\USERS\\SHELL\\DOCUMENTS\\PROGRAMMING\\SEMESTER_1\\WEEK_9\\SRC3D\\STATISTICS.CPP"
+  },
+  {
+    "target": "rs3d_geometry_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_morphology_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_terrain_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_input_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_physics_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_elastic_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_statistics_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_config_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_batch_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_settling_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_session_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_contact_observer_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_obstacle_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_analysis_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_motion_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_archive_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  },
+  {
+    "target": "rs3d_playback_tests",
+    "configuration": "Debug",
+    "command_count": 1,
+    "verified": true,
+    "sample_command": "/"
+  }
+]

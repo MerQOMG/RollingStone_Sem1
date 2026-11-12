@@ -1,0 +1,27 @@
+expected rejection: zero-area footprint
+expected rejection: obstacle layout failed: accepted=0 requested=40 seed=20261112 candidates=200 boundary=200
+expected rejection: obstacles.count outside [0,500]
+O3 exact clipping, edge-only extrema, collinear and invalid/empty layouts PASS
+O1 body readback N=2 preview=0 PASS
+O1 body readback N=3 preview=0 PASS
+O1 body readback N=1000 preview=0 PASS
+O1 body readback N=2 preview=2 PASS
+O1 body readback N=3 preview=2 PASS
+O1 body readback N=1000 preview=2 PASS
+O1/O2 frozen N=2/3/1000, restart, actual geometry reload, independent seed=0 PASS hash=fnv1a64:652f9bbd8f6125f4
+O5 count=0 bodies=16 pairs=1024 contacts=1024 temp_bytes=10485760 temp_peak_bytes=1049457 measured_private_allocation_delta=13803520
+expected rejection: injected insufficient body capacity
+O5 count=40 bodies=48 pairs=1024 contacts=1536 temp_bytes=11534336 temp_peak_bytes=1493873 measured_private_allocation_delta=14741504
+expected rejection: injected insufficient body capacity
+O5 count=500 bodies=508 pairs=8128 contacts=16256 temp_bytes=41680896 temp_peak_bytes=14270833 measured_private_allocation_delta=49512448
+expected rejection: injected insufficient body capacity
+O4 mode=0 contacts=2 min_v=-40.0032501221 max_depth=0 max_omega=0.0182765456852
+expected rejection: initial solid penetrates obstacle
+O4 mode=1 contacts=0 min_v=50 max_depth=0 max_omega=0
+expected rejection: initial solid penetrates obstacle
+O4 mode=2 contacts=0 min_v=50 max_depth=0 max_omega=0
+expected rejection: initial solid penetrates obstacle
+O4 mode=3 contacts=1 min_v=-32.1171607971 max_depth=0 max_omega=39.4282295644
+expected rejection: initial solid penetrates obstacle
+O4 support rest and obstacle/elastic filtering PASS
+PASS obstacle core tests

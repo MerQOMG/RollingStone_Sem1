@@ -2,6 +2,7 @@
 #include "batch.h"
 #include <thread>
 namespace rs3d {
+struct ResultArchive;
 enum class SessionState { idle,running,paused,cancelling,completed,failed };
 enum class SessionPhase { idle,generating,preview,background,finished };
 const char*sessionStateName(SessionState state);
@@ -12,6 +13,8 @@ struct SessionView {
     std::shared_ptr<const PhysicsScene>scene;
     Snapshot snapshot;
     std::shared_ptr<const BatchResult>result;
+    std::shared_ptr<const AnalysisSnapshot>analysis;
+    std::shared_ptr<const ResultArchive>archive;
     std::uint64_t trialId=0,processed=0,completed=0,failures=0;
     double wallSeconds=0;
     bool pauseAcknowledged=false,workerFinished=true;
@@ -29,12 +32,15 @@ class Session {
     std::shared_ptr<BatchControl>control_;
     std::thread worker_;
     std::chrono::steady_clock::time_point started_;
+    bool readOnly_=false;
     void launch(bool single,int preview);
 public:
     explicit Session(const SceneDraft&draft);
+    explicit Session(std::shared_ptr<const ResultArchive>archive);
     ~Session();
     Session(const Session&)=delete;Session&operator=(const Session&)=delete;
     bool busy()const;
+    bool readOnly()const{return readOnly_;}
     const SceneDraft&draft()const{return draft_;} // UI thread only.
     SessionView view()const;
     void apply(const SceneDraft&draft);

@@ -1,0 +1,254 @@
+# Copy of event log excluding capture_async heartbeat lines.
+CPU=Intel(R) Core(TM) i7-14650HX RAM_bytes=16877125632 logical_processors=24 OS=Windows (build details in configure log)
+raylib=5.5 raygui=4.0 font=C:/Windows/Fonts/simhei.ttf fps=60 vsync=off
+source=GUI actual physics; helper lines use depth test; latest snapshot bounded to one
+resize window=1280x720 viewport=1200x605 dpi=1.25,1.25
+action=auto_start
+state=Running phase=1 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=0 wall=3.82e-05
+analysis version=1 trajectories=0 directory=1000 C=0 B=0 M=0 unknown=1000
+state=Running phase=1 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=0 wall=0.031029600000000001
+state=Running phase=2 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=0.0060000000000000001 wall=0.050902999999999997
+analysis version=2 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=3 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=4 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=5 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=6 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=7 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=8 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=9 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=10 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=11 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=12 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=13 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=14 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=15 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=16 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=17 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=18 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=19 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=20 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=21 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=22 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=23 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=24 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=25 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=26 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=27 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=28 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=29 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=30 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=31 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=32 trajectories=1 directory=1000 C=0 B=0 M=0 unknown=1000
+analysis version=33 trajectories=1 directory=1000 C=1 B=0 M=1 unknown=999
+state=Running phase=1 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.9139999999993504 wall=7.9705265000000001
+state=Running phase=2 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=0.0060000000000000001 wall=7.9871575000000004
+analysis version=34 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=35 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=36 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=37 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=38 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=39 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=40 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=41 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=42 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=43 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=44 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=45 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=46 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=47 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=48 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=49 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=50 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=51 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=52 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=53 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=54 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=55 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=56 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=57 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=58 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=59 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=60 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+analysis version=61 trajectories=2 directory=1000 C=1 B=0 M=1 unknown=999
+timeline action=background_follow_disabled trial=2 cursor=7.145999999999435 following=0 playing=0 physics_updates=7724
+analysis version=62 trajectories=2 directory=1000 C=2 B=0 M=2 unknown=998
+state=Running phase=3 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=15.143955200000001
+history_pose trial=2 time=7.145999999999435 interpolated=0 available=1 error= physics_updates=8086
+state=Running phase=3 trial=4 processed=3 C=3 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=15.3437757
+analysis version=63 trajectories=3 directory=1000 C=3 B=0 M=3 unknown=997
+state=Running phase=1 trial=5 processed=4 C=4 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=15.627212399999999
+analysis version=64 trajectories=4 directory=1000 C=4 B=0 M=4 unknown=996
+state=Running phase=3 trial=5 processed=4 C=4 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=15.643885900000001
+state=Running phase=3 trial=6 processed=5 C=5 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=15.793887700000001
+analysis version=65 trajectories=5 directory=1000 C=5 B=0 M=5 unknown=995
+state=Running phase=1 trial=7 processed=6 C=6 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=16.044198999999999
+state=Running phase=3 trial=7 processed=6 C=6 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=16.060862700000001
+analysis version=66 trajectories=6 directory=1000 C=6 B=0 M=6 unknown=994
+analysis version=67 trajectories=6 directory=1000 C=6 B=0 M=6 unknown=994
+analysis version=68 trajectories=6 directory=1000 C=6 B=0 M=6 unknown=994
+state=Running phase=3 trial=8 processed=7 C=7 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=16.694421299999998
+analysis version=69 trajectories=7 directory=1000 C=7 B=1 M=6 unknown=993
+state=Running phase=3 trial=9 processed=8 C=8 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.077839000000001
+analysis version=70 trajectories=8 directory=1000 C=8 B=1 M=7 unknown=992
+state=Running phase=1 trial=10 processed=9 C=9 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.194648099999998
+state=Running phase=3 trial=10 processed=9 C=9 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.211339899999999
+state=Running phase=3 trial=11 processed=10 C=10 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.311520399999999
+analysis version=71 trajectories=10 directory=1000 C=10 B=1 M=9 unknown=990
+state=Running phase=1 trial=12 processed=11 C=11 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.5449989
+state=Running phase=3 trial=12 processed=11 C=11 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.561618800000002
+analysis version=72 trajectories=11 directory=1000 C=11 B=1 M=10 unknown=989
+state=Running phase=3 trial=13 processed=12 C=12 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.7115504
+analysis version=73 trajectories=12 directory=1000 C=12 B=1 M=11 unknown=988
+state=Running phase=3 trial=14 processed=13 C=13 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=17.945046999999999
+analysis version=74 trajectories=13 directory=1000 C=13 B=1 M=12 unknown=987
+state=Running phase=1 trial=15 processed=14 C=14 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.228376399999998
+state=Running phase=3 trial=15 processed=14 C=14 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.245245100000002
+analysis version=75 trajectories=14 directory=1000 C=14 B=1 M=13 unknown=986
+state=Running phase=1 trial=16 processed=15 C=15 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.411815399999998
+state=Running phase=3 trial=16 processed=15 C=15 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.428472299999999
+analysis version=76 trajectories=15 directory=1000 C=15 B=1 M=14 unknown=985
+state=Running phase=1 trial=17 processed=16 C=16 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.7284465
+state=Running phase=3 trial=17 processed=16 C=16 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.745117499999999
+state=Running phase=1 trial=18 processed=17 C=17 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.828432500000002
+state=Running phase=3 trial=18 processed=17 C=17 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.845051000000002
+analysis version=77 trajectories=17 directory=1000 C=17 B=2 M=15 unknown=983
+state=Running phase=1 trial=19 processed=18 C=18 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.9450793
+state=Running phase=3 trial=19 processed=18 C=18 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=18.961748799999999
+analysis version=78 trajectories=18 directory=1000 C=18 B=2 M=16 unknown=982
+state=Running phase=1 trial=20 processed=19 C=19 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.145290299999999
+state=Running phase=3 trial=20 processed=19 C=19 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.161831299999999
+state=Running phase=1 trial=21 processed=20 C=20 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.261938399999998
+state=Running phase=3 trial=21 processed=20 C=20 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.278608899999998
+analysis version=79 trajectories=20 directory=1000 C=20 B=2 M=18 unknown=980
+state=Running phase=1 trial=22 processed=21 C=21 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.445447900000001
+state=Running phase=3 trial=22 processed=21 C=21 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.461949600000001
+state=Running phase=3 trial=23 processed=22 C=22 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.611947199999999
+analysis version=80 trajectories=22 directory=1000 C=22 B=2 M=20 unknown=978
+state=Running phase=3 trial=24 processed=23 C=23 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.828641300000001
+analysis version=81 trajectories=23 directory=1000 C=23 B=2 M=21 unknown=977
+state=Running phase=1 trial=25 processed=24 C=24 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.945285899999998
+state=Running phase=3 trial=25 processed=24 C=24 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=19.9619529
+state=Running phase=3 trial=26 processed=25 C=25 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.112063599999999
+analysis version=82 trajectories=25 directory=1000 C=25 B=2 M=23 unknown=975
+state=Running phase=1 trial=27 processed=26 C=26 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.245413599999999
+state=Running phase=3 trial=27 processed=26 C=26 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.262107100000001
+analysis version=83 trajectories=26 directory=1000 C=26 B=2 M=24 unknown=974
+state=Running phase=1 trial=28 processed=27 C=27 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.412089000000002
+state=Running phase=3 trial=28 processed=27 C=27 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.428809900000001
+state=Running phase=3 trial=29 processed=28 C=28 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.512139699999999
+analysis version=84 trajectories=28 directory=1000 C=28 B=3 M=25 unknown=972
+state=Running phase=3 trial=30 processed=29 C=29 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.779084099999999
+analysis version=85 trajectories=30 directory=1000 C=30 B=4 M=26 unknown=970
+state=Running phase=3 trial=31 processed=30 C=30 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=20.8957029
+analysis version=86 trajectories=30 directory=1000 C=30 B=4 M=26 unknown=970
+state=Running phase=1 trial=32 processed=31 C=31 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.162388799999999
+state=Running phase=3 trial=32 processed=31 C=31 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.179048600000002
+state=Running phase=1 trial=33 processed=32 C=32 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.295718900000001
+state=Running phase=3 trial=33 processed=32 C=32 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.3124091
+analysis version=87 trajectories=32 directory=1000 C=32 B=4 M=28 unknown=968
+state=Running phase=1 trial=34 processed=33 C=33 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.495837099999999
+state=Running phase=3 trial=34 processed=33 C=33 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.512619099999998
+analysis version=88 trajectories=33 directory=1000 C=33 B=4 M=29 unknown=967
+state=Running phase=1 trial=35 processed=34 C=34 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.829593200000001
+state=Running phase=3 trial=35 processed=34 C=34 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=21.846285399999999
+analysis version=89 trajectories=34 directory=1000 C=34 B=4 M=30 unknown=966
+state=Running phase=3 trial=36 processed=35 C=35 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.046637799999999
+analysis version=90 trajectories=35 directory=1000 C=35 B=4 M=31 unknown=965
+state=Running phase=1 trial=37 processed=36 C=36 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.196627700000001
+state=Running phase=3 trial=37 processed=36 C=36 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.2132966
+state=Running phase=1 trial=38 processed=37 C=37 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.296640799999999
+state=Running phase=3 trial=38 processed=37 C=37 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.3133005
+analysis version=91 trajectories=37 directory=1000 C=37 B=4 M=33 unknown=963
+state=Running phase=1 trial=39 processed=38 C=38 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.5466655
+state=Running phase=3 trial=39 processed=38 C=38 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.563314800000001
+analysis version=92 trajectories=38 directory=1000 C=38 B=4 M=34 unknown=962
+state=Running phase=3 trial=40 processed=39 C=39 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.696836099999999
+state=Running phase=1 trial=41 processed=40 C=40 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.830087299999999
+state=Running phase=3 trial=41 processed=40 C=40 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=22.846894299999999
+analysis version=93 trajectories=40 directory=1000 C=40 B=4 M=36 unknown=960
+state=Running phase=3 trial=42 processed=41 C=41 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.0302066
+analysis version=94 trajectories=41 directory=1000 C=41 B=4 M=37 unknown=959
+state=Running phase=1 trial=43 processed=42 C=42 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.247025499999999
+state=Running phase=3 trial=43 processed=42 C=42 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.263701300000001
+analysis version=95 trajectories=43 directory=1000 C=43 B=4 M=39 unknown=957
+state=Running phase=3 trial=44 processed=43 C=43 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.3970512
+state=Running phase=3 trial=45 processed=44 C=44 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.530408699999999
+analysis version=96 trajectories=44 directory=1000 C=44 B=4 M=40 unknown=956
+state=Running phase=1 trial=46 processed=45 C=45 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.6804314
+state=Running phase=3 trial=46 processed=45 C=45 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.697102600000001
+state=Running phase=1 trial=47 processed=46 C=46 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.897450800000001
+analysis version=97 trajectories=46 directory=1000 C=46 B=4 M=42 unknown=954
+state=Running phase=3 trial=47 processed=46 C=46 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=23.914095499999998
+analysis version=98 trajectories=46 directory=1000 C=46 B=4 M=42 unknown=954
+state=Running phase=3 trial=48 processed=47 C=47 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=24.197684899999999
+analysis version=99 trajectories=47 directory=1000 C=47 B=4 M=43 unknown=953
+state=Running phase=1 trial=49 processed=48 C=48 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=24.4642768
+state=Running phase=3 trial=49 processed=48 C=48 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=24.4810129
+state=Running phase=1 trial=50 processed=49 C=49 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=24.6143508
+state=Running phase=3 trial=50 processed=49 C=49 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=24.6478565
+analysis version=100 trajectories=49 directory=1000 C=49 B=4 M=45 unknown=951
+state=Running phase=3 trial=51 processed=50 C=50 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=24.847860000000001
+analysis version=101 trajectories=50 directory=1000 C=50 B=4 M=46 unknown=950
+state=Running phase=1 trial=52 processed=51 C=51 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.0979128
+state=Running phase=3 trial=52 processed=51 C=51 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.1146107
+analysis version=102 trajectories=51 directory=1000 C=51 B=4 M=47 unknown=949
+state=Running phase=1 trial=53 processed=52 C=52 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.314915500000001
+state=Running phase=3 trial=53 processed=52 C=52 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.3315795
+analysis version=103 trajectories=52 directory=1000 C=52 B=4 M=48 unknown=948
+state=Running phase=1 trial=54 processed=53 C=53 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.481627
+state=Running phase=3 trial=54 processed=53 C=53 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.4983164
+state=Running phase=1 trial=55 processed=54 C=54 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.631672900000002
+state=Running phase=3 trial=55 processed=54 C=54 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.6482919
+analysis version=104 trajectories=54 directory=1000 C=54 B=4 M=50 unknown=946
+state=Running phase=1 trial=56 processed=55 C=55 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.765274999999999
+state=Running phase=3 trial=56 processed=55 C=55 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.781896499999998
+analysis version=105 trajectories=55 directory=1000 C=55 B=4 M=51 unknown=945
+state=Running phase=1 trial=57 processed=56 C=56 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.9820785
+state=Running phase=3 trial=57 processed=56 C=56 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=25.998732700000001
+analysis version=106 trajectories=56 directory=1000 C=56 B=4 M=52 unknown=944
+state=Running phase=1 trial=58 processed=57 C=57 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.282499999999999
+state=Running phase=3 trial=58 processed=57 C=57 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.2991648
+state=Running phase=1 trial=59 processed=58 C=58 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.382557200000001
+state=Running phase=3 trial=59 processed=58 C=58 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.399107300000001
+analysis version=107 trajectories=58 directory=1000 C=58 B=5 M=53 unknown=942
+state=Running phase=1 trial=60 processed=59 C=59 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.532474300000001
+state=Running phase=3 trial=60 processed=59 C=59 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.549172599999999
+analysis version=108 trajectories=59 directory=1000 C=59 B=5 M=54 unknown=941
+state=Running phase=1 trial=61 processed=60 C=60 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.7659758
+state=Running phase=3 trial=61 processed=60 C=60 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.782644099999999
+analysis version=109 trajectories=60 directory=1000 C=60 B=5 M=55 unknown=940
+state=Running phase=1 trial=62 processed=61 C=61 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.9159814
+state=Running phase=3 trial=62 processed=61 C=61 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=26.9326495
+state=Running phase=3 trial=63 processed=62 C=62 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.0495619
+analysis version=110 trajectories=62 directory=1000 C=62 B=5 M=57 unknown=938
+state=Running phase=1 trial=64 processed=63 C=63 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.233086400000001
+state=Running phase=3 trial=64 processed=63 C=63 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.2497483
+analysis version=111 trajectories=63 directory=1000 C=63 B=5 M=58 unknown=937
+state=Running phase=1 trial=65 processed=64 C=64 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.449822999999999
+state=Running phase=3 trial=65 processed=64 C=64 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.466604700000001
+state=Running phase=1 trial=66 processed=65 C=65 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.583145200000001
+state=Running phase=3 trial=66 processed=65 C=65 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.599818200000001
+analysis version=112 trajectories=65 directory=1000 C=65 B=5 M=60 unknown=935
+state=Running phase=1 trial=67 processed=66 C=66 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.817362899999999
+state=Running phase=3 trial=67 processed=66 C=66 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=27.834123900000002
+analysis version=113 trajectories=66 directory=1000 C=66 B=5 M=61 unknown=934
+state=Running phase=1 trial=68 processed=67 C=67 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=28.028457700000001
+state=Running phase=3 trial=68 processed=67 C=67 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=28.044457399999999
+analysis version=114 trajectories=67 directory=1000 C=67 B=5 M=62 unknown=933
+state=Running phase=1 trial=69 processed=68 C=68 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=28.195373700000001
+input_to_draw_ms=15.739400000001069 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+state=Running phase=3 trial=69 processed=68 C=68 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=28.2112026
+request=cancel
+state=Cancelling phase=3 trial=69 processed=69 C=68 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=28.244627000000001
+analysis version=115 trajectories=69 directory=1000 C=68 B=5 M=63 unknown=932
+state=Failed phase=4 trial=69 processed=69 C=68 failures=0 hash=fnv1a64:b83ce3ff3845e35b sim=7.145999999999435 wall=28.293404800000001
+request=cancel confirmation_ms=63.880499999999785
+input_to_draw_ms=17.178799999996386 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+input_to_draw_ms=18.218499999989035 source=native owner=1 editor=-1 menu=0 yaw=-1 pitch=0.60000002384185791 distance=176.24443054199219
+action=request_open_results
+action=open_results
+analysis version=1 trajectories=0 directory=3 C=3 B=3 M=0 unknown=0
+state=Completed phase=4 trial=1 processed=3 C=3 failures=0 hash=fnv1a64:a9e90c354a0683d4 sim=0 wall=0
+history_pose trial=1 time=0 interpolated=0 available=1 error= physics_updates=385509
+analysis version=1 trajectories=3 directory=3 C=3 B=3 M=0 unknown=0
+exit worker_finished=1 state=Completed hash=fnv1a64:a9e90c354a0683d4

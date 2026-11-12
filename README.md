@@ -1,4 +1,18 @@
-# 山区滚石模拟：弹性阻挡体增量
+# 山区滚石模拟
+
+## 三维版：固定障碍、热图与时间轴
+
+三维程序使用 Jolt 刚体与实际凸多面体，支持同批固定随机障碍、前两次预览后汇总全部轨迹、全路径热图、首次触板局部热图和逐试验只读回放。完整操作说明见 [三维 README](docs/3d/README.md)，统计与文件格式见 [分析与时间轴说明](docs/3d/ANALYSIS_AND_TIMELINE.md)，验收证据见 [F0–F5记录](docs/3d/OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)。
+
+```bat
+build_3d.cmd Release
+test_3d.cmd
+run_obstacles_3d.cmd
+```
+
+在窗口点击“批量”开始演示；“分析”中选择试验、热格或拖动时间轴。“打开结果”选择已保存目录的 `manifest.ini`。也可运行 `run_3d.cmd --view-results "结果目录"`。回放直接读取记录，不重新计算物理。小样本频率、未确认数与不完整结果的上下界均明确显示；首次触板图不表示冲击力。
+
+## 二维版：弹性阻挡体增量
 
 在现有凸多边形和参数化地形代码上增加了水平单自由度弹簧阻尼挡板，重点计算数值，不模拟网格局部变形。两份 `rollingstone.cpp` 已同步；推荐从仓库根目录的 `RollingStone.sln` 或构建脚本进入。
 
