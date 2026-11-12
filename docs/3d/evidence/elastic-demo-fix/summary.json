@@ -1,0 +1,97 @@
+{
+  "date": "2026-11-12",
+  "baseline_head": "c09cf45416843b0ee168e6ba0540a845455f713f",
+  "root_cause": "Combined preset omitted mode; legacy parsing correctly chose rigid",
+  "before": "preset-red.txt",
+  "after": "preset-green.txt",
+  "binary_sha256": "4EF4AF5B68D3070CB04563D93CC346498F88565BF73DF405A4D48DB3E5294DD9",
+  "config_sha256": "09BDB08AE3DBFD51C70D081A839EC892D266953B9032E2D2662E84FBA1B15161",
+  "headless_archive": "results3d/elastic-demo-fix/ten/run_20261112_192707_16580_1",
+  "completed": 10,
+  "failures": 0,
+  "timeouts": 0,
+  "hits": [
+    {
+      "trial": 4,
+      "peak_displacement_m": 1.3841440522433999,
+      "final_displacement_m": 8.384404281969182E-13
+    },
+    {
+      "trial": 5,
+      "peak_displacement_m": 2.579664334633435,
+      "final_displacement_m": 1.4210854715202004E-13
+    },
+    {
+      "trial": 10,
+      "peak_displacement_m": 2.2404224105221147,
+      "final_displacement_m": 3.410605131648481E-13
+    }
+  ],
+  "gui": {
+    "completed": 4,
+    "original_frame_time": 11.87,
+    "observed_trial": 4,
+    "displayed_displacement_m": 1.383,
+    "previews": 2,
+    "final_displayed_peak_m": 1.384,
+    "final_displayed_displacement_m": 0,
+    "displayed_peak_m": 1.384,
+    "timeline_physics_update_count_constant": 39478,
+    "archive": "results3d/elastic-demo-fix/gui-runs/run_20261112_192657_20564_2",
+    "final_time": 23.812,
+    "headless_barrier_rows_exactly_equal": true
+  },
+  "replay": {
+    "trial": 4,
+    "barrier_position_error_m": 0,
+    "rock_position_error_m": 0
+  },
+  "readonly": {
+    "frames": 15580,
+    "physics_updates": 0,
+    "trials": 10
+  },
+  "release": {
+    "failed": 0,
+    "passed": 19
+  },
+  "protected_files": [
+    {
+      "path": "RollingStone.sln",
+      "sha256": "b17d44cc220737bf23a8ed698f2dd6603330e4f6ce0b1f5d79a8b623b22b5907",
+      "unchanged": true
+    },
+    {
+      "path": "docs/3d/IMPLEMENTATION_PLAN.md",
+      "sha256": "12336a7cec804fd4f5f2fdc1cf20cf8d8a07e855217db3ecd581756164d02205",
+      "unchanged": true
+    },
+    {
+      "path": "docs/3d/OBSTACLES_HEATMAP_TIMELINE_PLAN.md",
+      "sha256": "67a8e453bab39f149b4f9f978075c054c12c8bb5ebfeff2d319cc179ba93e48b",
+      "unchanged": true
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "JoltPhysics",
+      "clean": true,
+      "head": "0373ec0dd762e4bc2f6acdb08371ee84fa23c6db"
+    },
+    {
+      "name": "raylib",
+      "clean": true,
+      "head": "c1ab645ca298a2801097931d1079b10ff7eb9df8"
+    },
+    {
+      "name": "raygui",
+      "clean": true,
+      "head": "25c8c65a6e5f0f4d4b564a0343861898c6f2778b"
+    }
+  ],
+  "boundary": "Counts describe these fixed samples; the previous 100-trial rubble comparison used a rigid barrier.",
+  "debug": {
+    "failed": 0,
+    "passed": 3
+  }
+}

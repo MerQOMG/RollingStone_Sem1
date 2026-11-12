@@ -1,0 +1,1 @@
+replay trial=4 reason=resting position_error_m=0 barrier_position_error_m=0 pass=1

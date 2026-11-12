@@ -16,7 +16,7 @@
 #endif
 namespace {
 using namespace rs3d;
-const char*labels=u8"计算暂停继续停算续算障碍生成只读不与挡板碰撞无限位支座可能穿越障碍 单次运行批量暂停继续取消重置重新随机保存加载相机俯视侧视线框轨迹统计落石初值材料地形挡板应用更改设置释放点结束选点上一页下一页当前选择无空闲正在生成真实预览后台计算完成失败取消中已处理正常截断请求数量耗时秒本批参数哈希鼠标右键拖动旋转中键平移滚轮缩放世界向上比例每轴米质心速度自旋配置加载失败输入必须是有限数值范围错误保留原场景保存成功相机文件中文目录输出场景验证测试文件空间独立种子仅在空闲重新随机请点击地形释放点已更新运行期间参数锁定固定值或逗号分隔区间例显示关闭窗口正在安全取消未完成批次正式概率为空文件全部写入已完成总计静止上游下游横向退出超时几何数值错误单击对象高亮保存视角读取视角请先应用未应用更改帧率不限恢复即将关闭选择参数组正确最近交点单位确认文本编辑菜单弹性位移支承力阻尼耗能储能回弹刚性";
+const char*labels=u8"计算暂停继续停算续算障碍生成只读不与挡板碰撞无限位支座可能穿越障碍 单次运行批量暂停继续取消重置重新随机保存加载相机俯视侧视线框轨迹统计落石初值材料地形挡板应用更改设置释放点结束选点上一页下一页当前选择无空闲正在生成真实预览后台计算完成失败取消中已处理正常截断请求数量耗时秒本批参数哈希鼠标右键拖动旋转中键平移滚轮缩放世界向上比例每轴米质心速度自旋配置加载失败输入必须是有限数值范围错误保留原场景保存成功相机文件中文目录输出场景验证测试文件空间独立种子仅在空闲重新随机请点击地形释放点已更新运行期间参数锁定固定值或逗号分隔区间例显示关闭窗口正在安全取消未完成批次正式概率为空文件全部写入已完成总计静止上游下游横向退出超时几何数值错误单击对象高亮保存视角读取视角请先应用未应用更改帧率不限恢复即将关闭选择参数组正确最近交点单位确认文本编辑菜单弹性位移支承力阻尼耗能储能回弹刚性峰值启用首次接触事件";
 struct Window {Window(){SetConfigFlags(FLAG_WINDOW_RESIZABLE|FLAG_WINDOW_HIGHDPI|FLAG_WINDOW_ALWAYS_RUN);InitWindow(1280,720,"RollingStone3D - 3D rigid-body simulation");if(!IsWindowReady())throw std::runtime_error("OpenGL window initialization failed");SetWindowMinSize(800,600);SetExitKey(KEY_NULL);}~Window(){CloseWindow();}};
 // raylib 5.5 defaults to one stream buffer. Reusing it for offscreen 3D and
 // GUI flushes can stall on the Intel driver; rotate the public rlgl batches.
@@ -163,12 +163,15 @@ int runApplication(const rs3d::SceneDraft&draft,const AppOptions&opt){
         ui::text(font.value,TextFormat("%d / %d",page+1,pages),228,170,14);ui::text(font.value,busy?u8"运行期间参数锁定":u8"固定值或区间：例 0,1",16,float(height-100),14,{164,187,207,255});
         }
         GuiUnlock();if(GuiDropdownBox({16,136,194,30},u8"落石 / 批次;初值 / 材料;地形;挡板;统计 / 输出;固定障碍;结果 / 回放",&group,menu)){menu=!menu;active=-1;}
-        DrawRectangle(328,60,std::max(1,width-336),displayView.snapshot.barrier.elastic?121:75,{16,24,36,218});ui::text(font.value,std::string(u8"本批参数哈希 ")+view.config->hash,338,67,16);ui::text(font.value,TextFormat("t %.3f s   COM (%.3f, %.3f, %.3f) m",displayView.snapshot.time,displayView.snapshot.center.x,displayView.snapshot.center.y,displayView.snapshot.center.z),338,90,16);ui::text(font.value,TextFormat("|v| %.3f m/s   |omega| %.3f rad/s   k %d   r %.2f m",norm(displayView.snapshot.velocity),norm(displayView.snapshot.angularVelocity),int(displayView.scene->shape.vertices.size()),displayView.scene->radius),338,112,16);
+        const bool elasticState=displayView.snapshot.barrier.elastic&&!analysisPanel.showingEvent();
+        const int hudHeight=elasticState?121:98;
+        DrawRectangle(328,60,std::max(1,width-336),hudHeight,{16,24,36,218});ui::text(font.value,std::string(u8"本批参数哈希 ")+view.config->hash,338,67,16);ui::text(font.value,TextFormat("t %.3f s   COM (%.3f, %.3f, %.3f) m",displayView.snapshot.time,displayView.snapshot.center.x,displayView.snapshot.center.y,displayView.snapshot.center.z),338,90,16);ui::text(font.value,TextFormat("|v| %.3f m/s   |omega| %.3f rad/s   k %d   r %.2f m",norm(displayView.snapshot.velocity),norm(displayView.snapshot.angularVelocity),int(displayView.scene->shape.vertices.size()),displayView.scene->radius),338,112,16);
         if(displayView.snapshot.barrier.elastic&&!analysisPanel.showingEvent()){const auto&b=displayView.snapshot.barrier;
             ui::text(font.value,TextFormat(u8"弹性挡板 q %.3f m  v %.3f m/s  支承力 %.2f kN",b.displacement,b.velocity,b.supportForce/1000),338,135,16);
-            ui::text(font.value,TextFormat(u8"储能 %.2f kJ  阻尼耗能 %.2f kJ",b.springEnergy/1000,b.dampingEnergy/1000),338,157,16);}
+            ui::text(font.value,TextFormat(u8"峰值位移 %.3f m  储能 %.2f kJ  阻尼耗能 %.2f kJ",b.maxDisplacement,b.springEnergy/1000,b.dampingEnergy/1000),338,157,16);
+        }else ui::text(font.value,!displayView.scene->barrier.enabled?u8"挡板未启用":(displayView.scene->barrier.elastic?u8"弹性挡板（首次接触事件）":u8"刚性挡板（固定，无弹性位移）"),338,135,16);
         if(selected.id>=firstObstacleObjectId&&displayView.scene->obstacles){for(const auto&o:displayView.scene->obstacles->boxes)if(o.id==selected.id){std::ostringstream info;info<<"ID "<<o.id<<"  "<<o.dimensions.x<<" x "<<o.dimensions.y<<" x "<<o.dimensions.z<<" m  mu="<<o.friction<<" e="<<o.restitution;ui::text(font.value,info.str(),334,float(height-230),16,YELLOW);}}
-        if(group==5)ui::text(font.value,u8"不与挡板碰撞；无限位支座可能穿越障碍",334,142,16,YELLOW);
+        if(group==5)ui::text(font.value,u8"不与挡板碰撞；无限位支座可能穿越障碍",334,float(64+hudHeight),16,YELLOW);
         const char*names[]{u8"无",u8"地形",u8"落石",u8"挡板"};ui::text(font.value,std::string(u8"选择：")+(selected.id>=firstObstacleObjectId?u8"障碍":names[selected.id])+"   "+(releaseMode?u8"请点击地形":""),334,float(height-223),16,YELLOW);ui::text(font.value,u8"右拖旋转 / 中拖平移 / 滚轮缩放 | Z 向上 | 每轴 5 m",334,float(height-202),15);
         if(menu)GuiLock();analysisPanel.drawTimeline(font.value,width,height);GuiUnlock();
         DrawRectangle(0,height-84,width,84,{14,20,29,255});std::string summary=std::string(stateName(view.state))+" / "+phaseName(view.phase)+"  "+u8"已处理 "+std::to_string(view.processed)+"/"+std::to_string(view.config->source.count)+u8"  正常 "+std::to_string(view.completed)+u8"  失败/截断 "+std::to_string(view.failures)+"  "+std::string(TextFormat("%.1f",view.wallSeconds))+" s";ui::text(font.value,summary,16,float(height-76),18);

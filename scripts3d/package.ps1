@@ -13,14 +13,16 @@ Get-ChildItem -LiteralPath (Join-Path $root 'build/3d/bin') -Filter 'rs3d_*.exe'
 Copy-Item -LiteralPath (Join-Path $root 'configs3d') -Destination $target -Recurse
 $docs = Join-Path $target 'docs'
 New-Item -ItemType Directory -Path $docs | Out-Null
-foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md','ELASTIC_BARRIER.md','ANALYSIS_AND_TIMELINE.md','OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md','OBSTACLE_DISTRIBUTION_FIX.md')) {
+foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md','ELASTIC_BARRIER.md','ANALYSIS_AND_TIMELINE.md','OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md','OBSTACLE_DISTRIBUTION_FIX.md','ELASTIC_DEMO_FIX.md')) {
     Copy-Item -LiteralPath (Join-Path $root ('docs/3d/'+$name)) -Destination $docs
 }
 $readme = @'
 # RollingStone3D
 
-双击 run_obstacles_3d.cmd 打开障碍、热图与时间轴演示，点击“批量”开始。
+双击 run_obstacles_3d.cmd 打开弹性挡板、障碍、热图与时间轴演示，点击“批量”开始。
 双击 run_elastic_3d.cmd 打开弹性挡板场景。
+
+组合场景前3次未碰板，第4次有真实撞击。完成至少4次后，选择trial 4并拖到约11.87秒，可查看位移和回弹。随包有样例时，可用 `run_3d.cmd --view-results examples/demo_results` 直接打开记录。
 
 完整说明见 [操作文档](docs/README.md)、[统计与回放格式](docs/ANALYSIS_AND_TIMELINE.md) 和 [验收记录](docs/OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)。
 
@@ -34,7 +36,7 @@ if ($ExampleDirectory) {
     $example = [IO.Path]::GetFullPath((Join-Path $root $ExampleDirectory))
     if (!(Test-Path -LiteralPath (Join-Path $example 'FILES_COMPLETE.txt'))) { throw 'Example must be a committed result archive.' }
     New-Item -ItemType Directory -Path (Join-Path $target 'examples') | Out-Null
-    Copy-Item -LiteralPath $example -Destination (Join-Path $target 'examples/three_trials') -Recurse
+    Copy-Item -LiteralPath $example -Destination (Join-Path $target 'examples/demo_results') -Recurse
 }
 Copy-Item -LiteralPath (Join-Path $root 'docs/3d/images') -Destination (Join-Path $docs 'images') -Recurse
 $notices = Join-Path $target 'licenses'

@@ -1,0 +1,1 @@
+FAIL combined demo must explicitly enable an elastic barrier

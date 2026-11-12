@@ -1,4 +1,5 @@
 #include "trial.h"
+#include "config.h"
 #include "jolt_runtime.h"
 #include <iostream>
 #include <iomanip>
@@ -59,5 +60,20 @@ void decayAndLimits(){auto s=scene();s.barrier.stiffness=0;s.barrier.initialVelo
  for(double k:{0.,1e8})for(double c:{0.,1e7}){s.barrier.stiffness=k;s.barrier.damping=c;s.barrier.initialDisplacement=.02;s.barrier.initialVelocity=0;Trial edge(s,{1,true});auto end=advance(edge,100,.002).barrier;check(std::isfinite(end.springEnergy+end.kineticEnergy),"support boundary nonfinite");}
  s=scene();s.barrier.damping=0;s.barrier.initialDisplacement=.4;Trial active(s,{3});advance(active,1100,.002);check(active.snapshot().reason==StopReason::running,"rock rest prematurely ended oscillating support");
  std::cout<<"E3 zero stiffness/damping, stiff boundaries, support-aware termination PASS\n";}
+void demoPreset(const std::filesystem::path&path){
+    auto draft=loadScene(path);auto c=freezeConfig(draft);
+    check(c->barrier.enabled&&c->barrier.elastic,"combined demo must explicitly enable an elastic barrier");
+    check(c->barrier.stiffness>0&&c->barrier.damping>0,"combined demo must have a spring and damper");
+    // Use the shipped scene and sampler; do not replace its slope, input rock,
+    // obstacle field or barrier with a synthetic contact fixture.
+    bool moved=false;double peak=0;int hits=0;
+    for(std::uint64_t id=1;id<=10;++id){auto input=sampleTrialInput(*c,id);auto shape=generatePolyhedron(c->source.geometry,input.seed).geometry;auto scene=makePhysicsScene(*c,input,shape);Trial t(scene,{draft.maxTime});
+        while(t.snapshot().reason==StopReason::running){auto s=t.step();check(s.reason!=StopReason::numericFailure,s.error.c_str());peak=std::max(peak,s.barrier.maxDisplacement);hits+=s.contacts.barrier;
+            check(norm(s.barrier.center-(scene.barrier.center+barrierAxis(scene.barrier)*s.barrier.displacement))<1e-5,"demo barrier pose lost its physical displacement");
+            if(s.barrier.touched&&s.barrier.maxDisplacement>.01)moved=true;}
+        if(moved){std::cout<<"PASS actual combined demo trial="<<id<<" peak_q="<<peak<<"m barrier_listener_manifolds="<<hits<<'\n';break;}
+    }
+    check(moved,"first ten combined demo trials show no visible elastic impact");
 }
-int main(){try{JoltRuntime runtime;std::cout<<std::setprecision(12);double coarse=oscillator(.002),fine=oscillator(.001);check(fine<coarse,"oscillator step refinement did not improve error");impact(0);impact(35);finiteAndEnergy();decayAndLimits();impactRefinement();std::cout<<"PASS elastic support numerical tests\n";return 0;}catch(const std::exception&e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}
+}
+int main(int argc,char**argv){try{JoltRuntime runtime;std::cout<<std::setprecision(12);if(argc==2){demoPreset(std::filesystem::u8path(argv[1]));return 0;}double coarse=oscillator(.002),fine=oscillator(.001);check(fine<coarse,"oscillator step refinement did not improve error");impact(0);impact(35);finiteAndEnergy();decayAndLimits();impactRefinement();std::cout<<"PASS elastic support numerical tests\n";return 0;}catch(const std::exception&e){std::cerr<<"FAIL "<<e.what()<<'\n';return 1;}}

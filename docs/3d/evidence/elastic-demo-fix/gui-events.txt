@@ -1,0 +1,35 @@
+action=auto_start
+state=Running phase=1 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=0 wall=5.9200000000000002e-05
+state=Running phase=1 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=0 wall=0.044920000000000002
+state=Running phase=2 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=0.018000000000000002 wall=0.066427799999999995
+state=Running phase=1 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=7.6679999999993775 wall=7.7181506000000004
+state=Running phase=2 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=0.0080000000000000002 wall=7.7348388000000003
+timeline action=background_follow_disabled trial=2 cursor=8.1879999999994038 following=0 playing=0 physics_updates=7928
+state=Running phase=1 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=8.1879999999994038 wall=15.920169
+history_pose trial=2 time=8.1879999999994038 interpolated=0 available=1 error= physics_updates=8190
+state=Running phase=3 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=8.1879999999994038 wall=15.936839900000001
+state=Completed phase=4 trial=3 processed=3 C=3 failures=0 hash=fnv1a64:8b2120f4f4a41a90 sim=8.1879999999994038 wall=16.301353500000001
+apply config_hash=fnv1a64:5b0e9bcf17be3199 barrier=1
+action=apply
+state=Idle phase=0 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=0 wall=0
+action=batch
+state=Running phase=1 trial=0 processed=0 C=0 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=0 wall=0.0131133
+state=Running phase=2 trial=1 processed=0 C=0 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=0.002 wall=0.046342000000000001
+state=Running phase=1 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=7.6679999999993775 wall=7.7166765000000002
+state=Running phase=2 trial=2 processed=1 C=1 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=0 wall=7.7334453999999999
+timeline action=background_follow_disabled trial=2 cursor=8.1879999999994038 following=0 playing=0 physics_updates=21714
+state=Running phase=1 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=8.1879999999994038 wall=15.9248694
+history_pose trial=2 time=8.1879999999994038 interpolated=0 available=1 error= physics_updates=21930
+state=Running phase=3 trial=3 processed=2 C=2 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=8.1879999999994038 wall=15.9414786
+state=Running phase=3 trial=4 processed=3 C=3 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=8.1879999999994038 wall=16.285077399999999
+state=Completed phase=4 trial=4 processed=4 C=4 failures=0 hash=fnv1a64:5b0e9bcf17be3199 sim=8.1879999999994038 wall=16.869123699999999
+timeline action=trial_input trial=4 cursor=0 following=0 playing=0 physics_updates=39478
+history_pose trial=4 time=0 interpolated=0 available=1 error= physics_updates=39478
+timeline action=drag trial=4 cursor=11.863668494819439 following=0 playing=0 physics_updates=39478
+history_pose trial=4 time=11.863668494819439 interpolated=1 available=1 error= physics_updates=39478
+timeline action=next_frame trial=4 cursor=11.870000000000633 following=0 playing=0 physics_updates=39478
+history_pose trial=4 time=11.870000000000633 interpolated=0 available=1 error= physics_updates=39478
+timeline action=end trial=4 cursor=23.811999999997681 following=0 playing=0 physics_updates=39478
+history_pose trial=4 time=23.811999999997681 interpolated=0 available=1 error= physics_updates=39478
+exit worker_finished=1 state=Completed hash=fnv1a64:5b0e9bcf17be3199
+result_directory=results3d/elastic-demo-fix/gui-runs\run_20261112_192657_20564_2 status=complete

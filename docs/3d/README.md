@@ -34,6 +34,8 @@ python scripts3d/audit_batch.py "results3d/run_实际目录"
 
 组合演示和独立只读浏览：
 
+组合预设已启用弹性挡板，顶部显示当前和峰值位移。当前固定种子下第4次有真实撞击，约11.87s位移1.383m、峰值1.384m；前3次未触板。完成至少4次后选择trial 4查看回弹，详见 [组合演示修复](ELASTIC_DEMO_FIX.md)。
+
 ```powershell
 ./run_3d.cmd --config configs3d/obstacles_heatmap_timeline.ini
 ./run_3d.cmd --config configs3d/obstacles_heatmap_timeline.ini --batch 100 --preview 2

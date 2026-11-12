@@ -1,0 +1,44 @@
+Internal ctest changing into directory: C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+Test project C:/Users/shell/Documents/Programming/Semester_1/Week_9/build/3d
+      Start  1: abi_zero_radius
+ 1/19 Test  #1: abi_zero_radius ..................   Passed    0.01 sec
+      Start  2: input_ownership
+ 2/19 Test  #2: input_ownership ..................   Passed    0.01 sec
+      Start  3: geometry_analytic
+ 3/19 Test  #3: geometry_analytic ................   Passed    0.02 sec
+      Start  4: geometry_morphology
+ 4/19 Test  #4: geometry_morphology ..............   Passed    0.52 sec
+      Start  5: terrain_mesh_support
+ 5/19 Test  #5: terrain_mesh_support .............   Passed    0.02 sec
+      Start  6: physics_dynamics
+ 6/19 Test  #6: physics_dynamics .................   Passed    0.82 sec
+      Start  7: statistics_dda
+ 7/19 Test  #7: statistics_dda ...................   Passed    0.09 sec
+      Start  8: config_snapshot
+ 8/19 Test  #8: config_snapshot ..................   Passed    0.03 sec
+      Start  9: settling_regression
+ 9/19 Test  #9: settling_regression ..............   Passed    0.42 sec
+      Start 10: batch_output_replay
+10/19 Test #10: batch_output_replay ..............   Passed    6.26 sec
+      Start 11: session_playback_control
+11/19 Test #11: session_playback_control .........   Passed    6.73 sec
+      Start 12: elastic_barrier
+12/19 Test #12: elastic_barrier ..................   Passed    0.21 sec
+      Start 13: elastic_combined_demo
+13/19 Test #13: elastic_combined_demo ............   Passed    1.16 sec
+      Start 14: contact_observer
+14/19 Test #14: contact_observer .................   Passed    0.05 sec
+      Start 15: fixed_obstacles
+15/19 Test #15: fixed_obstacles ..................   Passed    6.19 sec
+      Start 16: full_path_first_contact
+16/19 Test #16: full_path_first_contact ..........   Passed    0.05 sec
+      Start 17: motion_chunks
+17/19 Test #17: motion_chunks ....................   Passed    0.01 sec
+      Start 18: archive_analysis_transactions
+18/19 Test #18: archive_analysis_transactions ....   Passed    1.31 sec
+      Start 19: readonly_playback
+19/19 Test #19: readonly_playback ................   Passed    0.15 sec
+
+100% tests passed, 0 tests failed out of 19
+
+Total Test time (real) =  24.09 sec

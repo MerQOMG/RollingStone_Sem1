@@ -1,0 +1,11 @@
+{
+  "package": "C:\\Users\\shell\\Documents\\Programming\\Semester_1\\Week_9\\build\\3d\\package\\RollingStone3D-elastic-demo-fix-20261112",
+  "readonly_sample_trials": 4,
+  "physics_updates": 0,
+  "binary_sha256": "4EF4AF5B68D3070CB04563D93CC346498F88565BF73DF405A4D48DB3E5294DD9",
+  "launcher_mode": "elastic",
+  "all_hashes_match": true,
+  "actual_preset_peak_displacement_m": 1.38414405224,
+  "actual_preset_trial": 4,
+  "manifest_entries": 251
+}
