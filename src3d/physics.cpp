@@ -122,7 +122,7 @@ struct PhysicsWorld::Impl {
         system.Init(16,0,1024,1024,broad,filter,pair);system.SetGravity(jvec(settings.gravity));
         JPH::PhysicsSettings physics;physics.mPenetrationSlop=float(diagnostic.slop);physics.mMinVelocityForRestitution=0.15f;
         physics.mLinearCastThreshold=0.25f;physics.mLinearCastMaxPenetration=float(diagnostic.linearCastMaxPenetration);
-        physics.mNumVelocitySteps=10;physics.mNumPositionSteps=2;system.SetPhysicsSettings(physics);
+        physics.mUseManifoldReduction=settings.manifoldReduction;physics.mNumVelocitySteps=10;physics.mNumPositionSteps=2;system.SetPhysicsSettings(physics);
         system.SetCombineFriction(friction);system.SetCombineRestitution(restitution);contacts.slop=diagnostic.slop;system.SetContactListener(&contacts);
         auto&bi=system.GetBodyInterface();
         auto add=[&](const JPH::BodyCreationSettings&b){auto id=bi.CreateAndAddBody(b,b.mMotionType==JPH::EMotionType::Dynamic?JPH::EActivation::Activate:JPH::EActivation::DontActivate);require(!id.IsInvalid(),"Jolt body allocation failed");bodies.push_back(id);return id;};

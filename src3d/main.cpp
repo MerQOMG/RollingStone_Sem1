@@ -12,7 +12,7 @@ std::mutex consoleMutex;
 BOOL WINAPI interrupt(DWORD signal){std::lock_guard<std::mutex>lock(consoleMutex);if((signal==CTRL_C_EVENT||signal==CTRL_BREAK_EVENT||signal==CTRL_CLOSE_EVENT)&&activeControl){activeControl->cancel();return TRUE;}return FALSE;}
 std::uint64_t integer(const std::wstring&s){if(s.empty()||s.find_first_not_of(L"0123456789")!=s.npos)throw std::runtime_error("expected unsigned integer");return std::stoull(s);}
 int selfTest(const std::filesystem::path&folder){
-    for(auto name:{L"rs3d_abi.exe",L"rs3d_input_tests.exe",L"rs3d_geometry_tests.exe",L"rs3d_terrain_tests.exe",L"rs3d_physics_tests.exe",L"rs3d_statistics_tests.exe",L"rs3d_config_tests.exe",L"rs3d_settling_tests.exe",L"rs3d_batch_tests.exe",L"rs3d_session_tests.exe"}){
+    for(auto name:{L"rs3d_abi.exe",L"rs3d_input_tests.exe",L"rs3d_geometry_tests.exe",L"rs3d_morphology_tests.exe",L"rs3d_terrain_tests.exe",L"rs3d_physics_tests.exe",L"rs3d_statistics_tests.exe",L"rs3d_config_tests.exe",L"rs3d_settling_tests.exe",L"rs3d_batch_tests.exe",L"rs3d_session_tests.exe"}){
         auto path=folder/name;std::wstring command=L"\""+path.wstring()+L"\"";STARTUPINFOW startup{};startup.cb=sizeof(startup);PROCESS_INFORMATION process{};
         if(!CreateProcessW(path.c_str(),command.data(),nullptr,nullptr,FALSE,0,nullptr,nullptr,&startup,&process))throw std::runtime_error("cannot start self-test executable; build all test targets");WaitForSingleObject(process.hProcess,INFINITE);DWORD code=1;GetExitCodeProcess(process.hProcess,&code);CloseHandle(process.hThread);CloseHandle(process.hProcess);if(code)return int(code);
     }return 0;

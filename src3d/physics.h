@@ -12,6 +12,9 @@ struct DynamicsSettings {
     double density=2600,friction=0.45,restitution=0.45,airDensity=1.225,dragCoefficient=1,rollingCoefficient=0.02;
     Vec3 gravity{0,0,-9.81};
     bool allowSleeping=true;
+    // Keep separate coplanar mesh contacts for stable irregular support faces.
+    // Replay explicitly restores true for output produced before this setting.
+    bool manifoldReduction=false;
 };
 struct InitialState {
     Vec3 shapeOrigin{10,0,0}; // World position of canonical double COM; Jolt COM offset is added internally.

@@ -15,7 +15,7 @@ struct Polyhedron {
     double innerRadius=0,tau=0,slenderness=0;
     bool doubleFallback=false;
 };
-struct GeometrySettings{int kMin=20,kMax=50;double radius=2,volume=7;};
+struct GeometrySettings{int kMin=20,kMax=50;double radius=2,volume=7;}; // radius=max vertex distance from solid COM
 struct ShapeDiagnostics {
     int k=0,attempts=0,rootIterations=0;
     std::uint64_t trialSeed=0,attemptSeed=0;
@@ -29,7 +29,7 @@ public:
     bool cancelled;
     GenerationFailure(std::string message,ShapeDiagnostics details,bool wasCancelled=false):std::runtime_error(message),diagnostics(std::move(details)),cancelled(wasCancelled){}
 };
-constexpr const char* samplerVersion="stereographic-bipyramid-v1";
+constexpr const char* samplerVersion="convex-retreat-com-radius-v3";
 double referenceVolume(int k,double radius);
 void validateGeometrySettings(const GeometrySettings& settings);
 double hullTolerance(const std::vector<Vec3>& normalizedPoints);

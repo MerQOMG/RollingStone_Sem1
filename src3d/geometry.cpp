@@ -87,10 +87,49 @@ void integrate(Polyhedron& p){
     for(auto f:p.faces){Vec3 a=p.vertices[f.a],n=unit(cross(p.vertices[f.b]-a,p.vertices[f.c]-a));p.innerRadius=std::min(p.innerRadius,-dot(n,p.center-a));}
     p.slenderness=extent(p.vertices,p.center)/p.innerRadius;
 }
-std::vector<Vec3> reference(int k){
-    if(k==4){double a=1/std::sqrt(3.0);return {{a,a,a},{a,-a,-a},{-a,a,-a},{-a,-a,a}};}
-    std::vector<Vec3> v{{0,0,1},{0,0,-1}};
-    for(int i=0;i<k-2;++i){double a=2*pi*i/(k-2);v.push_back({std::cos(a),std::sin(a),0});}return v;
+std::vector<Vec3> reference(int k,Random&rng,const std::function<bool()>&cancelled){
+    // Random best-candidate spacing, without poles, latitude rings or fixed
+    // connectivity. The bounded search discourages near-duplicate vertices;
+    // it is a shape-family sampler, not an IID/uniform polyhedron distribution.
+    std::vector<Vec3> points;points.reserve(k);
+    for(int i=0;i<k;++i){
+        checkpoint(cancelled);Vec3 best;double score=-1;
+        for(int candidate=0;candidate<24;++candidate){
+            auto q=rng.direction();double nearest=4;
+            for(auto p:points)nearest=std::min(nearest,norm2(q-p));
+            if(nearest>score){score=nearest;best=q;}
+        }
+        points.push_back(best);
+    }
+    return points;
+}
+std::vector<Vec3> irregularReference(int k,Random&rng,double target,const std::function<bool()>&cancelled){
+    auto points=reference(k,rng,cancelled);
+    auto initial=convexPolyhedron(points);
+    require(initial.volume/std::pow(extent(points,initial.center),3)>target,"spaced reference did not bracket target");
+    std::vector<int> order;for(int i=0;i<k;++i)order.push_back(i);
+    for(int i=k-1;i>0;--i)std::swap(order[i],order[rng.integer(0,i)]);
+    for(int id:order){
+        checkpoint(cancelled);std::vector<Vec3> others;
+        for(int i=0;i<k;++i)if(i!=id)others.push_back(points[i]);
+        auto hull=convexPolyhedron(others);auto direction=points[id]-hull.center;
+        double boundary=1;
+        for(auto f:hull.faces){auto a=others[f.a],normal=cross(others[f.b]-a,others[f.c]-a);double denominator=dot(normal,direction);
+            if(denominator>0)boundary=std::min(boundary,dot(normal,a-hull.center)/denominator);}
+        require(boundary>0&&boundary<1,"vertex retreat has no exposed interval");
+        // Stay strictly beyond the other vertices' hull. Moving one vertex
+        // inward cannot hide another vertex; the moved point stays extreme too.
+        double fraction=boundary+(1-boundary)*(.25+.6*rng.uniform());
+        Vec3 original=points[id],displacement=hull.center+direction*fraction-original;
+        bool accepted=false;
+        for(int backtrack=0;backtrack<24;++backtrack){
+            checkpoint(cancelled);points[id]=original+displacement;auto candidate=convexPolyhedron(points);
+            if(candidate.volume/std::pow(extent(points,candidate.center),3)>target){accepted=true;break;}
+            displacement=displacement*.5;
+        }
+        if(!accepted)points[id]=original; // Preserve the existing upper-volume endpoint.
+    }
+    return points;
 }
 }
 
@@ -138,28 +177,30 @@ GeneratedShape generatePolyhedron(const GeometrySettings&s,std::uint64_t seed,co
         checkpoint(checkCancellation);d.attempts=attempt+1;d.attemptSeed=mix((seed^shapeDomain)+std::uint64_t(attempt));Random rng(d.attemptSeed);
         try{
             if(attempt<rejectFirst)throw std::runtime_error("injected attempt rejection");
-            auto base=reference(d.k);std::vector<Vec3> direction;for(auto q:base){auto v=rng.direction();direction.push_back(v-q*dot(q,v));}
-            std::vector<Vec3> ref;double amplitude=0.8/(d.k-2);
-            bool above=false;
-            for(int shrink=0;shrink<24;++shrink){checkpoint(checkCancellation);ref.clear();for(size_t i=0;i<base.size();++i)ref.push_back(unit(base[i]+direction[i]*amplitude));
-                if(convexPolyhedron(ref).volume>target){above=true;break;}amplitude*=0.5;}
-            require(above,"reference perturbation did not bracket target");
-            Vec3 n;bool axis=false;
-            for(int i=0;i<128;++i){checkpoint(checkCancellation);n=rng.direction();axis=true;for(auto q:ref)if(1+dot(q,n)<=0.01){axis=false;break;}if(axis)break;}
-            require(axis,"128 projection axes exhausted");
-            Vec3 e1=unit(cross(n,std::abs(n.z)<0.8?Vec3{0,0,1}:Vec3{1,0,0})),e2=cross(n,e1);
-            std::vector<Vec3> uv;for(auto q:ref){double den=1+dot(q,n);uv.push_back({dot(q,e1)/den,dot(q,e2)/den,0});}
-            auto deform=[&](double t){std::vector<Vec3> v;for(auto u:uv){double sq=t*t*(u.x*u.x+u.y*u.y);v.push_back((e1*(2*t*u.x)+e2*(2*t*u.y)+n*(1-sq))/(1+sq));}return v;};
-            double lo=0,hi=1;Polyhedron solved;bool converged=false;
-            for(int iteration=0;iteration<80;++iteration){checkpoint(checkCancellation);double t=(lo+hi)/2;solved=convexPolyhedron(deform(t));d.rootIterations=iteration+1;
-                if(std::abs(solved.volume-target)<=std::max(1e-13,1e-9*target)){converged=true;break;}
-                if(solved.volume>target)hi=t;else lo=t;
+            auto base=convexPolyhedron(irregularReference(d.k,rng,target,checkCancellation));
+            std::vector<Vec3> ref;auto axes=axisRotation(rng.direction(),2*pi*rng.uniform());
+            for(auto p:base.vertices)ref.push_back(axes*(p-base.center));
+            require(base.volume/std::pow(extent(ref,{}),3)>target,"irregular reference did not bracket target");
+            // Invertible anisotropic maps preserve all k extreme vertices.
+            // det(diag(1,t^a,t^(1-a)))=t. Normalizing the maximum COM radius
+            // fixes r for every candidate; the scalar root fixes V independently.
+            double aspect=.15+.7*rng.uniform();
+            auto volumeAt=[&](double t,double&scaleY,double&scaleZ,double&outer){
+                scaleY=std::pow(t,aspect);scaleZ=std::pow(t,1-aspect);outer=0;
+                for(auto p:ref)outer=std::max(outer,norm(Vec3{p.x,p.y*scaleY,p.z*scaleZ}));
+                return base.volume*t/(outer*outer*outer);
+            };
+            double lo=0,hi=1,sy=1,sz=1,outer=1;bool converged=false;
+            for(int iteration=0;iteration<80;++iteration){checkpoint(checkCancellation);double t=(lo+hi)/2;double volume=volumeAt(t,sy,sz,outer);d.rootIterations=iteration+1;
+                if(std::abs(volume-target)<=std::max(1e-13,1e-9*target)){converged=true;break;}
+                if(volume>target)hi=t;else lo=t;
             }
             require(converged,"volume bracket root exceeded 80 iterations");
             auto rotation=axisRotation(rng.direction(),2*pi*rng.uniform());std::vector<Vec3> final;
-            for(auto q:solved.vertices)final.push_back((rotation*q)*s.radius);
+            for(auto q:ref)final.push_back((rotation*Vec3{q.x,q.y*sy,q.z*sz})*(s.radius/outer));
             out.geometry=convexPolyhedron(final);auto& p=out.geometry;
-            for(auto q:p.vertices)require(std::abs(norm(q)-s.radius)<=1e-8*s.radius,"sphere radius constraint violated");
+            require(norm(p.center)<=1e-8*s.radius,"COM-centered geometry constraint violated");
+            require(std::abs(extent(p.vertices,p.center)-s.radius)<=1e-8*s.radius,"maximum COM radius constraint violated");
             require(std::abs(p.volume-s.volume)<=std::max(1e-12*s.radius*s.radius*s.radius,1e-6*s.volume),"canonical volume tolerance exceeded");
             std::vector<Vec3> enginePoints;for(auto q:p.vertices)enginePoints.push_back((q-p.center)/s.radius);p.tau=hullTolerance(enginePoints);
             require(p.innerRadius>=32*p.tau*s.radius,"inner radius below 32*tau*r quality threshold");

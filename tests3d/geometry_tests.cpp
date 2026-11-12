@@ -72,7 +72,7 @@ double percentile(std::vector<double>v,double q){std::sort(v.begin(),v.end());re
 void samples(int count,const std::filesystem::path&dir){
     std::filesystem::create_directories(dir);std::ofstream csv(dir/"samples.csv"),reject(dir/"attempt_rejections.csv"),fail(dir/"failures.txt"),summary(dir/"summary.txt");
     check(bool(csv)&&bool(reject)&&bool(fail)&&bool(summary),"sample logs not writable");csv<<std::setprecision(17);reject<<"sample,attempt,reason\n";
-    csv<<"sample,trial_seed,k,r,V,actual_V,attempts,root_iterations,ms,tau,d_in,slenderness,double_fallback,engine_V_rel,engine_mass_rel,engine_COM_m,engine_I_rel,engine_vertex_m,engine_d_in\n";
+    csv<<"sample,trial_seed,k,r,V,actual_V,attempts,root_iterations,ms,tau,d_in,slenderness,double_fallback,engine_V_rel,engine_mass_rel,engine_COM_m,engine_I_rel,engine_vertex_m,engine_d_in,max_radius_relative_error,min_radius_over_r,canonical_COM_over_r\n";
     int failures=0,retries=0,totalRetries=0,fallback=0;double minInner=1e300,maxThin=0,maxV=0,maxI=0,maxC=0;std::vector<double> ms;std::map<int,int>hist;
     for(int i=0;i<count;++i){
         GeometrySettings s;
@@ -82,8 +82,9 @@ void samples(int count,const std::filesystem::path&dir){
         try{auto result=generatePolyhedron(s,seed);const auto&p=result.geometry;const auto&d=result.diagnostics;
             check(p.vertices.size()==size_t(s.kMin),"sample actual k");validatePolyhedron(p);++hist[d.attempts];if(d.attempts>1)++retries;totalRetries+=d.attempts-1;fallback+=p.doubleFallback?1:0;
             for(size_t a=0;a<d.rejections.size();++a)reject<<i+1<<','<<a+1<<",\""<<d.rejections[a]<<"\"\n";
+            double outer=0,inner=1e300;for(auto vertex:p.vertices){double distance=norm(vertex-p.center);outer=std::max(outer,distance);inner=std::min(inner,distance);}check(std::abs(outer/s.radius-1)<=1e-8,"sample maximum COM radius");check(norm(p.center)/s.radius<=1e-8,"sample canonical COM");
             minInner=std::min(minInner,p.innerRadius/s.radius);maxThin=std::max(maxThin,p.slenderness);maxV=std::max(maxV,d.engineVolumeError);maxI=std::max(maxI,d.engineInertiaError);maxC=std::max(maxC,d.engineCenterError/s.radius);ms.push_back(d.milliseconds);
-            csv<<i+1<<','<<seed<<','<<d.k<<','<<s.radius<<','<<s.volume<<','<<p.volume<<','<<d.attempts<<','<<d.rootIterations<<','<<d.milliseconds<<','<<p.tau<<','<<p.innerRadius<<','<<p.slenderness<<','<<p.doubleFallback<<','<<d.engineVolumeError<<','<<d.engineMassError<<','<<d.engineCenterError<<','<<d.engineInertiaError<<','<<d.engineVertexError<<','<<d.engineInnerRadius<<'\n';
+            csv<<i+1<<','<<seed<<','<<d.k<<','<<s.radius<<','<<s.volume<<','<<p.volume<<','<<d.attempts<<','<<d.rootIterations<<','<<d.milliseconds<<','<<p.tau<<','<<p.innerRadius<<','<<p.slenderness<<','<<p.doubleFallback<<','<<d.engineVolumeError<<','<<d.engineMassError<<','<<d.engineCenterError<<','<<d.engineInertiaError<<','<<d.engineVertexError<<','<<d.engineInnerRadius<<','<<std::abs(outer/s.radius-1)<<','<<inner/s.radius<<','<<norm(p.center)/s.radius<<'\n';
         }catch(const std::exception&e){++failures;fail<<"sample="<<i+1<<" seed="<<seed<<" k="<<s.kMin<<" r="<<s.radius<<" V="<<s.volume<<": "<<e.what()<<'\n';}
         if((i+1)%100==0){csv.flush();fail.flush();std::cout<<"sample "<<i+1<<'/'<<count<<" final_failures="<<failures<<" retry_trials="<<retries<<'\n'<<std::flush;}
     }

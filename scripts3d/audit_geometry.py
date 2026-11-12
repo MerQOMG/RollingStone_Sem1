@@ -23,6 +23,10 @@ for row in rows:
     assert float(row["engine_COM_m"]) <= 1e-5*radius and float(row["engine_I_rel"]) <= 1e-3
     assert float(row["engine_vertex_m"]) <= 1e-5*radius and float(row["engine_d_in"]) > 0
     assert 1 <= int(row["attempts"]) <= 64 and 1 <= int(row["root_iterations"]) <= 80
+    if "max_radius_relative_error" in row:
+        assert float(row["max_radius_relative_error"]) <= 1e-8
+        assert 0 < float(row["min_radius_over_r"]) <= 1
+        assert float(row["canonical_COM_over_r"]) <= 1e-8
     if int(row["sample"]) > 1100:
         ratio = volume/radius**3
         cap = 0.9*(k-2)*math.sin(2*math.pi/(k-2))/3
