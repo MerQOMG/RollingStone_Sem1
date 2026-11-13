@@ -1,223 +1,208 @@
-# 山区滚石模拟
+# 山区滚石模拟 RollingStone3D
 
-## 三维版：固定障碍、热图与时间轴
+三维山区滚石模拟程序：用 Jolt 刚体引擎模拟真实凸多面体石块沿参数化山坡滚落，支持固定随机障碍、弹性挡板，按批次做蒙特卡洛统计坡脚 10 m 高度范围内的路线概率，并在 raylib 三维界面中查看轨迹、热图和逐次试验回放。
 
-三维程序使用 Jolt 刚体与实际凸多面体，支持同批固定随机障碍、前两次预览后汇总全部轨迹、全路径热图、首次触板局部热图和逐试验只读回放。完整操作说明见 [三维 README](docs/3d/README.md)，统计与文件格式见 [分析与时间轴说明](docs/3d/ANALYSIS_AND_TIMELINE.md)，验收证据见 [F0–F5记录](docs/3d/OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)。
+同济大学《程序设计（基础项目一）工业互联领域的程序开发》课程项目。
 
-```bat
-build_3d.cmd Release
-test_3d.cmd
-run_obstacles_3d.cmd
-```
+![场景页：参数化山坡、石块、坡脚统计带](docs/3d/images/ui_scene.png)
 
-在窗口点击“批量”开始演示；“分析”中选择试验、热格或拖动时间轴。“打开结果”选择已保存目录的 `manifest.ini`。也可运行 `run_3d.cmd --view-results "结果目录"`。回放直接读取记录，不重新计算物理。小样本频率、未确认数与不完整结果的上下界均明确显示；首次触板图不表示冲击力。
+## 1. 功能
 
-## 二维版：可调参数工作台
+- **石块**：按外包半径 r、体积 V、顶点数 k 随机生成不规则凸多面体（质心、体积、完整惯量张量由实体积分得到），每次试验的石块由批次种子确定，结果可重复。
+- **地形**：参数化山坡（坡顶高度 `height`、陡坡角、缓台起点/长度/坡角、坡脚平台长度）或平地（`type=flat`）；可设宽度、横坡角和沟槽振幅。
+- **障碍与挡板**：同批固定随机障碍（碎石）；刚性或弹性挡板（`mode=elastic`：质量—弹簧—阻尼支承，真实位移与回弹）。
+- **批量蒙特卡洛**：N 次随机试验，后台线程运行，可暂停、取消；结果事务式写盘，未写完的目录以 `.pending` 标记。
+- **统计**：坡脚 10 m 统计带（见第 6 节）、收集截面、全路径热图、首次触板热图、逐试验轨迹与时间轴；未完成批次只给出频率的上下界，不当作概率。
+- **三维视图**：透视 / 俯视 / 侧视 / 跟随石块四种视角，右上角导航轴，等高线、高程着色、太阳光阴影贴图，CC0 实拍地形纹理（可切回程序化地形）。
+- **回放与结果文件**：保存的结果可用 `--view-results` 只读打开，直接读取记录，不重新计算物理。
 
-双击 `run.cmd`。左侧六个参数按钮覆盖61项输入与自定义地形控制点；数值支持输入、加减，模式支持下拉选择。顶部提供运行/暂停、重置、CSV导出和可取消的后台批量试验。参数方案可保存、载入，批量结果直接显示为概率网格。
+## 2. 环境与依赖
 
-完整清单见 [参数总表.md](参数总表.md)，也可双击 [参数总表.html](参数总表.html) 用浏览器查看。
+- Windows 10/11 x64，支持 OpenGL 3.3 的显卡。
+- Visual Studio 2022 或 2026，安装"使用 C++ 的桌面开发"（含 MSVC x64 与随附的 CMake）。
+- Git（首次获取依赖时需要）和网络。
+- 第三方依赖（版本和提交号固定，`scripts3d/bootstrap.ps1` 会校验）：
 
-新增源码：`project_settings.h`（共享配置与验证）、`parameter_editor.h`（参数页）、`configured_batch.h`（按方案批量统计）、`dashboard.h`（新工作台）。这些文件与两份cpp都必须上传。已有 `batch_stats.h` 和旧 `--batch` 入口保留，仓库原500次结果不覆盖。
-
-![工作台](docs/ui_dashboard.png)
-
----
-
-## 二维版基础说明
-
-同济大学《程序设计（基础项目一）工业互联领域的程序开发》课程项目。在 Windows 上用 EasyX 做二维凸多边形刚体滚石模拟：石头沿折线山坡滚动，可调地形和物理参数，可选弹性挡板，并支持无窗口的批量蒙特卡洛统计。
-
-## 1. 项目简介
-
-程序能做的事：生成定面积凸多边形石头，在参数化山坡（或老师给的原始山坡）上做冲量接触模拟；图形窗口里单次演示并导出 CSV；命令行里批量随机模拟，统计坡脚 10 m 高度范围内的路线概率。
-
-| 任务书要求 | 实现位置 | 状态 |
+| 依赖 | 版本 | 用途 |
 | --- | --- | --- |
-| 随机多次模拟，统计坡脚 10 m 高度范围内的路线概率 | `--batch`，`batch_stats.h` | 已完成。原始山坡上释放点已在 z≤10 m 区内，故 `p_entered_toe` 恒为 1，更有区分度的是到达收集器的概率 |
-| 结果输出为 CSV | 批量模式写 6 个 CSV；图形模式结束或按 E 导出轨迹 / 汇总 / 参数 | 已完成 |
-| 参数影响（初速度等按正态分布、变异系数 0.1 随机） | 批量模式对各参数同时抽样 | 部分完成：已按 CV = 0.1 联合随机，但没有“一次只变一个参数”的敏感性分析 |
-| 研究地形参数对滚动的影响 | 图形模式启动框与 T 键；`--batch` 可跟 6 个地形参数 | 工具已完成；对照实验和结论需自行分组跑、再分析 |
-| 凸多边形块体 | `PolygonShape`、`RollingStone`（`rollingstone.cpp`） | 已完成 |
-| 加分：弹性阻挡体 | `ElasticBarrier`（`rollingstone.cpp`） | 已完成（图形模式；批量模式尚未接入挡板） |
+| Jolt Physics | v5.3.0 | 刚体物理 |
+| raylib | 5.5 | 窗口、渲染 |
+| raygui | 4.0 | 仅作头文件依赖，界面控件在 `src3d/ui/widgets.*` 自绘 |
 
-## 2. 文件结构
+依赖放在仓库根目录的 `.deps3d/`（已被 .gitignore 忽略）。不需要单独安装字体：界面字体 Noto Sans SC 和地形纹理已在 `assets/` 中。
 
-```text
-RollingStone_Sem1/
-  rollingstone.cpp              主程序（推荐编译这一份）
-  batch_stats.h                 批量蒙特卡洛与 CSV（被 rollingstone.cpp 包含）
-  RollingStone.sln / .vcxproj   根目录 Visual Studio 工程（推荐）
-  build_msvc.cmd                MSVC 编译脚本（可带 --run / --test / --demo）
-  run.cmd  test.cmd  demo.cmd   上述三种用途的快捷脚本
-  README.md                     本说明
-  BATCH_README.md               批量模式的统计口径、随机模型和 CSV 列说明
-  examples/barrier_reference/   挡板对照算例的参考 CSV
-  results/                      已提交的批量样例（已过时，见第 7 节）
-  rollingstone/rollingstone/    历史嵌套工程，内含另一份 rollingstone.cpp 与 batch_stats.h
-  .vscode/                      VS Code 配置
-  .gitignore
-```
+## 3. 构建
 
-根目录和 `rollingstone/rollingstone/` 下的 `rollingstone.cpp`、`batch_stats.h` 必须保持完全一致，改一处就要改另一处。推荐用根目录的工程或直接编译根目录的 cpp。
-
-## 3. 编译运行
-
-需要 Windows 和 EasyX（x64）。可任选 Visual Studio 或 MSYS2 g++。请在仓库根目录编译。
-
-### 3.1 Visual Studio / MSVC
-
-需要安装 Visual Studio C++ 桌面工具和对应的 EasyX x64。推荐用脚本，它会自动寻找本机 MSVC：
+首次构建请先取依赖，再编译、测试：
 
 ```bat
-build_msvc.cmd --run
-build_msvc.cmd --test
-build_msvc.cmd --demo
+powershell -ExecutionPolicy Bypass -File scripts3d\bootstrap.ps1
+build_3d.cmd
+test_3d.cmd
+run_3d.cmd
 ```
 
-也可双击 `run.cmd`、`test.cmd`、`demo.cmd`。脚本把可执行文件写到 `build\RockfallStudio.exe`。EasyX 若装在自定义目录，先设置环境变量 `EASYX_INCLUDE` 和 `EASYX_LIB`。
+- `scripts3d\bootstrap.ps1`：克隆并校验 Jolt、raylib、raygui 到 `.deps3d\`（`-CoreOnly` 只取 Jolt）。**正常流程应先运行它。**依赖若放在别处，可在 CMake 里用 `RS_JoltPhysics_SOURCE_DIR`、`RS_raylib_SOURCE_DIR`、`RS_raygui_SOURCE_DIR` 指定。
+- `build_3d.cmd [Release|Debug] [--core]`：用 `vswhere` 自动找到本机最新的 Visual Studio（2022 / 2026）及其 CMake，不写死路径和生成器；已有的 `build\3d` 沿用原来的生成器。`--core` 只编核心库和测试，不含界面和 raylib。可设环境变量 `CMAKE_EXE` 指定另一个 cmake。Release 输出到 `build\3d\bin\`，Debug 输出到 `build\3d\bin\debug\`。
+- 构建时会把 `assets\` 复制到 exe 旁边（`build\3d\bin\assets\`），所以直接双击 exe 也能找到字体和纹理。
+- `scripts3d\package.ps1 [-Destination 目录]`：生成发布目录（exe、自检 exe、`assets`、`configs3d`、文档、依赖许可、`package-sha256.json`）。
 
-也可以打开根目录的 `RollingStone.sln`（工具集 v143；本机只有更新工具集时，在 VS 里重定向即可）。嵌套目录里还有一份历史工程，建议不要混用。
+## 4. 运行与命令行参数
 
-### 3.2 MSYS2 UCRT64 g++
-
-在仓库根目录执行：
+不带参数运行 `run_3d.cmd`（或双击 `build\3d\bin\RollingStone3D.exe`）打开三维程序。快捷启动：
 
 ```bat
-C:\msys64\ucrt64\bin\g++.exe rollingstone.cpp -o rollingstone.exe -std=c++17 -O2 -finput-charset=UTF-8 -DUNICODE -D_UNICODE "-I..\rollingstone\easyx\include" "-L..\rollingstone\easyx\lib64" -leasyxw -lgdi32 -lole32 -luuid -lwinmm -lcomdlg32 -lshell32 -static
+run_3d.cmd                                   :: 默认场景
+run_elastic_3d.cmd                           :: 参数化山坡 + 弹性挡板
+run_obstacles_3d.cmd                         :: 障碍 + 热图 + 时间轴演示，点“开始批量计算”
+run_3d.cmd --view-results "results3d\run_..."  :: 只读打开已保存结果
 ```
 
-`-I` 和 `-L` 指向 EasyX 的 include 与 lib64。上面是本仓库旁边 `rollingstone\easyx` 的示例路径；若 EasyX 装在别处，改成实际路径。命令已在本机验证可以编译，`--self-test` 通过。
-
-## 4. 图形模式
-
-直接运行 `rollingstone.exe`（不要带命令行参数）。启动时会依次弹出两个输入框：
-
-1. **形状参数**：最小边数、最大边数、圆半径 r（m）、面积 S（m²）。默认 `3 6 2 3`。边数须为 3～30 的整数，r 为 0.05～10 m，S 须大于 0、不超过最小边数对应的正多边形面积，且 S/r² ≥ 0.0001。厚度固定 1 m，密度 2600 kg/m³，初始无自旋。点取消则退出程序。
-2. **地形参数**：坡顶高度 H（m）、陡坡角（度）、缓台起点（m）、缓台长度（m）、缓台坡角（度）、坡脚平台长度（m）。默认 `55.6 40 25 15 7 20`。只输入 `0`，或点取消：使用老师给的原始山坡。输入 6 个合法数字：用 `buildTerrain` 生成自定义山坡（合法范围见第 5 节）。
-
-确认后，石头从坡顶以 1.5 m/s 沿坡释放。挡板默认开启，装在地形右端前 12 m（原始山坡上为 x = 108 m），高度 8 m、质量 2000 kg、刚度 500000 N/m、阻尼 30000 N·s/m。
-
-| 按键 | 功能 |
-| --- | --- |
-| Space | 暂停 / 继续 |
-| P | 打开或关闭暂停菜单；菜单内 W/S 选择 Pause 或 Continue，Enter 确认 |
-| R | 按当前形状参数重新随机一块石头并重跑 |
-| G | 弹出形状参数框，确认后生成新石头并重跑；取消则不变 |
-| T | 弹出地形参数框。取消不变；输入 `0` 恢复原始地形；输入 6 个数则重建山坡。改地形会重新随机石头，并把挡板重新装到新地形右端前 12 m |
-| M | 打开或关闭物理参数菜单。菜单内 W/S 选择，A/D 调整，Enter 关闭。可调：滚动阻力 c_rr（0～0.30）、摩擦系数 μ（0～1）、恢复系数 e（0～0.90）、空气阻力 Cd（0～2）、播放倍速 ×1 / ×2 / ×4 / ×8。改前四项会用同一块石头重跑，避免一条轨迹混用参数 |
-| B | 设置挡板：位置 x、高度 H、等效质量 M、刚度 k、阻尼 c，随后用同一块石头重跑。x 须距地形两端至少 2 m；H 为 0.5～30 m；M 为 1～1×10⁷ kg；k 为 0～1×10⁸ N/m；c 为 0～1×10⁷ N·s/m |
-| V | 开关挡板，同一块石头、相同初始状态重跑，便于对照 |
-| E | 立即把当前轨迹、汇总结果、完整参数导出为 3 个 CSV，写到 `results/` |
-| Esc | 退出 |
-
-模拟结束（到达下游边界、静止满 3 秒、超过 180 秒，或求解出错）会自动导出到 `results/trial_时间戳_*`。脚本运行时该目录在仓库根目录。
-
-旧 --batch 的网格经过、失败状态和安全输出修复详见 [BATCH_README.md](BATCH_README.md)。--self-test 同时覆盖几何、挡板、批量统计和新版参数配置。
-
-## 5. 命令行模式
-
-以下命令都不打开图形窗口。请在仓库根目录运行，以便相对路径与示例一致。
+完整命令行（以 `RollingStone3D.exe --help` 为准）：
 
 ```text
-rollingstone.exe --self-test
-rollingstone.exe --barrier-test
-rollingstone.exe --barrier-demo
-rollingstone.exe --batch 500 2026
-rollingstone.exe --batch 300 2026 55.6 40 25 15 7 20
+RollingStone3D: SI units, x downslope / y across / z up.
+--config scene.ini --batch N --seed integer --preview 0 --headless [--output path]
+--config scene.ini --single [--headless] [--output path]
+--config scene.ini --batch N --preview 2   (real GUI previews, then background)
+--view-results run_directory [--headless] [--diagnostic-results]  (read-only history)
+--replay run_directory --trial id --headless
+--self-test
+--write-config scene.ini [--throughput-scene]
+GUI: [--config scene.ini] [--view-results dir] [--tab scene|run|analysis] [--demo] [--scale 1.25] [--size 1366x768]
+     [--terrain-tex NAME | --procedural-terrain] (default: bundled assets/textures/terrain; env RS3D_TERRAIN_TEX)
+     [--tour --shots dir] (automated walkthrough with screenshots) [--duration seconds] [--single|--batch N start immediately]
+No arguments opens the 3D app.
 ```
 
-`--batch` 也可以写成 `-b`。次数 N 省略时默认为 200，种子省略时默认为 2026；种子写 `0` 表示用当前时间。旧 --batch 的 N 必须是 2～20000 的整数；非法次数或种子直接报错。
-
-| 参数 | 含义 |
+| 参数 | 说明 |
 | --- | --- |
-| `--self-test` | 多边形刚体 + 弹性挡板 + 批量统计 + 参数配置自检 |
-| `--barrier-test` | 只跑挡板自检 |
-| `--barrier-demo` | 在平地上跑 3 组对照（关挡板 / 默认刚度 / 更高刚度），写入 `results/`，用于核对第 6 节的数值表 |
-| `--batch N seed` | 批量蒙特卡洛，使用原始山坡 |
-| `--batch N seed` + 6 个地形数 | 批量蒙特卡洛，使用自定义地形。6 个数必须一次给全 |
+| `--config scene.ini` | 场景配置（INI，schema=2，兼容 schema=1）；`configs3d\` 有现成示例 |
+| `--batch N` / `--single` | 批量 N 次 / 单次试验；GUI 模式下表示打开后立即开始 |
+| `--seed` | 批次主种子（无符号 64 位整数） |
+| `--preview 0\|2` | 批量前预览的试验数；0 为全部后台计算，2 为先实时播放前两次 |
+| `--headless` | 不打开窗口，命令行直接计算或读取 |
+| `--output 路径` | 输出根目录，默认 `results3d\`；支持中文和空格 |
+| `--view-results 目录` | 只读打开已保存的结果（也可在界面用“打开结果…”选择） |
+| `--replay 目录 --trial id` | 按记录的初始条件重新积分某次试验并与结果比对（无窗口） |
+| `--self-test` | 启动构建或发布包里附带的自检程序 |
+| `--write-config scene.ini` | 写出默认配置；`--throughput-scene` 写出吞吐基准场景 |
+| `--tab scene\|run\|analysis` | 启动时打开的页签 |
+| `--demo` | 演示模式（也可按 F5） |
+| `--scale 1.25` / `--size 宽x高` | 界面缩放 / 窗口大小 |
+| `--terrain-tex NAME` | 指定地形纹理；默认是内置的 `assets\textures\terrain`；`procedural` 等同下一项 |
+| `--procedural-terrain` | 使用程序生成的地形外观（环境变量 `RS3D_TERRAIN_TEX=procedural` 同效） |
+| `--tour --shots 目录` | 自动走一遍界面并截图，用于验收；`--duration` 限定时长 |
 
-自定义地形的 6 个参数及合法范围（与图形模式的 `buildTerrain` 相同）：
+纹理加载失败时自动回到程序化地形，不会黑屏。调试用环境变量：`RS3D_NO_VIZ`（关闭增强着色器）、`RS3D_NO_SHADOW`（关阴影）、`RS3D_NOVSYNC`（关垂直同步测帧率）、`RS3D_TERRAIN_TEX`（等同 `--terrain-tex`）。
 
-| 顺序 | 参数 | 含义 | 合法范围 |
-| --- | --- | --- | --- |
-| 1 | `H` | 坡顶高度（m） | 5～60 |
-| 2 | `steepDeg` | 陡坡段坡角（度） | 15～70 |
-| 3 | `benchStart` | 缓台起点离坡顶的水平距离（m） | ≥ 0 |
-| 4 | `benchLength` | 缓台水平长度（m），0 表示没有缓台 | ≥ 0 |
-| 5 | `benchDeg` | 缓台坡角（度） | ≥ 0，且小于 `steepDeg` |
-| 6 | `toeLength` | 坡脚平台长度（m） | ≥ 5 |
+`configs3d\` 中的示例：
 
-另外还有两条几何约束：缓台末端至少离坡脚 1 m，整条山坡水平长度不超过 120 m。
+| 文件 | 内容 |
+| --- | --- |
+| `default.ini`、`batch.ini` | 参数化山坡（55.6 m 高），无挡板、无障碍，批量 N=100 |
+| `parameterized_elastic.ini` | 参数化山坡 + 36 m 宽 × 8 m 高弹性挡板（`run_elastic_3d.cmd` 使用） |
+| `obstacles_heatmap_timeline.ini` | 弹性挡板 + 固定障碍，用于热图和时间轴演示（`run_obstacles_3d.cmd` 使用；schema=2） |
+| `with_barrier.ini` | 参数化山坡 + 刚性挡板（偏转 15°） |
+| `elastic_barrier.ini` | 平地 + 弹性挡板 |
+| `batch_throughput.ini` | 平地、稳定姿态释放、1000 次的吞吐基准 |
+| `user_case_10_20_7_20.ini` | 一组给定的 k = 10–20、r = 7、V = 20 的用例 |
+| `natural_preview.ini` | 12×12 m 平地、k = 30，预览 3 块石头的形状 |
 
-**旧 --batch 输出目录：** 原始山坡写入 results/batch_.../；自定义地形写入 results/terrain_<六个参数>/batch_.../。每次独立，未完成目录保留 .partial；同一地形重跑也不覆盖已有数据。地形不合法时不生成 CSV。
+## 5. 界面说明
 
-`batch_summary.csv` 在原有列之后追加：`terrain`（`original` 或 `custom`）、6 个地形参数（原始山坡填 `-`）、`release_x_min`、`release_x_max`。
+三个页签（`Tab` / `Shift+Tab` 切换）：
 
-**释放点：** 原始山坡仍为 x = 90～100 m。自定义地形按几何计算：在坡脚前最后一段陡坡上，高度范围为 `[0.75·zHigh, zHigh]`，其中 `zHigh = min(20 m, 这段陡坡的上端高度)`，再换算成 x 后均匀随机。
+1. **场景**：左侧编辑地形、石块、挡板、障碍等参数。修改先标为"待应用"，点底部"应用"（`Ctrl+Enter`）后生效，非法值会在字段旁说明原因；`R` 换一块预览石块；`Ctrl+S` 保存场景。
+2. **运行**：`运行单次` 用预览石块实时观察；`开始批量计算` 按批次数 N 和批次种子做蒙特卡洛，可暂停（空格）、取消；可选先实时播放前两次，其余后台全速。
+3. **分析**：路径频率、首次触板、坡脚 xy / xz 分布等热图；逐次试验回放，拖动时间轴，`E` 跳到首次触板瞬间，`← →` 逐帧，`↑ ↓` 换试验，空格播放 / 暂停；`Ctrl+O` 打开已保存结果。
 
-旧 --batch 退出码：0 表示完整成功；1 表示次数/种子非法或文件创建、写入、关闭失败；2 表示地形参数格式错误，或模拟存在失败/超时（请结合错误信息及 .partial 目录判断）；3 表示地形不合法。不完整批次的概率留空。`--self-test`、`--barrier-test`、`--barrier-demo` 通过为 `0`，失败为 `1`。
+三维视图：左键拖动旋转，右键或中键拖动平移，滚轮缩放；`1` 透视 · `2` 俯视 · `3` 侧视 · `4` 跟随石块。右上角导航轴可点轴球对齐视角，拖动圆盘旋转（x 沿坡向下，y 横向，z 向上，与输出文件一致）。"三维视图显示"里可开关轨迹线、热图贴地、坡脚统计带、等高线。`F1` 使用指南，`F5` 演示模式，`F12` 保存当前画面，`Ctrl + 加减 / 0` 缩放界面。
 
-批量的随机模型、统计口径和各 CSV 列说明见 [BATCH_README.md](BATCH_README.md)。
+**坡脚 10 m 统计带**：x 取地形末端 40 m（或整个坡脚平台）、y 取全宽、z 取坡脚高程（默认坡脚中心）以上 10 m；在三维视图里画成半透明盒子，另有一个收集截面（x = 终点 − 10 m）。
 
-## 6. 功能模块简述
+热图读法：频率 = H / N；"条件概率"= H / B（仅在已触板的试验里）；批次未完成或有失败 / 超时时，只给出下界和上界，不是置信区间。首次触板图表示位置，不表示冲击力。
 
-**凸多边形刚体。** 在给定外接圆半径和面积内，随机生成 3～30 边的圆内接凸多边形，按密度 2600 kg/m³、厚度 1 m 计算质量和极惯性矩。与折线地面做冲量接触，含库仑摩擦、法向恢复系数、滚动阻力和空气阻力。图形模式默认从坡顶以 1.5 m/s 释放；这是二维数值近似，不包括破碎和三维翻滚。
+![演示模式：全部试验轨迹、坡脚统计带和收集截面](docs/3d/images/ui_demo.png)
 
-- 多边形按实际边、顶点和挡板高度裁剪检测，包含边穿过挡板端点的情况。
-- 接触速度使用双方相对速度，有效质量包含石头平动、转动及挡板水平运动。
-- 作用冲量同时更新石头和挡板；偏心碰撞产生转动。
-- 挡板接触恢复系数为0，摩擦系数默认0.3（新版可调）；弹性回弹由支座弹簧产生。地面仍使用原有参数。
-- 弹簧阻尼采用后向 Euler，分别累计物理阻尼耗能、积分数值耗散、接触耗能，不将数值耗散冒充材料耗能。
-- 支座力是 `k*q + c*v`；CSV 的接触峰值是**子步平均冲量力**，随时间步改变，不能当作真实瞬时冲击峰值或直接用于结构设计。
-- 耗能列仅覆盖挡板相关项，未汇总地面摩擦、空气阻力等全部损失，因此不能直接用于全程总能量平衡。
-- `blocked_at_rest` 表示发生接触后、未通过挡板且最终石头和挡板基本静止；`passed_barrier` 表示石头完整通过挡板所在位置。接触一次不会直接算拦截成功。
-- 极端高刚度、低质量、细薄石头可能超过允许子步数量，此时停止并记录错误，不伪造有效结果。参数是演示用等效值，尚未用真实拦截设施标定。
-**参数化地形。** 用 6 个数字生成“陡坡—可选缓台—陡坡—坡脚平台”的折线，并可随时切回原始 120 m 山坡（坡顶高 55.6 m，坡脚在 x = 120 m）。批量模式可以共用同一套参数，便于做控制变量对比。
+## 6. 输出与 CSV
 
-**批量蒙特卡洛。** 无窗口循环调用同一套 `RollingStone::update()`。每次模拟把初速度、半径、面积、摩擦系数、恢复系数、空气阻力、滚动阻力按正态分布（CV = 0.1）同时抽样，边数在 3～6 内均匀随机，并统计坡脚 10 m 高度范围内的路线占用概率，输出 CSV。详细口径见 [BATCH_README.md](BATCH_README.md)。
+每个批次一个独立目录：`results3d\run_<日期>_<时间>_<进程号>_<序号>\`。
 
-### 6.1 弹性挡板（模型与已验证结果）
+- `manifest.ini`：配置和身份（schema=3，状态 `status`、计数、依赖版本、源码哈希）；批次是否有效以它为准。
+- `FILES_COMPLETE.txt`：写盘全部成功后才出现的文件清单。目录名带 `.pending` 或含 `INCOMPLETE.txt` 表示事务没提交，**不能使用其中的概率**。
 
-挡板是水平单自由度弹簧阻尼等效模型，不模拟网格局部变形，也不是连续弹性体、有限元网或可断裂结构。水平位移 q、速度 v 满足
+| 文件 | 内容 |
+| --- | --- |
+| `scene.ini`、`trials.csv` | 场景配置；每次试验的状态与结果 |
+| `trajectory.csv`、`motion.bin` + `motion_index.csv` | 轨迹点；逐帧运动记录（回放读取） |
+| `collector_summary.csv`、`collector_yz.csv` | 收集截面统计与穿越点 |
+| `route_heatmap_xy.csv`、`voxel_probability.csv` | 全路径热图；三维体素概率 |
+| `projection_xy.csv`、`projection_xz.csv` | xy / xz 投影（按试验去重，不能相加成三维概率） |
+| `barrier_trials.csv`、`barrier_trajectory.csv` | 每次试验的挡板状态；挡板位移轨迹 |
+| `barrier_first_contact.csv`、`_heatmap.csv`、`_points.csv` | 首次触板记录、热图和点 |
+| `shape_vertices/faces.csv`、`terrain_vertices/faces.csv`、`obstacles.csv`、`obstacle_vertices/faces.csv` | 石块、地形、障碍的顶点和三角面（供独立重放） |
+| `attempt_rejections.csv` | 构造石块时被拒绝的尝试 |
+
+单位 m / s / kg，坐标 x 下坡、y 横向、z 向上，数值使用小数点。列定义和统计口径见 [docs/3d/ANALYSIS_AND_TIMELINE.md](docs/3d/ANALYSIS_AND_TIMELINE.md)。
+
+## 7. 目录结构
 
 ```text
-M * q'' + c * q' + k * q = F_contact
+RollingStone_ui-rebuild/
+  src3d/              程序源码（CMake 工程）
+    ui/               界面：应用壳、页签、参数面板、3D 视口(viewport3d)、渲染增强(viz)、控件(widgets)
+    cmake/            依赖与构建脚本（Jolt、raylib、观察器）
+    observer/         Jolt 接触观察器头文件
+    *.cpp / *.h       核心：配置、地形、物理、批处理、统计、结果存档、回放
+  tests3d/            测试（21 个 ctest 用例）
+  configs3d/          示例场景配置
+  scripts3d/          bootstrap / package / vs_cmake 与 audit_* 验收脚本
+  assets/             字体 fonts/、地形纹理 textures/terrain/
+  licenses/           字体与纹理的授权文件
+  docs/3d/            设计、验收与格式文档
+  .planning/          开发过程记录
+  build_3d.cmd  test_3d.cmd  run_3d.cmd  run_elastic_3d.cmd  run_obstacles_3d.cmd
+  build/              本地构建输出（已忽略）    .deps3d/  依赖（已忽略）    results3d/  运行输出（已忽略）
 ```
 
-底部高程在安装时固定，竖直方向由支座约束。多边形按实际边、顶点和挡板高度裁剪检测。接触速度用双方相对速度，有效质量包含石头平动、转动和挡板水平运动；冲量同时更新双方，偏心碰撞产生转动。
+## 8. 测试
 
-挡板接触的恢复系数为 0，摩擦系数为 0.3；弹性回弹由支座弹簧产生，地面仍用原有参数。弹簧阻尼采用后向 Euler，分别累计物理阻尼耗能、积分数值耗散和接触耗能。支座力是 `k*q + c*v`。CSV 里的接触峰值是**子步平均冲量力**，会随时间步改变，不能当作真实瞬时冲击峰值，也不能直接用于结构设计。耗能列只覆盖挡板相关项，未汇总地面摩擦、空气阻力等全部损失，不能直接做全程总能量平衡。
+```bat
+test_3d.cmd                    :: 等价于 ctest --test-dir build/3d -C Release --output-on-failure
+test_3d.cmd --geometry-full    :: 另跑完整几何验收（耗时长，输出到 results3d\geometry_acceptance）
+run_3d.cmd --self-test
+```
 
-`blocked_at_rest` 表示发生接触后、未通过挡板，且最终石头和挡板基本静止；`passed_barrier` 表示石头完整通过挡板所在位置。接触一次并不直接算拦截成功。极端高刚度、低质量或细薄石头可能超过允许子步数量，此时停止并记录错误，不伪造结果。参数是演示用等效值，尚未用真实拦截设施标定。
+21 个 ctest 用例：ABI、输入归属、几何（解析 / 形态）、地形网格、物理动力学、统计 DDA、配置快照、静止回归、批处理输出与回放、会话与播放控制、弹性挡板（含组合演示）、接触观察器、固定障碍、全路径与首次触板、运动分块、存档事务、只读回放、界面模型（含障碍场景）。验收记录见 [docs/3d/VALIDATION.md](docs/3d/VALIDATION.md) 和 `docs/3d/evidence/`。
 
-`--self-test` 含原有测试与挡板测试（弹簧阻尼能量恒等式、中心碰撞解析解、偏心冲量、有限高度接触与越顶、耦合能量、禁用挡板与旧算法一致、拦截、高速接触、时间步收敛等）。2026-11-11 本机实测，三组平地对照如下（同一正方形石头：质量 5200 kg、初速度 12 m/s、平地、初始 x = 1 m；挡板 x = 8 m、高 6 m、质量 2000 kg；模拟 12 秒）。该算例只验证挡板，不代表原始山坡的统计结果。运行 `--barrier-demo` 可重新生成数据。
+## 9. 素材与授权
 
-| 平地对照算例 | 最大挡板位移 | 最终石头位置 |
-| --- | ---: | ---: |
-| 关闭挡板 | 0 m | 49.935664 m |
-| k = 500000 N/m，c = 30000 N·s/m | 0.671827 m | 2.530084 m |
-| k = 1000000 N/m，c 不变 | 0.515700 m | 0.423369 m |
+- 界面字体：Noto Sans SC（SIL OFL 1.1），`assets/fonts/`，授权 `licenses/NotoSansSC-OFL.txt`。
+- 地形纹理：Poly Haven 的 [cliff_side](https://polyhaven.com/a/cliff_side) 和 [dry_ground_rocks](https://polyhaven.com/a/dry_ground_rocks)（CC0 1.0），`assets/textures/terrain/`，说明见 `licenses/terrain-textures-CC0.txt`。
+- 代码依赖：Jolt Physics（MIT）、raylib 与 raygui（zlib/libpng）；发布包的 `licenses\` 附带各自许可原文。
 
-外层时间步 0.002、0.001、0.0005 秒时，最大位移分别为 0.671827、0.679280、0.683038 m；粗细两组相对差 1.64132%。空中耦合能量测试最大核算残差 0.026348%，其中包含原有重力积分的数值耗散。以上是数值近似及有限测试证据，不代表任意参数都精确。参考 CSV 在 `examples/barrier_reference/`。
+## 10. 已知限制
 
-## 7. 已知问题与待办
+- 首次触板图表示接触位置，不表示冲击力；小样本只给经验频率，不代表统计稳定。
+- 石块在全景里很小（半径约 2 m 对 60 m 的坡）；纹理为 1K，近景略软。
+- 地形纹理的平铺、亮度、饱和度等参数写在 `assets/textures/terrain/terrain.cfg`，修改后重启生效，界面里没有滑块。
+- `scripts3d/` 里的 `audit_gui.py`、`verify_deployment.py`、`audit_performance.py`、`benchmark_analysis.py` 依赖已不存在的命令行选项（如 `--capture`、`--font`、`--exercise-view`），当前不能直接运行，仅作历史记录保留。
 
-- results/ 的已提交批量样例是历史数据，按要求保留；当前运行采用线段网格统计和精确终止边界，结果可能不同。样例不代表当前版本的重新验证结果。
-- 批量默认释放点在坡脚上方的陡坡段（原始山坡为 x = 90～100 m），不是坡顶。原因是：多边形若从坡顶按图形模式的 1.5 m/s 出发，多数会在缓台停住，坡脚统计没有意义。图形模式仍然从坡顶释放。两种场景不要混着解释。
-- 因此，在原始山坡上 `p_entered_toe` 恒为 1（释放点已在 z≤10 m 区内）。看结果时请主要看到达收集器（x = 终点−10 m）的概率、最大速度和停止位置。自定义地形的释放点更高，`p_entered_toe` 才可能小于 1。
-- `results/route_probability_heatmap.png` 不是程序生成的，而是根据 CSV 另行绘图后放进仓库的。程序本身只写 CSV。
-- 旧 --batch 不启用挡板；新版工作台与 --batch-config 可选择当前挡板。单参数敏感性分析仍需用户安排对照运行。
-- 课程交付物还未开始：使用说明书、开发说明、约 15 页 PPT、海报。提交截止日期为 12 月 1 日；汇报报名截止日期为 11 月 18 日。
+## 11. 小组成员
 
-## 8. 分工
-
-核心代码是根目录 `rollingstone.cpp`；历史嵌套工程使用 `rollingstone/rollingstone/rollingstone.cpp`，两份必须一起更新。嵌套 `.vcxproj` 同时补充 UTF-8、C++14 和 EasyX 路径。其余新增脚本、README、参考数据可以一并上传。
-
-当前仓库已合入批量统计，新工作台还支持读取界面方案运行。下文为弹性挡板基础模型说明；完整可调项和新旧批量区别以参数总表为准。
-| 贡献者 | 主要工作 |
+| 贡献者（GitHub） | 主要工作 |
 | --- | --- |
 | Shellmega | 凸多边形刚体与接触求解 |
-| MerQOMG | 参数化地形，以及把地形参数接入批量模式 |
+| MerQOMG | 地形、前端搭建 |
 | percy07071077-art | 弹性挡板及数值记录 |
 | 1394989349-cmd | 批量蒙特卡洛模拟与 CSV 统计 |
+
+## 12. 文档索引
+
+- [docs/3d/README.md](docs/3d/README.md)：统计口径、几何与采样器、配置和结果格式的技术补充。
+- [docs/3d/ANALYSIS_AND_TIMELINE.md](docs/3d/ANALYSIS_AND_TIMELINE.md)：热图、时间轴与结果文件格式。
+- [docs/3d/DEPENDENCIES.md](docs/3d/DEPENDENCIES.md)：依赖、编译环境与许可。
+- [docs/3d/SHAPE_SAMPLER.md](docs/3d/SHAPE_SAMPLER.md)、[docs/3d/ELASTIC_BARRIER.md](docs/3d/ELASTIC_BARRIER.md)：石块采样器、弹性挡板模型。
+- [docs/3d/VALIDATION.md](docs/3d/VALIDATION.md)、[docs/3d/OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md](docs/3d/OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)：验收记录。
+- 开发过程记录：`docs/3d/PROGRESS.md`、`docs/3d/IMPLEMENTATION_PLAN.md`、`.planning/`。
