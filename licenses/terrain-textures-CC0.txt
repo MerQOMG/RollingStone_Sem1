@@ -1,0 +1,9 @@
+Terrain textures in assets/textures/terrain/ - Poly Haven, CC0 1.0 Universal (public domain dedication).
+License text: https://polyhaven.com/license  (https://creativecommons.org/publicdomain/zero/1.0/)
+
+rock_*.jpg    cliff_side         https://polyhaven.com/a/cliff_side
+ground_*.jpg  dry_ground_rocks   https://polyhaven.com/a/dry_ground_rocks
+Source API:   https://api.polyhaven.com/files/<asset id>
+
+Modifications: 1K JPG maps only; recompressed, roughness/AO packed into the R/G channels of *_r.jpg (B unused).
+No attribution is required by CC0; it is listed here for provenance.

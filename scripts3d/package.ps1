@@ -1,4 +1,4 @@
-param([string]$Destination = 'build/3d/package/RollingStone3D', [string]$ExampleDirectory = '')
+﻿param([string]$Destination = 'build/3d/package/RollingStone3D', [string]$ExampleDirectory = '')
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $target = [IO.Path]::GetFullPath((Join-Path $root $Destination))
@@ -11,6 +11,9 @@ Copy-Item -LiteralPath (Join-Path $root 'run_elastic_3d.cmd') -Destination $targ
 Copy-Item -LiteralPath (Join-Path $root 'run_obstacles_3d.cmd') -Destination $target
 Get-ChildItem -LiteralPath (Join-Path $root 'build/3d/bin') -Filter 'rs3d_*.exe' | Copy-Item -Destination $target
 Copy-Item -LiteralPath (Join-Path $root 'configs3d') -Destination $target -Recurse
+New-Item -ItemType Directory -Path (Join-Path $target 'assets') | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'assets/fonts') -Destination (Join-Path $target 'assets/fonts') -Recurse # Noto Sans SC (OFL)
+Copy-Item -LiteralPath (Join-Path $root 'assets/textures') -Destination (Join-Path $target 'assets/textures') -Recurse # default terrain textures (CC0)
 $docs = Join-Path $target 'docs'
 New-Item -ItemType Directory -Path $docs | Out-Null
 foreach ($name in @('README.md','DEPENDENCIES.md','VALIDATION.md','SHAPE_SAMPLER.md','ELASTIC_BARRIER.md','ANALYSIS_AND_TIMELINE.md','OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md','OBSTACLE_DISTRIBUTION_FIX.md','ELASTIC_DEMO_FIX.md')) {
@@ -28,7 +31,7 @@ $readme = @'
 
 读取保存结果：`run_3d.cmd --view-results "结果目录"`，或在窗口“打开结果”选择 manifest.ini。
 执行随包测试：`run_3d.cmd --self-test`。
-程序沿用本机中文字体，不需要安装编译器；package-sha256.json 可核对随包文件。
+界面字体 Noto Sans SC（OFL）和地形纹理（CC0）随包提供在 assets 目录；package-sha256.json 可核对随包文件。
 '@
 [IO.File]::WriteAllText((Join-Path $target 'README.md'),$readme,[Text.UTF8Encoding]::new($false))
 Copy-Item -LiteralPath (Join-Path $root 'docs/3d/evidence') -Destination (Join-Path $docs 'evidence') -Recurse
@@ -41,6 +44,8 @@ if ($ExampleDirectory) {
 Copy-Item -LiteralPath (Join-Path $root 'docs/3d/images') -Destination (Join-Path $docs 'images') -Recurse
 $notices = Join-Path $target 'licenses'
 New-Item -ItemType Directory -Path $notices | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'licenses/terrain-textures-CC0.txt') -Destination $notices
+Copy-Item -LiteralPath (Join-Path $root 'licenses/NotoSansSC-OFL.txt') -Destination $notices
 foreach ($vendor in @('JoltPhysics','raylib','raygui')) {
     Copy-Item -LiteralPath (Join-Path $root ('.deps3d/'+$vendor+'/LICENSE')) -Destination (Join-Path $notices ($vendor+'.txt'))
 }
@@ -66,4 +71,4 @@ $rows = Get-ChildItem -LiteralPath $target -Recurse -File | ForEach-Object {
     [pscustomobject]@{path=$_.FullName.Substring($target.Length+1);sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash}
 }
 $rows | ConvertTo-Json -Depth 3 | Set-Content -Encoding utf8 (Join-Path $target 'package-sha256.json')
-Write-Output "Packaged $target (system CJK font is not redistributed)"
+Write-Output "Packaged $target"

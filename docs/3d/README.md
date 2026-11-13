@@ -1,15 +1,8 @@
 # RollingStone3D
 
-RollingStone3D 使用固定 r/V 随机凸多面体、真实三维刚体、参数化地形和刚性/弹性挡板。新增同批固定随机障碍、全部 trial 轨迹、全路径与首次触板热图，以及从保存帧读取的全 trial 时间轴。操作、统计口径、格式和兼容说明见 [障碍与分析回放](ANALYSIS_AND_TIMELINE.md)；本次验收证据见 [F0–F5验收记录](OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)。原版、采样器与弹性挡板的历史验证保留在 VALIDATION.md，二维版独立保留。
+RollingStone3D 使用固定 r/V 随机凸多面体、真实三维刚体、参数化地形和刚性/弹性挡板。新增同批固定随机障碍、全部 trial 轨迹、全路径与首次触板热图，以及从保存帧读取的全 trial 时间轴。操作、统计口径、格式和兼容说明见 [障碍与分析回放](ANALYSIS_AND_TIMELINE.md)；本次验收证据见 [F0–F5验收记录](OBSTACLES_HEATMAP_TIMELINE_VALIDATION.md)。原版、采样器与弹性挡板的历史验证保留在 VALIDATION.md。构建、运行、命令行参数和界面说明见 [根目录 README](../../README.md)。
 
-使用现有 VS2022 C++ 工具链，不需要安装新编译器。在仓库根目录执行：
-
-```powershell
-./scripts3d/bootstrap.ps1
-./build_3d.cmd
-./test_3d.cmd
-./run_3d.cmd
-```
+构建、运行和命令行参数见 [根目录 README](../../README.md)：先 `scripts3d/bootstrap.ps1` 取依赖，再 `build_3d.cmd`、`test_3d.cmd`、`run_3d.cmd`。
 
 几何完整验收可运行 `test_3d.cmd --geometry-full`，顺序重跑先1100用户case、再补足5000样本；日志在`results3d/geometry_acceptance`。另用 `python scripts3d/audit_geometry.py results3d/geometry_acceptance`独立核对样本数、边界覆盖和记录误差。生产支持k10–100，默认20–50/r2/V7；k4–9仅为显式几何内核回归。当前使用凸包顶点内缩与各向形变的自然形状采样器（convex-retreat-com-radius-v3），仍不是所有定体积凸多面体上的均匀分布；最终5000样本中7个trial发生重试、0最终失败；0/5000不证明所有种子均成功。
 
@@ -55,65 +48,19 @@ python scripts3d/audit_batch.py "results3d/run_实际目录"
 
 `batch_throughput.ini`是专用水平面稳定基准：r2/V7/k20–50、e0、默认摩擦、零速度、零间隙、10s上限，显式`orientation=stable_face`将最接近质心的支撑面朝下。该夹具不改变采样几何或随机数，实际四元数写入输出；普通场景`orientation=sampled`保留采样姿态。随机姿态在10s内不一定满足连续2s静止，原失败基准也保存在VALIDATION。滚阻是按重量定标的接触切向角耗散，不含绕法线扭转阻力；空气阻力用pi*r²面积，均未作工程材料标定。
 
-正式窗口使用顶部运行栏、左侧参数分页、中央三维视口、底部状态栏。操作步骤：
-
-1. 从参数组选择地形，设置类型、宽度、横坡或沟槽，点击“应用更改”。地形实际变化后自动重新取景，避免从flat切到parameterized时旧相机落在坡面下面；材料等其他编辑保留视角。各数值带单位；可输入固定数或 `lower,upper` 区间，枚举使用字段提示的 ASCII 文本。
-2. 设置 k/r/V、密度、材料和初值。只有应用成功才替换场景；非法值保留供修改，字段附近和底部显示错误。改动尚未应用时不能启动运行。
-3. 在明确的“设置释放点”模式下点选地形，填入世界 x/y 并计算实体支撑高度。也可数值编辑释放位置和间隙。
-4. 可选启用挡板：有限宽度、高度、厚度、中心和绕 Z 方位角一起用于显示与刚体碰撞；`auto` 高度使底边落在覆盖区域最高支撑处。mode=rigid 为静态刚性板；mode=elastic 为质量—弹簧—阻尼支承板，可设置 M/k/c，实际运动与碰撞耦合。详见 [弹性挡板](ELASTIC_BARRIER.md)。
-5. “单次”使用屏幕上的独立预览样本；“重新随机”只改预览种子。正式“批量”要求 N>=2，重新按 master seed 采样，前两次按 1 倍模拟时钟播放，其余只更新进度。第二次结束后保留完整轨迹，第3次起每完成一次加入全批轨迹集合；后台不自动播放石块。所有 trial 分块记录，概率仍逐物理步统计。
-6. 运行和暂停时参数锁定。顶部“停算/续算”控制计算，下方“播放回放/暂停回放”独立控制显示；计算暂停时仍能查看已写入的历史。计算暂停保留每一个物理步，重置先受控取消；取消或关闭等待工作线程安全收尾，状态与输出清单明确区分完整、失败、截断和取消。
-
-视口右拖旋转、中拖平移、滚轮缩放；俯视、侧视和相机重置在左栏。左键拾取最近可见的落石、地形或挡板，空白取消；侧栏、文本编辑、菜单和模态对话框捕获自己的输入。实体/线框、轨迹、统计盒/截面开关均只影响显示。坐标轴每段5m；辅助轨迹和统计轮廓使用真实深度测试，会被实体遮挡。顶部显示 COM、速度/角速度模长和当前批次哈希；弹性挡板还显示实际位移、速度、支承力、储能和阻尼耗能。
-
-“保存/加载”通过原生文件对话框处理 UTF-8 INI。加载先验证全部参数，失败保留原场景。相机“保存视角/读取视角”单独写入诊断目录的 `camera.ini`，不改变物理配置或种子。数值编辑不承诺中文输入法；路径支持中文和空格。FPS按钮循环60/30/不限，只改变绘制频率。
+界面布局、视角、显示开关与操作说明见根目录 README 的“界面说明”。
 
 ```powershell
 ./run_elastic_3d.cmd
 ./run_3d.cmd --config configs3d/with_barrier.ini
 ./run_3d.cmd --config configs3d/user_case_10_20_7_20.ini --single
 ./run_3d.cmd --config configs3d/batch.ini --batch 100 --seed 20261111 --preview 2
-python scripts3d/audit_gui.py --output results3d/gui_matrix_new
 ./scripts3d/package.ps1 -Destination 'build/3d/package/new-release'
 ```
 
-发布文件夹含exe、自检exe、配置、文档和依赖许可；`run_3d.cmd`在任意当前目录下切换到包目录启动。VS和第三方运行时DLL不属于运行前提，程序使用静态/MT依赖；系统OpenGL及Windows组件仍必需。字体不随包分发。`--self-test`需要随包的测试exe；完整5000几何验收使用仓库测试脚本。
+发布文件夹含exe、自检exe、配置、文档和依赖许可；`run_3d.cmd`在任意当前目录下切换到包目录启动。VS和第三方运行时DLL不属于运行前提，程序使用静态/MT依赖；系统OpenGL及Windows组件仍必需。字体（Noto Sans SC，OFL）和地形纹理（CC0）放在包内 assets 目录。`--self-test`需要随包的测试exe；完整5000几何验收使用仓库测试脚本。
 
-`--ui-prototype`保留独立的预设运动观察原型，始终标记 preset motion，供显示负载复测，不产生物理概率。新时间轴和热图在正式应用中使用实际记录；历史多批合并和防护方案对比仍不在本次范围。
-
-字体默认读取本机 `C:/Windows/Fonts/simhei.ttf`，不随程序分发；可用 `--font "有权使用的中文字体.ttf"` 指定，路径支持中文及空格。
-
-P0辅助检查：
-
-```powershell
-./scripts3d/audit_build.ps1
-./run_3d.cmd --ui-self-test --output results3d/ui-self-test
-./run_3d.cmd --render-check --output results3d/render-check
-./run_3d.cmd --ui-prototype --benchmark --output results3d/benchmark
-./run_3d.cmd --ui-prototype --capture --duration 20 --output results3d/capture
-```
-
-基准每场景预热5秒、采样30秒，重复3次；基准和压力各3轮，共约210秒。每0.5秒向实际相机控制器送入微小旋转指令来测软件响应，日志明确区分scripted_controller/native；不是操作系统或屏幕端到端延迟。`scripts3d/audit_prototype.ps1 -Results results3d/benchmark`检查六轮的帧时间、内存与软件响应预算。
-
-`--capture` 每2秒保存真实帧缓冲诊断截图，不是录像。GPU读回在主线程，PNG压缩/写盘用单个后台任务；仍有读回和编码开销，性能报告必须标明是否开启，正式纯绘制基准默认关闭。测试结果目录和依赖缓存不提交。Computer Use窗口捕获有白屏或滞后现象，因此运行验收同时保存实际程序帧缓冲、原生输入日志，并说明哪些项目由控制器自动序列验证；详见VALIDATION。
-
-
-真实运行性能诊断（每场景预热5秒、取样30秒、三轮；无截图开销）：
-
-```powershell
-./run_3d.cmd --config configs3d/with_barrier.ini --single --benchmark --fps 0 --evidence results3d/perf_preview --output results3d/perf_preview_runs
-./run_3d.cmd --config configs3d/batch_throughput.ini --batch 10000 --preview 0 --benchmark --fps 0 --evidence results3d/perf_background --output results3d/perf_background_runs
-python scripts3d/audit_performance.py results3d/perf_preview
-python scripts3d/audit_performance.py results3d/perf_background
-```
-
-预览基准重复真实单次来覆盖整个取样时间，后台基准顺序推进真实数值批次；结束时受控取消未完成工作，因此可能返回退出码2并产生不完整概率，不能把它当作完整统计批。普通完成退出0，错误/失败退出1，受控取消退出2。性能门槛固定于P0，详见VALIDATION。
-
-
-本机验收覆盖76,800个地形三角面、单个k<=100刚体、一个有限挡板（静态刚性或单轴弹簧阻尼支承）；显示压力负载为50条各2000点的静态轨迹，这是一组历史显示压力数据；当前正式应用记录并显示所有 trial 的轨迹，后台仍不自动播放动画。不能据此推断可同时物理模拟50块石头。固定预算为帧P95<=33.334ms/P99<=50ms、峰值512MiB、软件响应P95<=50ms/最大250ms；最终真实预览/后台均通过。当前弹性挡板追加版的原稳定专用场景回归1000次45.39秒、零失败/超时，普通坡面结果仍按真实终止状态报告。
-
-历史独立发行目录为`build/3d/package/RollingStone3D-parameterized-elastic`，双击其中的`run_elastic_3d.cmd`打开参数化坡面与弹性挡板碰撞示例，`run_3d.cmd`打开默认场景；源码入口仍是仓库根目录的同名命令。原平地弹性版、自然形状版和v1发行目录保留。大体积发行包和结果未提交Git，换机器须按本文重建或复制发行目录，并提供有权使用的中文字体。真实输出示例在`results3d/natural_v3_final1000/run_20261112_084735_13532_1`；其中manifest、trials、voxel_probability、collector_yz和projection_xy/xz给出配置、状态与概率。
-
+历史独立发行目录为`build/3d/package/RollingStone3D-parameterized-elastic`，双击其中的`run_elastic_3d.cmd`打开参数化坡面与弹性挡板碰撞示例，`run_3d.cmd`打开默认场景；源码入口仍是仓库根目录的同名命令。原平地弹性版、自然形状版和v1发行目录保留。大体积发行包和结果未提交Git，换机器须按本文重建或复制发行目录。真实输出示例在`results3d/natural_v3_final1000/run_20261112_084735_13532_1`；其中manifest、trials、voxel_probability、collector_yz和projection_xy/xz给出配置、状态与概率。
 
 查看自然落石：`run_3d.cmd --config configs3d/natural_preview.ini`。这个12×12m平地场景便于观察形状；点击“重新随机”查看不同样本，默认坡面仍可正常使用。新旧采样器使用相同seed时形状会不同，旧结果请通过--replay读取实际顶点；完整运行身份包含manifest中的sampler和radius_definition，不能只凭参数hash混合统计。
 

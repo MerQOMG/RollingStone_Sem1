@@ -14,9 +14,9 @@
 
 编译器沿用 VS2022 Enterprise / MSVC 19.44.35228，x64、v143、Windows SDK 10.0.26100.0。优先使用该VS附带 CMake 3.31.6-msvc6；`CMAKE_EXE` 可指定另一现有CMake。所有目标/MT，Debug /MTd；Jolt静态，双精度位置、确定性开关开，C++异常开，硬件FP异常关，IPO关，数值代码/fp:precise。消费者链接 Jolt CMake 目标传播ABI宏。Debug/Release构建与消费者均已运行通过；实际编译命令审计见 `build/3d/evidence/compiler-audit.json`。采用/Z7嵌入式调试信息以避免本环境PDB服务器C1902。
 
-raylib使用固定源码附带GLFW、OpenGL 3.3桌面后端及其内嵌第三方代码；相关许可见该固定树的 `src/external` 与 `src/external/glfw`。不另外下载GLFW。raygui仅在 `prototype.cpp` 定义实现。音频模块关闭。
+raylib使用固定源码附带GLFW、OpenGL 3.3桌面后端及其内嵌第三方代码；相关许可见该固定树的 `src/external` 与 `src/external/glfw`。不另外下载GLFW。新界面使用 `src3d/ui/widgets.*` 自绘控件，raygui 仅保留为固定的头文件依赖。音频模块关闭。
 
-中文字体默认 `C:/Windows/Fonts/simhei.ttf`；只在本机读取，不随程序提交或分发。可用 `--font` 指定有权使用的中文TTF/TTC；宽字符路径以filesystem/ifstream读字节，再交给LoadFontFromMemory。缺文件或缺必需字形明确失败，不静默显示乱码。
+界面字体为随仓库提供的 Noto Sans SC（SIL OFL 1.1，`assets/fonts/`，授权见 `licenses/NotoSansSC-OFL.txt`），启动时按“exe 目录、当前目录及其上级目录”查找 `assets/fonts/`；找不到字体时中文无法显示并在日志报错。地形纹理为 Poly Haven CC0（`assets/textures/terrain/`，见 `licenses/terrain-textures-CC0.txt`）。
 
 
 ## 2026-11-12：raylib 5.5 构建定义修复
